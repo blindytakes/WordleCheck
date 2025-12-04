@@ -92,10 +92,22 @@ const WordCloud = ({ results }) => {
                 .remove();
 
             // ENTER + UPDATE: Add new words and update existing ones
-            wordElements.enter().append("text")
+            const allWords = wordElements.enter().append("text")
                 // Start new words invisible for fade-in animation
                 .style("opacity", 0)
-                .merge(wordElements)
+                .style("cursor", "pointer")
+                .merge(wordElements);
+
+            // Add click handler (must be done before transition)
+            allWords
+                .on("click", (event, d) => {
+                    navigator.clipboard.writeText(d.text);
+                    // Minimal feedback (could be a toast notification later)
+                    alert(`Copied: ${d.text}`);
+                });
+
+            // Apply transition animations
+            allWords
                 .transition().duration(750) // Smooth animation duration
                 .style("font-size", d => `${d.size}px`)
                 .style("fill", d => colorScale(d.score))
@@ -103,14 +115,7 @@ const WordCloud = ({ results }) => {
                 .style("opacity", 1) // Fade in
                 .attr("text-anchor", "middle")
                 .attr("transform", d => `translate(${d.x}, ${d.y})rotate(${d.rotate})`)
-                .text(d => d.text)
-                // Click handler for copy-to-clipboard (UX feature)
-                .on("click", (event, d) => {
-                    navigator.clipboard.writeText(d.text);
-                    // Minimal feedback (could be a toast notification later)
-                    alert(`Copied: ${d.text}`);
-                })
-                .style("cursor", "pointer");
+                .text(d => d.text);
         }
 
     }, [words, sizeScale, colorScale]); // Re-run effect when filtered words change
