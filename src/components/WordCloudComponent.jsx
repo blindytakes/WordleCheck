@@ -1,6 +1,6 @@
 // src/components/WordCloud.jsx
 
-import React, { useRef, useEffect, useMemo } from 'react';
+import React, { useRef, useEffect, useMemo, useState } from 'react';
 import * as d3 from 'd3';
 import cloud from 'd3-cloud';
 
@@ -30,6 +30,7 @@ const scoreWord = (word) => {
 
 const WordCloud = ({ results }) => {
     const svgRef = useRef(null);
+    const [copiedWord, setCopiedWord] = useState(null);
 
     // Prepare data (only runs when results change)
     const words = useMemo(() => {
@@ -110,8 +111,8 @@ const WordCloud = ({ results }) => {
             allWords
                 .on("click", (event, d) => {
                     navigator.clipboard.writeText(d.text);
-                    // Minimal feedback (could be a toast notification later)
-                    alert(`Copied: ${d.text}`);
+                    setCopiedWord(d.text);
+                    setTimeout(() => setCopiedWord(null), 2000);
                 });
 
             // Apply transition animations
@@ -130,9 +131,16 @@ const WordCloud = ({ results }) => {
     }, [words, sizeScale, colorScale]); // Re-run effect when filtered words change
 
     return (
-        <div className="w-full h-full">
+        <div className="w-full h-full relative">
              {/* The SVG element must fill its parent container */}
             <svg ref={svgRef} className="w-full h-full"></svg>
+
+            {/* Toast notification for copied word */}
+            {copiedWord && (
+                <div className="fixed top-4 right-4 bg-emerald-500 text-slate-900 px-6 py-3 rounded-lg shadow-lg font-bold animate-pulse z-50">
+                    ✓ Copied: {copiedWord.toUpperCase()}
+                </div>
+            )}
         </div>
     );
 };
