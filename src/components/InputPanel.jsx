@@ -112,12 +112,12 @@ const InputPanel = ({ constraints, onChange }) => {
                 {Array.from({ length: 5 }).map((_, index) => (
                     <input
                         key={index}
-                        data-index={index}
+                        data-green-index={index}
                         type="text"
                         maxLength="1"
                         className="w-12 h-12 text-2xl text-center font-bold bg-slate-700 rounded border-2 border-emerald-500 uppercase focus:outline-none focus:ring-2 focus:ring-emerald-400"
-                        value={green[index] || ''} 
-                        onChange={(e) => handleGreenChange(e, index)} 
+                        value={green[index] || ''}
+                        onChange={(e) => handleGreenChange(e, index)}
                     />
                 ))}
             </div>
@@ -136,15 +136,6 @@ const InputPanel = ({ constraints, onChange }) => {
                     </button>
                 ))}
             </div>
-
-            {/* CONSTRAINTS DEBUG VIEW */}
-            <pre className="text-xs bg-slate-700 p-3 rounded text-gray-300 overflow-auto h-40">
-                {JSON.stringify(
-                    constraints, 
-                    (key, value) => (value instanceof Set ? [...value] : value), 
-                    2
-                )}
-            </pre>
         </div>
     );
 };

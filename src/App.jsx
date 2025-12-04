@@ -46,20 +46,15 @@ function App() {
                 {/* LEFT PANEL: InputPanel component will go here */}
                 <div className="lg:col-span-1 bg-slate-800 p-6 rounded-lg shadow-xl">
                     <h2 className="text-xl font-semibold mb-4 text-cyan-400">Input Constraints</h2>
-                    <p className="text-gray-400">
-                        InputPanel component will go here!
-                    </p>
-                    {/* Placeholder for InputPanel: */}
-                    { <InputPanel constraints={constraints} onChange={handleConstraintChange} /> }
+                    <InputPanel constraints={constraints} onChange={handleConstraintChange} />
                 </div>
                 
                 {/* RIGHT PANEL: WordCloud component will go here */}
-                <div className="lg:col-span-2 bg-slate-800 p-6 rounded-lg shadow-xl min-h-[600px] flex items-center justify-center">
+                <div className="lg:col-span-2 bg-slate-800 p-6 rounded-lg shadow-xl min-h-[600px] flex flex-col">
                     <h2 className="text-xl font-semibold mb-4 text-cyan-400">
                         Possible Answers ({filteredResults.length} remaining)
                     </h2>
-                    {/* Placeholder for WordCloud: */}
-                    { <WordCloud results={filteredResults} /> }
+                    <WordCloud results={filteredResults} />
                 </div>
             </div>
         </div>
