@@ -103,49 +103,65 @@ const InputPanel = ({ constraints, onChange }) => {
         return 'bg-slate-600 text-white hover:bg-slate-500'; 
     };
 
+    // ------------------------------------------------------------------
+    // 4. RESET BUTTON HANDLER
+    // ------------------------------------------------------------------
+    const handleReset = () => {
+        const initialConstraints = {
+            green: { '0': '', '1': '', '2': '', '3': '', '4': '' },
+            yellow: {},
+            gray: new Set(),
+        };
+        onChange(initialConstraints);
+    };
+
     return (
-        <div className="space-y-8">
-            
+        <div className="space-y-6">
+
+            {/* RESET BUTTON */}
+            <button
+                onClick={handleReset}
+                className="w-full py-2 px-4 bg-red-600 hover:bg-red-700 text-white font-semibold rounded transition duration-150 ease-in-out"
+            >
+                Clear All Constraints
+            </button>
+
             {/* 1. GREEN LETTER INPUT GRID (Correct Position) */}
-            <h3 className="text-lg font-semibold text-cyan-400">Green Letters (Correct Position)</h3>
-            
-            <div className="flex justify-between space-x-2">
-                {Array.from({ length: 5 }).map((_, index) => (
-                    <input
-                        key={index}
-                        data-index={index}
-                        type="text"
-                        maxLength="1"
-                        className="w-12 h-12 text-2xl text-center font-bold bg-slate-700 rounded border-2 border-emerald-500 uppercase focus:outline-none focus:ring-2 focus:ring-emerald-400"
-                        value={green[index] || ''} 
-                        onChange={(e) => handleGreenChange(e, index)} 
-                    />
-                ))}
+            <div>
+                <h3 className="text-lg font-semibold text-cyan-400 mb-3">Green Letters (Correct Position)</h3>
+                <div className="flex justify-between space-x-2">
+                    {Array.from({ length: 5 }).map((_, index) => (
+                        <input
+                            key={index}
+                            data-index={index}
+                            type="text"
+                            maxLength="1"
+                            className="w-12 h-12 text-2xl text-center font-bold bg-slate-700 rounded border-2 border-emerald-500 uppercase focus:outline-none focus:ring-2 focus:ring-emerald-400"
+                            value={green[index] || ''}
+                            onChange={(e) => handleGreenChange(e, index)}
+                        />
+                    ))}
+                </div>
             </div>
 
             {/* 2. ALPHABET SELECTOR (Yellow/Gray) */}
-            <h3 className="text-lg font-semibold text-cyan-400 mt-8">Other Letters (Click to Toggle)</h3>
-            
-            <div className="grid grid-cols-7 gap-2">
-                {ALPHABET.map((letter) => (
-                    <button
-                        key={letter}
-                        className={`p-2 rounded font-bold transition duration-150 ease-in-out ${getButtonClass(letter)}`}
-                        onClick={() => handleAlphabetClick(letter)}
-                    >
-                        {letter}
-                    </button>
-                ))}
+            <div>
+                <h3 className="text-lg font-semibold text-cyan-400 mb-3">Other Letters</h3>
+                <p className="text-xs text-gray-400 mb-2">
+                    Click once: Yellow (in word) • Click twice: Gray (not in word) • Click again: Reset
+                </p>
+                <div className="grid grid-cols-7 gap-2">
+                    {ALPHABET.map((letter) => (
+                        <button
+                            key={letter}
+                            className={`p-2 rounded font-bold transition duration-150 ease-in-out ${getButtonClass(letter)}`}
+                            onClick={() => handleAlphabetClick(letter)}
+                        >
+                            {letter}
+                        </button>
+                    ))}
+                </div>
             </div>
-
-            {/* CONSTRAINTS DEBUG VIEW */}
-            <pre className="text-xs bg-slate-700 p-3 rounded text-gray-300 overflow-auto h-40">
-                {JSON.stringify(
-                    constraints, 
-                    (key, value) => (value instanceof Set ? [...value] : value), 
-                    2
-                )}
-            </pre>
         </div>
     );
 };
