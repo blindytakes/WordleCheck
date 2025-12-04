@@ -1,39 +1,47 @@
 // src/components/InputPanel.jsx
 
-import React from 'react';
+import { useState, useEffect } from 'react';
 
-const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+const QWERTY_ROWS = [
+    'QWERTYUIOP'.split(''),
+    'ASDFGHJKL'.split(''),
+    'ZXCVBNM'.split('')
+];
 
 const InputPanel = ({ constraints, onChange }) => {
     const { green, yellow, gray } = constraints;
 
+    // Local state for yellow grid (4 rows x 5 positions)
+    const [yellowGrid, setYellowGrid] = useState([
+        ['', '', '', '', ''],
+        ['', '', '', '', ''],
+        ['', '', '', '', ''],
+        ['', '', '', '', '']
+    ]);
+
     // ------------------------------------------------------------------
-    // 1. HANDLER FOR GREEN LETTERS (5-Letter Input Grid)
+    // HANDLER FOR GREEN LETTERS
     // ------------------------------------------------------------------
     const handleGreenChange = (e, index) => {
         const value = e.target.value.toUpperCase();
         const position = String(index);
 
-        // Create the updated green constraints object
         const newGreen = {
             ...green,
             [position]: value.length === 1 ? value : '',
         };
 
-        // Create the full new constraints object
         const newConstraints = {
             ...constraints,
             green: newGreen,
-            // Optimization: Remove a letter from gray if it's now green.
             gray: new Set(Array.from(gray).filter(l => l !== value)),
         };
 
-        // Update the App's state, triggering the filter
         onChange(newConstraints);
 
-        // Implement Auto-Focus for Green Letters (UX improvement)
+        // Auto-focus next box
         if (value && index < 4) {
-            const nextInput = document.querySelector(`input[data-index="${index + 1}"]`);
+            const nextInput = document.querySelector(`input[data-green-index="${index + 1}"]`);
             if (nextInput) {
                 nextInput.focus();
             }
@@ -41,99 +49,126 @@ const InputPanel = ({ constraints, onChange }) => {
     };
 
     // ------------------------------------------------------------------
-    // 2. HANDLER FOR ALPHABET (Yellow/Gray Click Toggle)
+    // HANDLER FOR YELLOW LETTERS
     // ------------------------------------------------------------------
-    const handleAlphabetClick = (letter) => {
-        let newConstraints = {
+    const handleYellowChange = (e, rowIndex, colIndex) => {
+        const value = e.target.value.toUpperCase();
+
+        // Update local grid state
+        const newGrid = yellowGrid.map((row, i) =>
+            i === rowIndex ? row.map((cell, j) => j === colIndex ? (value.length === 1 ? value : '') : cell) : row
+        );
+        setYellowGrid(newGrid);
+
+        // Convert grid to yellow object format
+        const newYellow = {};
+        newGrid.forEach((row) => {
+            row.forEach((letter, position) => {
+                if (letter) {
+                    if (!newYellow[letter]) {
+                        newYellow[letter] = [];
+                    }
+                    if (!newYellow[letter].includes(position)) {
+                        newYellow[letter].push(position);
+                    }
+                }
+            });
+        });
+
+        const newConstraints = {
             ...constraints,
-            gray: new Set(gray), // Ensure we're working with a new Set instance
-            yellow: { ...yellow }, // Ensure we're working with a new object
+            yellow: newYellow,
+            gray: new Set(Array.from(gray).filter(l => !Object.keys(newYellow).includes(l))),
         };
 
-        // If the letter is currently GRAY (not in word)
-        if (newConstraints.gray.has(letter)) {
-            // State transition: GRAY -> DEFAULT (remove from gray)
-            newConstraints.gray.delete(letter);
-        } 
-        
-        // If the letter is currently YELLOW (in word, wrong position)
-        else if (newConstraints.yellow[letter]) {
-            // State transition: YELLOW -> GRAY (remove from yellow, add to gray)
-            delete newConstraints.yellow[letter];
-            newConstraints.gray.add(letter);
-        } 
-        
-        // If the letter is currently DEFAULT (or Green, but green takes priority visually)
-        else {
-            // State transition: DEFAULT -> YELLOW (add to yellow)
-            // Note: For now, we add it to yellow with an empty list of excluded positions.
-            // A more advanced feature would let the user click positions to exclude them.
-            newConstraints.yellow[letter] = [];
-        }
-
-        // Final cleanup: If a letter is marked green, it cannot be yellow or gray.
-        const isGreen = Object.values(green).includes(letter);
-        if (isGreen) {
-            newConstraints.gray.delete(letter);
-            delete newConstraints.yellow[letter];
-        }
-
-        // Update the App's state
         onChange(newConstraints);
     };
 
     // ------------------------------------------------------------------
-    // 3. RENDER LOGIC
+    // HANDLER FOR GRAY KEYBOARD
     // ------------------------------------------------------------------
+    const handleKeyboardClick = (letter) => {
+        const newGray = new Set(gray);
 
-    const getButtonClass = (letter) => {
-        // 1. Check Green (Priority 1: Green takes visual priority)
-        if (Object.values(green).includes(letter)) {
-            return 'bg-emerald-500 text-slate-900 shadow-lg ring-2 ring-emerald-300 transform';
+        if (newGray.has(letter)) {
+            // Toggle off - remove from gray
+            newGray.delete(letter);
+        } else {
+            // Toggle on - add to gray (only if not green or yellow)
+            const isGreen = Object.values(green).includes(letter);
+            const isYellow = Object.keys(yellow).includes(letter);
+
+            if (!isGreen && !isYellow) {
+                newGray.add(letter);
+            }
         }
-        // 2. Check Gray (Priority 2)
-        if (gray.has(letter)) {
-            return 'bg-slate-700 text-gray-400 hover:bg-slate-600';
-        }
-        // 3. Check Yellow (Priority 3)
-        if (Object.keys(yellow).includes(letter)) {
-            return 'bg-amber-400 text-slate-900 hover:bg-amber-300 shadow-xl ring-4 ring-amber-300 transform scale-110 font-extrabold animate-pulse';
-        }
-        // 4. Default State
-        return 'bg-slate-600 text-white hover:bg-slate-500 transform hover:scale-105';
+
+        onChange({
+            ...constraints,
+            gray: newGray
+        });
     };
 
     // ------------------------------------------------------------------
-    // 4. RESET BUTTON HANDLER
+    // RESET HANDLER
     // ------------------------------------------------------------------
     const handleReset = () => {
-        const initialConstraints = {
+        setYellowGrid([
+            ['', '', '', '', ''],
+            ['', '', '', '', ''],
+            ['', '', '', '', ''],
+            ['', '', '', '', '']
+        ]);
+
+        onChange({
             green: { '0': '', '1': '', '2': '', '3': '', '4': '' },
             yellow: {},
             gray: new Set(),
-        };
-        onChange(initialConstraints);
+        });
     };
 
+    // ------------------------------------------------------------------
+    // KEYBOARD BUTTON STYLING
+    // ------------------------------------------------------------------
+    const getKeyboardClass = (letter) => {
+        // Green has highest priority
+        if (Object.values(green).includes(letter)) {
+            return 'bg-emerald-500 text-slate-900 shadow-lg ring-2 ring-emerald-300';
+        }
+        // Gray next
+        if (gray.has(letter)) {
+            return 'bg-slate-700 text-gray-400';
+        }
+        // Yellow letters shown but not clickable for gray
+        if (Object.keys(yellow).includes(letter)) {
+            return 'bg-amber-400 text-slate-900 shadow-md cursor-not-allowed';
+        }
+        // Default
+        return 'bg-slate-600 text-white hover:bg-slate-500';
+    };
+
+    // ------------------------------------------------------------------
+    // RENDER
+    // ------------------------------------------------------------------
     return (
         <div className="space-y-6">
 
             {/* RESET BUTTON */}
             <button
                 onClick={handleReset}
-                className="w-full py-2 px-4 bg-red-600 hover:bg-red-700 text-white font-semibold rounded transition duration-150 ease-in-out"
+                className="w-full py-2 px-4 bg-red-600 hover:bg-red-700 text-white font-semibold rounded transition"
             >
                 Clear All Constraints
             </button>
 
-            {/* 1. GREEN LETTER INPUT GRID (Correct Position) */}
+            {/* GREEN LETTERS (Correct Position) */}
             <div>
                 <h3 className="text-lg font-semibold text-cyan-400 mb-3">Green Letters (Correct Position)</h3>
                 <div className="flex justify-between space-x-2">
                     {Array.from({ length: 5 }).map((_, index) => (
                         <input
                             key={index}
-                            data-index={index}
+                            data-green-index={index}
                             type="text"
                             maxLength="1"
                             className="w-12 h-12 text-2xl text-center font-bold bg-slate-700 rounded border-2 border-emerald-500 uppercase focus:outline-none focus:ring-2 focus:ring-emerald-400"
@@ -144,21 +179,50 @@ const InputPanel = ({ constraints, onChange }) => {
                 </div>
             </div>
 
-            {/* 2. ALPHABET SELECTOR (Yellow/Gray) */}
+            {/* YELLOW LETTERS (In Word, Wrong Position) */}
             <div>
-                <h3 className="text-lg font-semibold text-cyan-400 mb-3">Other Letters</h3>
+                <h3 className="text-lg font-semibold text-cyan-400 mb-3">Yellow Letters (NOT at these positions)</h3>
                 <p className="text-xs text-gray-400 mb-2">
-                    Click once: Yellow (in word) • Click twice: Gray (not in word) • Click again: Reset
+                    Enter letters that were yellow at each position
                 </p>
-                <div className="grid grid-cols-7 gap-2">
-                    {ALPHABET.map((letter) => (
-                        <button
-                            key={letter}
-                            className={`p-2 rounded font-bold transition duration-150 ease-in-out ${getButtonClass(letter)}`}
-                            onClick={() => handleAlphabetClick(letter)}
-                        >
-                            {letter}
-                        </button>
+                <div className="space-y-1">
+                    {yellowGrid.map((row, rowIndex) => (
+                        <div key={rowIndex} className="flex justify-between space-x-2">
+                            {row.map((cell, colIndex) => (
+                                <input
+                                    key={`${rowIndex}-${colIndex}`}
+                                    type="text"
+                                    maxLength="1"
+                                    className="w-12 h-10 text-xl text-center font-bold bg-slate-700 rounded border-2 border-amber-400 uppercase focus:outline-none focus:ring-2 focus:ring-amber-300"
+                                    value={cell}
+                                    onChange={(e) => handleYellowChange(e, rowIndex, colIndex)}
+                                />
+                            ))}
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            {/* GRAY KEYBOARD (Not in Word) */}
+            <div>
+                <h3 className="text-lg font-semibold text-cyan-400 mb-3">Gray Letters (Not in Word)</h3>
+                <p className="text-xs text-gray-400 mb-2">
+                    Click to mark letters not in the word
+                </p>
+                <div className="space-y-1">
+                    {QWERTY_ROWS.map((row, rowIndex) => (
+                        <div key={rowIndex} className="flex justify-center gap-1">
+                            {row.map((letter) => (
+                                <button
+                                    key={letter}
+                                    className={`w-8 h-8 text-sm font-bold rounded transition ${getKeyboardClass(letter)}`}
+                                    onClick={() => handleKeyboardClick(letter)}
+                                    disabled={Object.values(green).includes(letter) || Object.keys(yellow).includes(letter)}
+                                >
+                                    {letter}
+                                </button>
+                            ))}
+                        </div>
                     ))}
                 </div>
             </div>
