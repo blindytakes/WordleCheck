@@ -2,13 +2,12 @@
 
 import { useState, useMemo } from 'react';
 import { SOLUTIONS_LIST } from './data/solutions';
-import { filterWordList } from './utils/filterlogic';
-// Update the CSS import to point to index.css where Tailwind is active
-import './index.css'; 
+import { filterWordList } from './utils/filterLogic';
+import './index.css';
 
-// Temporary Placeholders (We will create these components next)
 import InputPanel from './components/InputPanel';
 import WordCloud from './components/WordCloudComponent';
+import ErrorBoundary from './components/ErrorBoundary';
 
 // Initial state for constraints
 const initialConstraints = {
@@ -23,11 +22,7 @@ function App() {
 
     // 2. CORE LOGIC: Recalculates the filtered word list ONLY when constraints change
     const filteredResults = useMemo(() => {
-        const results = filterWordList(constraints, SOLUTIONS_LIST);
-        
-        console.log(`Words remaining: ${results.length}`);
-        
-        return results;
+        return filterWordList(constraints, SOLUTIONS_LIST);
     }, [constraints]);
 
     // Function to update constraints (passed down to the InputPanel)
@@ -54,7 +49,9 @@ function App() {
                     <h2 className="text-xl font-semibold mb-4 text-cyan-400">
                         Possible Answers ({filteredResults.length} remaining)
                     </h2>
-                    <WordCloud results={filteredResults} />
+                    <ErrorBoundary>
+                        <WordCloud results={filteredResults} />
+                    </ErrorBoundary>
                 </div>
             </div>
         </div>

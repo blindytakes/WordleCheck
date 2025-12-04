@@ -2,7 +2,12 @@
 
 import React from 'react';
 
-const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+// QWERTY keyboard layout
+const KEYBOARD_ROWS = [
+    'QWERTYUIOP'.split(''),
+    'ASDFGHJKL'.split(''),
+    'ZXCVBNM'.split('')
+];
 
 const InputPanel = ({ constraints, onChange }) => {
     const { green, yellow, gray } = constraints;
@@ -122,18 +127,26 @@ const InputPanel = ({ constraints, onChange }) => {
                 ))}
             </div>
 
-            {/* 2. ALPHABET SELECTOR (Yellow/Gray) */}
+            {/* 2. QWERTY KEYBOARD (Yellow/Gray) */}
             <h3 className="text-lg font-semibold text-cyan-400 mt-8">Other Letters (Click to Toggle)</h3>
-            
-            <div className="grid grid-cols-7 gap-2">
-                {ALPHABET.map((letter) => (
-                    <button
-                        key={letter}
-                        className={`p-2 rounded font-bold transition duration-150 ease-in-out ${getButtonClass(letter)}`}
-                        onClick={() => handleAlphabetClick(letter)}
+
+            <div className="space-y-2">
+                {KEYBOARD_ROWS.map((row, rowIndex) => (
+                    <div
+                        key={rowIndex}
+                        className="flex justify-center gap-1"
+                        style={{ paddingLeft: rowIndex === 1 ? '1.5rem' : rowIndex === 2 ? '3rem' : '0' }}
                     >
-                        {letter}
-                    </button>
+                        {row.map((letter) => (
+                            <button
+                                key={letter}
+                                className={`px-3 py-2 min-w-[2.5rem] rounded font-bold transition duration-150 ease-in-out ${getButtonClass(letter)}`}
+                                onClick={() => handleAlphabetClick(letter)}
+                            >
+                                {letter}
+                            </button>
+                        ))}
+                    </div>
                 ))}
             </div>
         </div>

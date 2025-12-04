@@ -31,6 +31,7 @@ const scoreWord = (word) => {
 const WordCloud = ({ results }) => {
     const svgRef = useRef(null);
     const [copiedWord, setCopiedWord] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
 
     // Prepare data (only runs when results change)
     const words = useMemo(() => {
@@ -60,6 +61,8 @@ const WordCloud = ({ results }) => {
 
     // D3 rendering logic inside a useEffect for canvas updates
     useEffect(() => {
+        setIsLoading(true);
+
         const width = svgRef.current.clientWidth;
         const height = 600; // Fixed height for visualization area
 
@@ -74,7 +77,10 @@ const WordCloud = ({ results }) => {
         const group = svg.append("g")
             .attr("transform", `translate(${width / 2}, ${height / 2})`);
 
-        if (words.length === 0) return;
+        if (words.length === 0) {
+            setIsLoading(false);
+            return;
+        }
 
         // D3-Cloud Layout Configuration
         const layout = cloud()
@@ -91,6 +97,8 @@ const WordCloud = ({ results }) => {
 
         // Drawing function called by d3-cloud
         function draw(cloudWords) {
+            setIsLoading(false);
+
             const wordElements = group.selectAll("text")
                 .data(cloudWords, d => d.text);
 
@@ -134,6 +142,16 @@ const WordCloud = ({ results }) => {
         <div className="w-full h-full relative">
              {/* The SVG element must fill its parent container */}
             <svg ref={svgRef} className="w-full h-full"></svg>
+
+            {/* Loading spinner */}
+            {isLoading && (
+                <div className="absolute inset-0 flex items-center justify-center bg-slate-800/50">
+                    <div className="text-center">
+                        <div className="w-16 h-16 border-4 border-cyan-400 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                        <p className="text-cyan-400 font-semibold">Generating word cloud...</p>
+                    </div>
+                </div>
+            )}
 
             {/* Toast notification for copied word */}
             {copiedWord && (
