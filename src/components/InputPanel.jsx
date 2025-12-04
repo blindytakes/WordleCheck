@@ -89,18 +89,18 @@ const InputPanel = ({ constraints, onChange }) => {
     const getButtonClass = (letter) => {
         // 1. Check Green (Priority 1: Green takes visual priority)
         if (Object.values(green).includes(letter)) {
-            return 'bg-emerald-500 text-slate-900 shadow-lg'; 
-        } 
+            return 'bg-emerald-500 text-slate-900 shadow-lg ring-2 ring-emerald-300';
+        }
         // 2. Check Gray (Priority 2)
         if (gray.has(letter)) {
-            return 'bg-slate-700 text-gray-400 hover:bg-slate-600'; 
-        } 
+            return 'bg-slate-700 text-gray-400 hover:bg-slate-600';
+        }
         // 3. Check Yellow (Priority 3)
         if (Object.keys(yellow).includes(letter)) {
-            return 'bg-amber-500 text-slate-900 hover:bg-amber-400 shadow-lg';
-        } 
+            return 'bg-amber-400 text-slate-900 hover:bg-amber-300 shadow-xl ring-2 ring-amber-200 scale-105 font-extrabold';
+        }
         // 4. Default State
-        return 'bg-slate-600 text-white hover:bg-slate-500'; 
+        return 'bg-slate-600 text-white hover:bg-slate-500';
     };
 
     // ------------------------------------------------------------------
