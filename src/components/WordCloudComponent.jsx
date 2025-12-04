@@ -41,12 +41,19 @@ const WordCloud = ({ results }) => {
 
     // Define D3 Scales for size and color
     const maxScore = d3.max(words, d => d.score) || 1;
-    const sizeScale = d3.scaleLinear().domain([1, maxScore]).range([14, 64]); // Font sizes
+    const minScore = d3.min(words, d => d.score) || 1;
 
-    // Color scale: Maps score to a Cyan/Emerald color saturation
+    // Adjust font size based on number of words for better cloud appearance
+    const numWords = words.length;
+    const maxSize = numWords > 500 ? 48 : numWords > 100 ? 56 : 64;
+    const minSize = numWords > 500 ? 12 : numWords > 100 ? 14 : 16;
+
+    const sizeScale = d3.scaleLinear().domain([minScore, maxScore]).range([minSize, maxSize]);
+
+    // Color scale: Maps score to a Cyan/Emerald/Blue color palette
     const colorScale = d3.scaleLinear()
-        .domain([1, maxScore])
-        .range(["#16A34A", "#4ade80"]) // A shade range from dark green to bright emerald
+        .domain([minScore, maxScore])
+        .range(["#06b6d4", "#10b981"]) // Cyan to Emerald
         .interpolate(d3.interpolateHsl);
 
 
@@ -72,10 +79,11 @@ const WordCloud = ({ results }) => {
         const layout = cloud()
             .size([width, height])
             .words(words)
-            .padding(2)
-            .rotate(() => (Math.random() > 0.8 ? 90 : 0)) // 20% slight rotation for organic feel
-            .font("sans-serif")
+            .padding(5) // Increased padding for better spacing
+            .rotate(() => (Math.random() > 0.85 ? 90 : 0)) // 15% vertical rotation for variety
+            .font("Impact, sans-serif")
             .fontSize(d => sizeScale(d.score)) // Apply size scale
+            .spiral("archimedean") // Use archimedean spiral for more circular cloud shape
             .on("end", draw); // Call draw function once layout is complete
 
         layout.start();
@@ -92,25 +100,31 @@ const WordCloud = ({ results }) => {
                 .remove();
 
             // ENTER + UPDATE: Add new words and update existing ones
-            wordElements.enter().append("text")
+            const allWords = wordElements.enter().append("text")
                 // Start new words invisible for fade-in animation
                 .style("opacity", 0)
-                .merge(wordElements)
-                .transition().duration(750) // Smooth animation duration
-                .style("font-size", d => `${d.size}px`)
-                .style("fill", d => colorScale(d.score))
-                .style("font-family", "sans-serif")
-                .style("opacity", 1) // Fade in
-                .attr("text-anchor", "middle")
-                .attr("transform", d => `translate(${d.x}, ${d.y})rotate(${d.rotate})`)
-                .text(d => d.text)
-                // Click handler for copy-to-clipboard (UX feature)
+                .style("cursor", "pointer")
+                .merge(wordElements);
+
+            // Add click handler (must be done before transition)
+            allWords
                 .on("click", (event, d) => {
                     navigator.clipboard.writeText(d.text);
                     // Minimal feedback (could be a toast notification later)
                     alert(`Copied: ${d.text}`);
-                })
-                .style("cursor", "pointer");
+                });
+
+            // Apply transition animations
+            allWords
+                .transition().duration(750) // Smooth animation duration
+                .style("font-size", d => `${d.size}px`)
+                .style("fill", d => colorScale(d.score))
+                .style("font-family", "Impact, sans-serif")
+                .style("font-weight", "bold")
+                .style("opacity", 1) // Fade in
+                .attr("text-anchor", "middle")
+                .attr("transform", d => `translate(${d.x}, ${d.y})rotate(${d.rotate})`)
+                .text(d => d.text.toUpperCase()); // Display in uppercase for better visibility
         }
 
     }, [words, sizeScale, colorScale]); // Re-run effect when filtered words change

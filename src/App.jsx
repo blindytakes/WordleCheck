@@ -37,26 +37,29 @@ function App() {
 
     // Use Tailwind classes to implement the dark theme layout with cloud motif
     return (
-        <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 text-white p-6">
-            <h1 className="text-5xl text-center font-bold text-white mb-2 drop-shadow-lg">
-                ☁️ Wordle Cloud Helper ☁️
+        <div className="min-h-screen bg-slate-900 text-white p-4">
+            <h1 className="text-4xl text-center font-bold text-emerald-400 mb-6">
+                Wordle Cloud Helper
             </h1>
-
-            <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* LEFT PANEL: InputPanel component */}
-                <div className="lg:col-span-1 bg-gradient-to-br from-slate-700 to-slate-800 p-6 rounded-3xl shadow-2xl border-2 border-slate-600">
-                    <h2 className="text-xl font-semibold mb-4 text-white">Input Constraints</h2>
-                    <InputPanel constraints={constraints} onChange={handleConstraintChange} />
+            
+            <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* LEFT PANEL: InputPanel component will go here */}
+                <div className="lg:col-span-1 bg-slate-800 p-6 rounded-lg shadow-xl">
+                    <h2 className="text-xl font-semibold mb-4 text-cyan-400">Input Constraints</h2>
+                    <p className="text-gray-400">
+                        InputPanel component will go here!
+                    </p>
+                    {/* Placeholder for InputPanel: */}
+                    { <InputPanel constraints={constraints} onChange={handleConstraintChange} /> }
                 </div>
-
-                {/* RIGHT PANEL: WordCloud component */}
-                <div className="lg:col-span-2 bg-gradient-to-br from-slate-700 to-slate-800 p-6 rounded-3xl shadow-2xl border-2 border-slate-600">
-                    <h2 className="text-2xl font-semibold mb-4 text-white text-center">
+                
+                {/* RIGHT PANEL: WordCloud component will go here */}
+                <div className="lg:col-span-2 bg-slate-800 p-6 rounded-lg shadow-xl min-h-[600px] flex items-center justify-center">
+                    <h2 className="text-xl font-semibold mb-4 text-cyan-400">
                         Possible Answers ({filteredResults.length} remaining)
                     </h2>
-                    <div className="min-h-[600px]">
-                        <WordCloud results={filteredResults} />
-                    </div>
+                    {/* Placeholder for WordCloud: */}
+                    { <WordCloud results={filteredResults} /> }
                 </div>
             </div>
         </div>
