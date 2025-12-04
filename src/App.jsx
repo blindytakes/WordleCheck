@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { SOLUTIONS_LIST } from './data/solutions';
-import { filterWordList } from './utils/filterLogic';
+import { filterWordList } from './utils/filterlogic';
 // Update the CSS import to point to index.css where Tailwind is active
 import './index.css'; 
 
