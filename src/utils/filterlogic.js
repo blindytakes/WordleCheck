@@ -14,14 +14,16 @@ export function filterWordList(constraints, solutionsList) {
     const requiredYellowLetters = Object.keys(yellow);
 
     const filteredWords = solutionsList.filter(word => {
-        let isValid = true; 
+        let isValid = true;
+        // Normalize word to uppercase for comparison with constraints
+        const wordUpper = word.toUpperCase();
 
         // 1. --- GREEN (Correct Position) CHECK ---
         for (let i = 0; i < 5; i++) {
             const requiredLetter = green[i];
-            if (requiredLetter && word[i] !== requiredLetter) {
+            if (requiredLetter && wordUpper[i] !== requiredLetter) {
                 isValid = false;
-                break; 
+                break;
             }
         }
         if (!isValid) return false;
@@ -29,7 +31,7 @@ export function filterWordList(constraints, solutionsList) {
         // 2. --- GRAY (Not In Word) CHECK ---
         // Exclude gray letters, UNLESS they are also green (i.e., multiple instances of a letter).
         for (const letter of gray) {
-            if (!greenLetters.includes(letter) && word.includes(letter)) {
+            if (!greenLetters.includes(letter) && wordUpper.includes(letter)) {
                 isValid = false;
                 break;
             }
@@ -38,23 +40,25 @@ export function filterWordList(constraints, solutionsList) {
 
         // 3. --- YELLOW (In Word, Wrong Spot) CHECK ---
         for (const letter of requiredYellowLetters) {
-            
+
             // Condition A: PRESENCE - The word MUST contain the yellow letter.
-            if (!word.includes(letter)) {
+            if (!wordUpper.includes(letter)) {
                 isValid = false;
-                break; 
+                break;
             }
 
             // Condition B: EXCLUSION - The word MUST NOT have the yellow letter
             // in any of the excluded positions (where it was already guessed).
             for (const position of yellow[letter]) {
-                if (word[position] === letter) {
+                if (wordUpper[position] === letter) {
                     isValid = false;
-                    break; 
+                    break;
                 }
             }
+            // If invalid from inner loop, exit outer loop
+            if (!isValid) break;
         }
-        
+
         return isValid;
     });
 
