@@ -133,18 +133,18 @@ const InputPanel = ({ constraints, onChange }) => {
     const getKeyboardClass = (letter) => {
         // Green has highest priority
         if (Object.values(green).includes(letter)) {
-            return 'bg-emerald-500 text-slate-900 shadow-lg ring-2 ring-emerald-300';
+            return 'bg-emerald-500 text-slate-900 shadow-lg ring-2 ring-emerald-300 font-bold';
         }
-        // Gray next
+        // Gray next - make it VERY obvious
         if (gray.has(letter)) {
-            return 'bg-slate-700 text-gray-400';
+            return 'bg-slate-900 text-gray-500 opacity-50 line-through';
         }
         // Yellow letters shown but not clickable for gray
         if (Object.keys(yellow).includes(letter)) {
-            return 'bg-amber-400 text-slate-900 shadow-md cursor-not-allowed';
+            return 'bg-amber-400 text-slate-900 shadow-md cursor-not-allowed font-bold';
         }
         // Default
-        return 'bg-slate-600 text-white hover:bg-slate-500';
+        return 'bg-slate-600 text-white hover:bg-slate-500 hover:scale-110 transition-transform';
     };
 
     // ------------------------------------------------------------------
