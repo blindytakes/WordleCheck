@@ -108,46 +108,74 @@ const InputPanel = ({ constraints, onChange }) => {
     // RENDER
     // ------------------------------------------------------------------
     return (
-        <div className="space-y-8">
-            
+        <div className="space-y-6">
+
             {/* 1. GREEN LETTER INPUT GRID (Correct Position) */}
-            <h3 className="text-lg font-semibold text-cyan-400">Green Letters (Correct Position)</h3>
-            
-            <div className="flex justify-between space-x-2">
-                {Array.from({ length: 5 }).map((_, index) => (
-                    <input
-                        key={index}
-                        data-green-index={index}
-                        type="text"
-                        maxLength="1"
-                        className="w-12 h-12 text-2xl text-center font-bold bg-slate-700 rounded border-2 border-emerald-500 uppercase focus:outline-none focus:ring-2 focus:ring-emerald-400"
-                        value={green[index] || ''}
-                        onChange={(e) => handleGreenChange(e, index)}
-                    />
-                ))}
+            <div>
+                <h3 className="text-lg font-semibold text-emerald-400 mb-3">Green Letters (Correct Position)</h3>
+                <div className="flex justify-between space-x-2">
+                    {Array.from({ length: 5 }).map((_, index) => (
+                        <input
+                            key={index}
+                            data-green-index={index}
+                            type="text"
+                            maxLength="1"
+                            className="w-12 h-12 text-2xl text-center font-bold bg-slate-700 rounded border-2 border-emerald-500 uppercase focus:outline-none focus:ring-2 focus:ring-emerald-400"
+                            value={green[index] || ''}
+                            onChange={(e) => handleGreenChange(e, index)}
+                        />
+                    ))}
+                </div>
             </div>
 
-            {/* 2. QWERTY KEYBOARD (Yellow/Gray) */}
-            <h3 className="text-lg font-semibold text-cyan-400 mt-8">Other Letters (Click to Toggle)</h3>
+            {/* Divider */}
+            <div className="border-t border-slate-700"></div>
 
-            <div className="space-y-2">
-                {KEYBOARD_ROWS.map((row, rowIndex) => (
-                    <div
-                        key={rowIndex}
-                        className="flex justify-center gap-1"
-                        style={{ paddingLeft: rowIndex === 1 ? '1.5rem' : rowIndex === 2 ? '3rem' : '0' }}
-                    >
-                        {row.map((letter) => (
-                            <button
+            {/* 2. YELLOW LETTERS (In Word, Wrong Position) */}
+            <div>
+                <h3 className="text-lg font-semibold text-amber-400 mb-3">Yellow Letters (In Word, Wrong Position)</h3>
+                <div className="min-h-[3rem] flex flex-wrap gap-2 items-center">
+                    {Object.keys(yellow).length > 0 ? (
+                        Object.keys(yellow).map((letter) => (
+                            <div
                                 key={letter}
-                                className={`px-3 py-2 min-w-[2.5rem] rounded font-bold transition duration-150 ease-in-out ${getButtonClass(letter)}`}
+                                className="px-4 py-2 bg-amber-500 text-slate-900 font-bold rounded shadow-lg cursor-pointer hover:bg-amber-400 transition"
                                 onClick={() => handleAlphabetClick(letter)}
                             >
                                 {letter}
-                            </button>
-                        ))}
-                    </div>
-                ))}
+                            </div>
+                        ))
+                    ) : (
+                        <p className="text-gray-500 text-sm italic">Click letters below to mark as yellow</p>
+                    )}
+                </div>
+            </div>
+
+            {/* Divider */}
+            <div className="border-t border-slate-700"></div>
+
+            {/* 3. QWERTY KEYBOARD (Click to Toggle) */}
+            <div>
+                <h3 className="text-lg font-semibold text-cyan-400 mb-3">Keyboard (Click to Toggle State)</h3>
+                <div className="space-y-2">
+                    {KEYBOARD_ROWS.map((row, rowIndex) => (
+                        <div
+                            key={rowIndex}
+                            className="flex justify-center gap-1"
+                            style={{ paddingLeft: rowIndex === 1 ? '1.5rem' : rowIndex === 2 ? '3rem' : '0' }}
+                        >
+                            {row.map((letter) => (
+                                <button
+                                    key={letter}
+                                    className={`px-3 py-2 min-w-[2.5rem] rounded font-bold transition duration-150 ease-in-out ${getButtonClass(letter)}`}
+                                    onClick={() => handleAlphabetClick(letter)}
+                                >
+                                    {letter}
+                                </button>
+                            ))}
+                        </div>
+                    ))}
+                </div>
             </div>
         </div>
     );
