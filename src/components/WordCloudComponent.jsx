@@ -52,10 +52,10 @@ const WordCloud = ({ results }) => {
 
     const sizeScale = d3.scaleLinear().domain([minScore, maxScore]).range([minSize, maxSize]);
 
-    // Color scale: Maps score to a Cyan/Emerald/Blue color palette
+    // Color scale: More vibrant gradient from cyan through teal to emerald
     const colorScale = d3.scaleLinear()
-        .domain([minScore, maxScore])
-        .range(["#06b6d4", "#10b981"]) // Cyan to Emerald
+        .domain([minScore, (minScore + maxScore) / 2, maxScore])
+        .range(["#22d3ee", "#14b8a6", "#10b981"]) // Cyan -> Teal -> Emerald
         .interpolate(d3.interpolateHsl);
 
 
@@ -115,21 +115,40 @@ const WordCloud = ({ results }) => {
                 .style("cursor", "pointer")
                 .merge(wordElements);
 
-            // Add click handler (must be done before transition)
+            // Add interaction handlers
             allWords
                 .on("click", (event, d) => {
                     navigator.clipboard.writeText(d.text);
                     setCopiedWord(d.text);
                     setTimeout(() => setCopiedWord(null), 2000);
+                })
+                .on("mouseenter", function(event, d) {
+                    // Hover effect: scale up and glow
+                    d3.select(this)
+                        .transition()
+                        .duration(200)
+                        .style("font-size", `${d.size * 1.15}px`)
+                        .style("filter", "drop-shadow(0 0 8px currentColor)")
+                        .style("opacity", 1);
+                })
+                .on("mouseleave", function(event, d) {
+                    // Return to normal
+                    d3.select(this)
+                        .transition()
+                        .duration(200)
+                        .style("font-size", `${d.size}px`)
+                        .style("filter", "drop-shadow(0 2px 4px rgba(0,0,0,0.3))")
+                        .style("opacity", 1);
                 });
 
-            // Apply transition animations
+            // Apply transition animations with text shadow
             allWords
                 .transition().duration(750) // Smooth animation duration
                 .style("font-size", d => `${d.size}px`)
                 .style("fill", d => colorScale(d.score))
                 .style("font-family", "Impact, sans-serif")
                 .style("font-weight", "bold")
+                .style("filter", "drop-shadow(0 2px 4px rgba(0,0,0,0.3))") // Subtle shadow for depth
                 .style("opacity", 1) // Fade in
                 .attr("text-anchor", "middle")
                 .attr("transform", d => `translate(${d.x}, ${d.y})rotate(${d.rotate})`)
