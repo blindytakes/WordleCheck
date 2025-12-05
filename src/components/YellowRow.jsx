@@ -1,9 +1,10 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useConstraints } from '../context/ConstraintContext';
 
 export default function YellowRow({ isFocused, onFocusChange }) {
   const { yellow, addYellow, removeYellow } = useConstraints();
   const rowRef = useRef(null);
+  const [selectedPosition, setSelectedPosition] = useState(0);
 
   useEffect(() => {
     if (!isFocused) return;
@@ -17,25 +18,18 @@ export default function YellowRow({ isFocused, onFocusChange }) {
         e.preventDefault();
         const letter = e.key.toUpperCase();
 
-        // Find first position to add (left to right)
-        for (let i = 0; i < 5; i++) {
-          // Try to add to this position (context will prevent duplicates)
-          addYellow(i, letter);
-          break;
-        }
+        // Add to the selected position
+        addYellow(selectedPosition, letter);
       }
 
       // Handle Backspace
       if (e.key === 'Backspace') {
         e.preventDefault();
 
-        // Find rightmost non-empty position and remove last letter
-        for (let i = 4; i >= 0; i--) {
-          if (yellow[i] && yellow[i].length > 0) {
-            const lastLetter = yellow[i][yellow[i].length - 1];
-            removeYellow(i, lastLetter);
-            break;
-          }
+        // Remove last letter from the selected position
+        if (yellow[selectedPosition] && yellow[selectedPosition].length > 0) {
+          const lastLetter = yellow[selectedPosition][yellow[selectedPosition].length - 1];
+          removeYellow(selectedPosition, lastLetter);
         }
       }
 
@@ -44,13 +38,28 @@ export default function YellowRow({ isFocused, onFocusChange }) {
         e.preventDefault();
         onFocusChange('gray');
       }
+
+      // Handle Arrow keys for navigation
+      if (e.key === 'ArrowLeft' && selectedPosition > 0) {
+        e.preventDefault();
+        setSelectedPosition(selectedPosition - 1);
+      }
+      if (e.key === 'ArrowRight' && selectedPosition < 4) {
+        e.preventDefault();
+        setSelectedPosition(selectedPosition + 1);
+      }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isFocused, yellow, addYellow, removeYellow, onFocusChange]);
+  }, [isFocused, yellow, addYellow, removeYellow, onFocusChange, selectedPosition]);
 
   const handleClick = () => {
+    onFocusChange('yellow');
+  };
+
+  const handleCellClick = (position) => {
+    setSelectedPosition(position);
     onFocusChange('yellow');
   };
 
@@ -75,7 +84,15 @@ export default function YellowRow({ isFocused, onFocusChange }) {
         {[0, 1, 2, 3, 4].map((position) => (
           <div
             key={position}
-            className="min-h-12 bg-gray-50 rounded-lg border-2 border-gray-200 p-1 flex flex-col gap-1 hover:border-yellow-300 transition-all"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleCellClick(position);
+            }}
+            className={`min-h-12 bg-gray-50 rounded-lg border-2 p-1 flex flex-col gap-1 hover:border-yellow-300 transition-all cursor-pointer ${
+              isFocused && selectedPosition === position
+                ? 'border-yellow-500 bg-yellow-50'
+                : 'border-gray-200'
+            }`}
           >
             {yellow[position] && yellow[position].length > 0 ? (
               yellow[position].map((letter, idx) => (
