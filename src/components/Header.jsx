@@ -6,15 +6,15 @@ export default function Header({ theme, onThemeToggle }) {
   return (
     <header className="w-full flex items-center justify-between mb-8">
       <div className="flex items-center gap-3">
-        <div className="text-4xl font-bold text-gray-800">
+        <div className="text-5xl font-black bg-gradient-to-r from-purple-600 via-pink-500 to-orange-500 text-transparent bg-clip-text">
           WordleViz
         </div>
       </div>
 
       <div className="flex items-center gap-6">
-        <div className="text-lg font-medium text-gray-600">
-          <span className="text-3xl font-bold text-gray-800">
-            {filteredWords.length}
+        <div className="text-lg font-medium text-gray-600 bg-white px-4 py-2 rounded-xl shadow-md border border-purple-100">
+          <span className="text-3xl font-bold bg-gradient-to-br from-purple-600 to-pink-500 text-transparent bg-clip-text">
+            {filteredWords.length.toLocaleString()}
           </span>
           {' '}
           <span className="text-gray-500">
@@ -24,7 +24,7 @@ export default function Header({ theme, onThemeToggle }) {
 
         <button
           onClick={onThemeToggle}
-          className="p-3 rounded-lg bg-white border-2 border-gray-200 hover:border-gray-300 transition-all"
+          className="p-3 rounded-lg bg-white border-2 border-gray-200 hover:border-purple-300 transition-all shadow-md hover:shadow-lg transform hover:scale-105"
           aria-label="Toggle theme"
         >
           {theme === 'light' ? (

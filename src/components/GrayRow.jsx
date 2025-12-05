@@ -60,10 +60,10 @@ export default function GrayRow({ isFocused, onFocusChange }) {
     <div
       ref={rowRef}
       onClick={handleClick}
-      className={`bg-white rounded-2xl p-4 cursor-pointer transition-all relative ${
+      className={`bg-white rounded-2xl p-4 cursor-pointer transition-all relative shadow-lg border ${
         isFocused
-          ? 'border-2 border-gray-400'
-          : 'border-2 border-transparent hover:border-gray-300'
+          ? 'border-2 border-gray-400 shadow-gray-200/50'
+          : 'border-2 border-transparent hover:border-gray-300 hover:shadow-xl'
       }`}
     >
       <ErrorMessage message={errorMessage} onClose={() => setErrorMessage(null)} />
@@ -81,7 +81,7 @@ export default function GrayRow({ isFocused, onFocusChange }) {
                 e.stopPropagation();
                 handleLetterRemove(letter);
               }}
-              className="bg-gray-300 border border-gray-400 rounded px-3 py-1 text-sm font-semibold text-gray-700 flex items-center gap-2 cursor-pointer hover:bg-gray-400 transition-all group"
+              className="bg-gradient-to-br from-gray-300 to-gray-400 border border-gray-400 rounded px-3 py-1 text-sm font-semibold text-gray-700 flex items-center gap-2 cursor-pointer hover:from-gray-400 hover:to-gray-500 transition-all group shadow-sm hover:shadow-md"
             >
               <span>{letter}</span>
               <button

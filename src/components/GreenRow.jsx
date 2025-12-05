@@ -75,10 +75,10 @@ export default function GreenRow({ isFocused, onFocusChange }) {
     <div
       ref={rowRef}
       onClick={handleClick}
-      className={`bg-white rounded-2xl p-4 cursor-pointer transition-all ${
+      className={`bg-white rounded-2xl p-4 cursor-pointer transition-all shadow-lg border ${
         isFocused
-          ? 'border-2 border-green-400'
-          : 'border-2 border-transparent hover:border-green-200'
+          ? 'border-2 border-green-400 shadow-green-200/50'
+          : 'border-2 border-transparent hover:border-green-200 hover:shadow-xl'
       }`}
     >
       <div className="text-sm font-medium text-gray-600 mb-2">
@@ -100,9 +100,9 @@ export default function GreenRow({ isFocused, onFocusChange }) {
               e.stopPropagation();
               handleTileClick(position);
             }}
-            className={`aspect-square bg-gray-50 rounded-lg border-2 flex items-center justify-center text-2xl font-bold relative group hover:border-green-300 transition-all cursor-pointer ${
+            className={`aspect-square bg-gray-50 rounded-lg border-2 flex items-center justify-center text-2xl font-bold relative group hover:border-green-300 transition-all cursor-pointer shadow-md hover:shadow-lg ${
               isFocused && selectedPosition === position
-                ? 'border-green-500 bg-green-50'
+                ? 'border-green-500 bg-gradient-to-br from-green-50 to-green-100 shadow-green-200'
                 : 'border-gray-200'
             }`}
           >

@@ -71,10 +71,10 @@ export default function YellowRow({ isFocused, onFocusChange }) {
     <div
       ref={rowRef}
       onClick={handleClick}
-      className={`bg-white rounded-2xl p-4 cursor-pointer transition-all ${
+      className={`bg-white rounded-2xl p-4 cursor-pointer transition-all shadow-lg border ${
         isFocused
-          ? 'border-2 border-yellow-400'
-          : 'border-2 border-transparent hover:border-yellow-200'
+          ? 'border-2 border-yellow-400 shadow-yellow-200/50'
+          : 'border-2 border-transparent hover:border-yellow-200 hover:shadow-xl'
       }`}
     >
       <div className="text-sm font-medium text-gray-600 mb-2">
@@ -96,9 +96,9 @@ export default function YellowRow({ isFocused, onFocusChange }) {
               e.stopPropagation();
               handleCellClick(position);
             }}
-            className={`min-h-12 bg-gray-50 rounded-lg border-2 p-1 flex flex-col gap-1 hover:border-yellow-300 transition-all cursor-pointer ${
+            className={`min-h-12 bg-gray-50 rounded-lg border-2 p-1 flex flex-col gap-1 hover:border-yellow-300 transition-all cursor-pointer shadow-md hover:shadow-lg ${
               isFocused && selectedPosition === position
-                ? 'border-yellow-500 bg-yellow-50'
+                ? 'border-yellow-500 bg-gradient-to-br from-yellow-50 to-yellow-100 shadow-yellow-200'
                 : 'border-gray-200'
             }`}
           >
@@ -110,7 +110,7 @@ export default function YellowRow({ isFocused, onFocusChange }) {
                     e.stopPropagation();
                     handleLetterRemove(position, letter);
                   }}
-                  className="bg-yellow-100 border border-yellow-300 rounded px-2 py-1 text-sm font-semibold text-yellow-800 flex items-center justify-between cursor-pointer hover:bg-yellow-200 transition-all group"
+                  className="bg-gradient-to-br from-yellow-100 to-yellow-200 border border-yellow-300 rounded px-2 py-1 text-sm font-semibold text-yellow-800 flex items-center justify-between cursor-pointer hover:from-yellow-200 hover:to-yellow-300 transition-all group shadow-sm hover:shadow-md"
                 >
                   <span>{letter}</span>
                   <button

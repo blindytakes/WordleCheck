@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { ConstraintProvider, useConstraints } from './context/ConstraintContext';
 import Header from './components/Header';
 import GreenRow from './components/GreenRow';
@@ -41,13 +42,23 @@ function AppContent() {
   }, [clearAll, undo]);
 
   return (
-    <div className="min-h-screen bg-blue-200 p-8">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-blue-100 via-purple-50 to-pink-100 p-8">
+      <motion.div
+        className="max-w-7xl mx-auto"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+      >
         <Header theme={theme} onThemeToggle={handleThemeToggle} />
 
         <div className="flex gap-6">
           {/* Left Panel - 40% width */}
-          <div className="w-2/5 flex flex-col gap-4">
+          <motion.div
+            className="w-2/5 flex flex-col gap-4"
+            initial={{ opacity: 0, x: -30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
+          >
             <GreenRow
               isFocused={focusedRow === 'green'}
               onFocusChange={handleFocusChange}
@@ -61,14 +72,19 @@ function AppContent() {
               onFocusChange={handleFocusChange}
             />
             <Keyboard />
-          </div>
+          </motion.div>
 
           {/* Right Panel - 60% width */}
-          <div className="w-3/5">
+          <motion.div
+            className="w-3/5"
+            initial={{ opacity: 0, x: 30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 0.3, ease: "easeOut" }}
+          >
             <WordCloud />
-          </div>
+          </motion.div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }

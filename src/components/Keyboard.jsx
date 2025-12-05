@@ -43,22 +43,22 @@ export default function Keyboard() {
   const getKeyClasses = (letter) => {
     const color = getLetterColor(letter);
 
-    const baseClasses = 'px-2 py-3 rounded font-semibold text-sm transition-all';
+    const baseClasses = 'px-2 py-3 rounded-lg font-semibold text-sm transition-all shadow-md hover:shadow-lg transform hover:scale-105';
 
     switch (color) {
       case 'green':
-        return `${baseClasses} bg-green-500 text-white`;
+        return `${baseClasses} bg-gradient-to-br from-green-400 to-green-600 text-white`;
       case 'yellow':
-        return `${baseClasses} bg-yellow-400 text-white`;
+        return `${baseClasses} bg-gradient-to-br from-yellow-300 to-yellow-500 text-white`;
       case 'gray':
-        return `${baseClasses} bg-gray-400 text-white`;
+        return `${baseClasses} bg-gradient-to-br from-gray-400 to-gray-600 text-white`;
       default:
-        return `${baseClasses} bg-gray-200 text-gray-800`;
+        return `${baseClasses} bg-gradient-to-br from-gray-100 to-gray-200 text-gray-800 hover:from-gray-200 hover:to-gray-300`;
     }
   };
 
   return (
-    <div className="bg-white rounded-2xl p-4">
+    <div className="bg-white rounded-2xl p-4 shadow-lg border border-gray-100">
       <div className="text-sm font-medium text-gray-600 mb-3">
         Keyboard Status
       </div>
@@ -78,14 +78,20 @@ export default function Keyboard() {
         ))}
       </div>
 
-      {/* Clear button */}
-      <div className="mt-4 flex justify-center">
-        <button
-          onClick={clearAll}
-          className="px-6 py-2 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-lg transition-all transform hover:scale-105 active:scale-95 shadow-md"
-        >
-          Clear All
-        </button>
+      {/* Clear button and shortcuts */}
+      <div className="mt-4 space-y-3">
+        <div className="flex justify-center">
+          <button
+            onClick={clearAll}
+            className="px-6 py-2 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-semibold rounded-lg transition-all transform hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl"
+          >
+            🗑️ Clear All
+          </button>
+        </div>
+        <div className="text-xs text-gray-400 text-center space-y-1">
+          <div>Press <kbd className="px-2 py-1 bg-gray-100 rounded border border-gray-300 font-mono">ESC</kbd> to clear all</div>
+          <div>Press <kbd className="px-2 py-1 bg-gray-100 rounded border border-gray-300 font-mono">Ctrl+Z</kbd> to undo</div>
+        </div>
       </div>
     </div>
   );

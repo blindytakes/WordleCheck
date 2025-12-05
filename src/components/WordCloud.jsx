@@ -31,7 +31,7 @@ export default function WordCloud() {
   const displayCount = Math.min(filteredWords.length, 40);
 
   return (
-    <div className="bg-white rounded-3xl shadow-lg p-8 h-full overflow-auto">
+    <div className="bg-white rounded-3xl shadow-xl shadow-purple-200/50 p-8 h-full overflow-auto border border-purple-100/50">
       {/* Word count display */}
       {filteredWords.length > 0 && (
         <div className="text-center mb-6 text-sm text-gray-500 font-medium">
@@ -48,19 +48,28 @@ export default function WordCloud() {
       ) : (
         <div className="flex flex-wrap gap-4 justify-center items-center">
           <AnimatePresence mode="popLayout">
-            {wordsWithSizes.map(({ word, size, id }) => (
+            {wordsWithSizes.map(({ word, size, id }, index) => (
               <motion.div
                 key={id}
                 layout
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 0.75, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
+                initial={{ opacity: 0, scale: 0.8, y: 20 }}
+                animate={{ opacity: 0.75, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.8, y: -20 }}
                 transition={{
-                  duration: 0.3,
-                  layout: { duration: 0.3 }
+                  duration: 0.4,
+                  delay: index * 0.01,
+                  layout: { duration: 0.3 },
+                  type: "spring",
+                  stiffness: 300,
+                  damping: 24
                 }}
-                whileHover={{ opacity: 1, scale: 1.05 }}
-                className={`${size} font-semibold text-gray-700 cursor-default select-none transition-all uppercase`}
+                whileHover={{
+                  opacity: 1,
+                  scale: 1.1,
+                  rotate: [-1, 1, -1, 0],
+                  transition: { duration: 0.3 }
+                }}
+                className={`${size} font-semibold text-transparent bg-clip-text bg-gradient-to-br from-gray-700 to-gray-900 cursor-default select-none transition-all uppercase`}
               >
                 {word}
               </motion.div>
