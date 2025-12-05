@@ -24,14 +24,8 @@ export function ConstraintProvider({ children }) {
 
   const [gray, setGray] = useState([]);
 
-  // Initial 40 random words on mount
-  const [initialWords] = useState(() => {
-    const shuffled = [...SOLUTIONS_LIST].sort(() => Math.random() - 0.5);
-    return shuffled.slice(0, 40);
-  });
-
-  // Filtered words based on constraints
-  const [filteredWords, setFilteredWords] = useState(initialWords);
+  // Filtered words based on constraints (all words initially)
+  const [filteredWords, setFilteredWords] = useState(SOLUTIONS_LIST);
 
   // Check if any constraints are set
   const hasConstraints = useMemo(() => {
@@ -44,21 +38,36 @@ export function ConstraintProvider({ children }) {
   // Update filtered words whenever constraints change
   useEffect(() => {
     if (!hasConstraints) {
-      setFilteredWords(initialWords);
+      setFilteredWords(SOLUTIONS_LIST);
       return;
     }
 
     const constraints = { green, yellow, gray };
     const filtered = filterWordList(constraints, SOLUTIONS_LIST);
-    setFilteredWords(filtered.slice(0, 40));
-  }, [green, yellow, gray, hasConstraints, initialWords]);
+    setFilteredWords(filtered);
+  }, [green, yellow, gray, hasConstraints]);
+
+  // Helper to check if letter is in green
+  const isLetterInGreen = useCallback((letter) => {
+    return Object.values(green).some(l => l === letter.toUpperCase());
+  }, [green]);
+
+  // Helper to check if letter is in yellow
+  const isLetterInYellow = useCallback((letter) => {
+    return Object.values(yellow).some(arr => arr.includes(letter.toUpperCase()));
+  }, [yellow]);
 
   // Green letter actions
   const addGreen = useCallback((position, letter) => {
+    const upperLetter = letter.toUpperCase();
+
     setGreen(prev => ({
       ...prev,
-      [position]: letter.toUpperCase()
+      [position]: upperLetter
     }));
+
+    // Automatically remove from gray if it's there
+    setGray(prev => prev.filter(l => l !== upperLetter));
   }, []);
 
   const removeGreen = useCallback((position) => {
@@ -84,6 +93,10 @@ export function ConstraintProvider({ children }) {
         [position]: [...current, upperLetter]
       };
     });
+
+    // Automatically remove from gray if it's there
+    const upperLetter = letter.toUpperCase();
+    setGray(prev => prev.filter(l => l !== upperLetter));
   }, []);
 
   const removeYellow = useCallback((position, letter) => {
@@ -93,17 +106,28 @@ export function ConstraintProvider({ children }) {
     }));
   }, []);
 
-  // Gray letter actions
+  // Gray letter actions - returns validation result
   const addGray = useCallback((letter) => {
+    const upperLetter = letter.toUpperCase();
+
+    // Check if letter is in green or yellow
+    const inGreen = Object.values(green).some(l => l === upperLetter);
+    const inYellow = Object.values(yellow).some(arr => arr.includes(upperLetter));
+
+    if (inGreen || inYellow) {
+      return { success: false, error: 'This letter is already in the word' };
+    }
+
     setGray(prev => {
-      const upperLetter = letter.toUpperCase();
       // Prevent duplicates
       if (prev.includes(upperLetter)) {
         return prev;
       }
       return [...prev, upperLetter];
     });
-  }, []);
+
+    return { success: true };
+  }, [green, yellow]);
 
   const removeGray = useCallback((letter) => {
     setGray(prev => prev.filter(l => l !== letter));

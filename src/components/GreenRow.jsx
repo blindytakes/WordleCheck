@@ -1,9 +1,10 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useConstraints } from '../context/ConstraintContext';
 
 export default function GreenRow({ isFocused, onFocusChange }) {
   const { green, addGreen, removeGreen } = useConstraints();
   const rowRef = useRef(null);
+  const [selectedPosition, setSelectedPosition] = useState(0);
 
   useEffect(() => {
     if (!isFocused) return;
@@ -17,12 +18,12 @@ export default function GreenRow({ isFocused, onFocusChange }) {
         e.preventDefault();
         const letter = e.key.toUpperCase();
 
-        // Find first empty slot
-        for (let i = 0; i < 5; i++) {
-          if (!green[i]) {
-            addGreen(i, letter);
-            break;
-          }
+        // Add to the selected position
+        addGreen(selectedPosition, letter);
+
+        // Move to next position if not at the end
+        if (selectedPosition < 4) {
+          setSelectedPosition(selectedPosition + 1);
         }
       }
 
@@ -30,12 +31,13 @@ export default function GreenRow({ isFocused, onFocusChange }) {
       if (e.key === 'Backspace') {
         e.preventDefault();
 
-        // Find rightmost non-empty position and clear it
-        for (let i = 4; i >= 0; i--) {
-          if (green[i]) {
-            removeGreen(i);
-            break;
-          }
+        // Clear the selected position
+        if (green[selectedPosition]) {
+          removeGreen(selectedPosition);
+        } else if (selectedPosition > 0) {
+          // If current position is empty, go back and clear previous
+          setSelectedPosition(selectedPosition - 1);
+          removeGreen(selectedPosition - 1);
         }
       }
 
@@ -44,20 +46,29 @@ export default function GreenRow({ isFocused, onFocusChange }) {
         e.preventDefault();
         onFocusChange('yellow');
       }
+
+      // Handle Arrow keys for navigation
+      if (e.key === 'ArrowLeft' && selectedPosition > 0) {
+        e.preventDefault();
+        setSelectedPosition(selectedPosition - 1);
+      }
+      if (e.key === 'ArrowRight' && selectedPosition < 4) {
+        e.preventDefault();
+        setSelectedPosition(selectedPosition + 1);
+      }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isFocused, green, addGreen, removeGreen, onFocusChange]);
+  }, [isFocused, green, addGreen, removeGreen, onFocusChange, selectedPosition]);
 
   const handleClick = () => {
     onFocusChange('green');
   };
 
   const handleTileClick = (position) => {
-    if (green[position]) {
-      removeGreen(position);
-    }
+    setSelectedPosition(position);
+    onFocusChange('green');
   };
 
   return (
@@ -81,7 +92,11 @@ export default function GreenRow({ isFocused, onFocusChange }) {
               e.stopPropagation();
               handleTileClick(position);
             }}
-            className="aspect-square bg-gray-50 rounded-lg border-2 border-gray-200 flex items-center justify-center text-2xl font-bold relative group hover:border-green-300 transition-all"
+            className={`aspect-square bg-gray-50 rounded-lg border-2 flex items-center justify-center text-2xl font-bold relative group hover:border-green-300 transition-all cursor-pointer ${
+              isFocused && selectedPosition === position
+                ? 'border-green-500 bg-green-50'
+                : 'border-gray-200'
+            }`}
           >
             {green[position] && (
               <>

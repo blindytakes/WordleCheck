@@ -1,9 +1,11 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useConstraints } from '../context/ConstraintContext';
+import ErrorMessage from './ErrorMessage';
 
 export default function GrayRow({ isFocused, onFocusChange }) {
   const { gray, addGray, removeGray } = useConstraints();
   const rowRef = useRef(null);
+  const [errorMessage, setErrorMessage] = useState(null);
 
   useEffect(() => {
     if (!isFocused) return;
@@ -16,7 +18,12 @@ export default function GrayRow({ isFocused, onFocusChange }) {
       if (e.key.length === 1 && /^[a-zA-Z]$/.test(e.key)) {
         e.preventDefault();
         const letter = e.key.toUpperCase();
-        addGray(letter);
+        const result = addGray(letter);
+
+        // Show error if validation failed
+        if (result && !result.success) {
+          setErrorMessage(result.error);
+        }
       }
 
       // Handle Backspace
@@ -53,12 +60,13 @@ export default function GrayRow({ isFocused, onFocusChange }) {
     <div
       ref={rowRef}
       onClick={handleClick}
-      className={`bg-white rounded-2xl p-4 cursor-pointer transition-all ${
+      className={`bg-white rounded-2xl p-4 cursor-pointer transition-all relative ${
         isFocused
           ? 'border-2 border-gray-400'
           : 'border-2 border-transparent hover:border-gray-300'
       }`}
     >
+      <ErrorMessage message={errorMessage} onClose={() => setErrorMessage(null)} />
       <div className="text-sm font-medium text-gray-600 mb-2">
         Absent Letters (Gray)
       </div>

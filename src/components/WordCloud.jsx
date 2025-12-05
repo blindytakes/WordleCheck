@@ -14,9 +14,14 @@ const FONT_SIZES = [
 export default function WordCloud() {
   const { filteredWords } = useConstraints();
 
-  // Assign random font sizes to words
+  // Select 40 random words to display and assign random font sizes
   const wordsWithSizes = useMemo(() => {
-    return filteredWords.map((word, index) => ({
+    // If 40 or fewer words, show all
+    const wordsToShow = filteredWords.length <= 40
+      ? filteredWords
+      : [...filteredWords].sort(() => Math.random() - 0.5).slice(0, 40);
+
+    return wordsToShow.map((word, index) => ({
       word,
       size: FONT_SIZES[Math.floor(Math.random() * FONT_SIZES.length)],
       id: `${word}-${index}`
