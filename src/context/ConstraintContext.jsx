@@ -24,6 +24,9 @@ export function ConstraintProvider({ children }) {
 
   const [gray, setGray] = useState([]);
 
+  // History for undo functionality (keep last 20 states)
+  const [history, setHistory] = useState([]);
+
   // Filtered words based on constraints (all words initially)
   const [filteredWords, setFilteredWords] = useState(SOLUTIONS_LIST);
 
@@ -57,8 +60,18 @@ export function ConstraintProvider({ children }) {
     return Object.values(yellow).some(arr => arr.includes(letter.toUpperCase()));
   }, [yellow]);
 
+  // Save current state to history
+  const saveToHistory = useCallback(() => {
+    setHistory(prev => {
+      const newHistory = [...prev, { green, yellow, gray }];
+      // Keep only last 20 states
+      return newHistory.slice(-20);
+    });
+  }, [green, yellow, gray]);
+
   // Green letter actions
   const addGreen = useCallback((position, letter) => {
+    saveToHistory();
     const upperLetter = letter.toUpperCase();
 
     setGreen(prev => ({
@@ -68,17 +81,19 @@ export function ConstraintProvider({ children }) {
 
     // Automatically remove from gray if it's there
     setGray(prev => prev.filter(l => l !== upperLetter));
-  }, []);
+  }, [saveToHistory]);
 
   const removeGreen = useCallback((position) => {
+    saveToHistory();
     setGreen(prev => ({
       ...prev,
       [position]: null
     }));
-  }, []);
+  }, [saveToHistory]);
 
   // Yellow letter actions
   const addYellow = useCallback((position, letter) => {
+    saveToHistory();
     setYellow(prev => {
       const current = prev[position];
       const upperLetter = letter.toUpperCase();
@@ -97,14 +112,15 @@ export function ConstraintProvider({ children }) {
     // Automatically remove from gray if it's there
     const upperLetter = letter.toUpperCase();
     setGray(prev => prev.filter(l => l !== upperLetter));
-  }, []);
+  }, [saveToHistory]);
 
   const removeYellow = useCallback((position, letter) => {
+    saveToHistory();
     setYellow(prev => ({
       ...prev,
       [position]: prev[position].filter(l => l !== letter)
     }));
-  }, []);
+  }, [saveToHistory]);
 
   // Gray letter actions - returns validation result
   const addGray = useCallback((letter) => {
@@ -118,6 +134,7 @@ export function ConstraintProvider({ children }) {
       return { success: false, error: 'This letter is already in the word' };
     }
 
+    saveToHistory();
     setGray(prev => {
       // Prevent duplicates
       if (prev.includes(upperLetter)) {
@@ -127,14 +144,29 @@ export function ConstraintProvider({ children }) {
     });
 
     return { success: true };
-  }, [green, yellow]);
+  }, [green, yellow, saveToHistory]);
 
   const removeGray = useCallback((letter) => {
+    saveToHistory();
     setGray(prev => prev.filter(l => l !== letter));
-  }, []);
+  }, [saveToHistory]);
+
+  // Undo last action
+  const undo = useCallback(() => {
+    if (history.length === 0) return;
+
+    const previousState = history[history.length - 1];
+    setGreen(previousState.green);
+    setYellow(previousState.yellow);
+    setGray(previousState.gray);
+
+    // Remove the last history entry
+    setHistory(prev => prev.slice(0, -1));
+  }, [history]);
 
   // Clear all constraints
   const clearAll = useCallback(() => {
+    saveToHistory();
     setGreen({
       0: null,
       1: null,
@@ -150,7 +182,7 @@ export function ConstraintProvider({ children }) {
       4: []
     });
     setGray([]);
-  }, []);
+  }, [saveToHistory]);
 
   const value = {
     green,
@@ -163,7 +195,8 @@ export function ConstraintProvider({ children }) {
     removeYellow,
     addGray,
     removeGray,
-    clearAll
+    clearAll,
+    undo
   };
 
   return (

@@ -28,8 +28,17 @@ export default function WordCloud() {
     }));
   }, [filteredWords]);
 
+  const displayCount = Math.min(filteredWords.length, 40);
+
   return (
     <div className="bg-white rounded-3xl shadow-lg p-8 h-full overflow-auto">
+      {/* Word count display */}
+      {filteredWords.length > 0 && (
+        <div className="text-center mb-6 text-sm text-gray-500 font-medium">
+          Showing {displayCount} of {filteredWords.length.toLocaleString()} words
+        </div>
+      )}
+
       {filteredWords.length === 0 ? (
         <div className="flex items-center justify-center h-full">
           <div className="text-gray-400 text-2xl font-medium text-center">

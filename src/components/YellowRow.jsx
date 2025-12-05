@@ -80,6 +80,14 @@ export default function YellowRow({ isFocused, onFocusChange }) {
       <div className="text-sm font-medium text-gray-600 mb-2">
         Wrong Position Letters (Yellow)
       </div>
+      {/* Position labels */}
+      <div className="grid grid-cols-5 gap-2 mb-1">
+        {[1, 2, 3, 4, 5].map((num) => (
+          <div key={num} className="text-center text-xs font-semibold text-gray-500">
+            {num}
+          </div>
+        ))}
+      </div>
       <div className="grid grid-cols-5 gap-2">
         {[0, 1, 2, 3, 4].map((position) => (
           <div
