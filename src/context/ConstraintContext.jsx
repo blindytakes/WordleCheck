@@ -133,6 +133,25 @@ export function ConstraintProvider({ children }) {
     setGray(prev => prev.filter(l => l !== letter));
   }, []);
 
+  // Clear all constraints
+  const clearAll = useCallback(() => {
+    setGreen({
+      0: null,
+      1: null,
+      2: null,
+      3: null,
+      4: null
+    });
+    setYellow({
+      0: [],
+      1: [],
+      2: [],
+      3: [],
+      4: []
+    });
+    setGray([]);
+  }, []);
+
   const value = {
     green,
     yellow,
@@ -143,7 +162,8 @@ export function ConstraintProvider({ children }) {
     addYellow,
     removeYellow,
     addGray,
-    removeGray
+    removeGray,
+    clearAll
   };
 
   return (

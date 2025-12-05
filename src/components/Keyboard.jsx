@@ -8,7 +8,7 @@ const KEYBOARD_LAYOUT = [
 ];
 
 export default function Keyboard() {
-  const { green, yellow, gray } = useConstraints();
+  const { green, yellow, gray, clearAll } = useConstraints();
 
   // Determine the color for each letter
   const getLetterColor = useMemo(() => {
@@ -76,6 +76,16 @@ export default function Keyboard() {
             ))}
           </div>
         ))}
+      </div>
+
+      {/* Clear button */}
+      <div className="mt-4 flex justify-center">
+        <button
+          onClick={clearAll}
+          className="px-6 py-2 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-lg transition-all transform hover:scale-105 active:scale-95 shadow-md"
+        >
+          Clear All
+        </button>
       </div>
     </div>
   );
