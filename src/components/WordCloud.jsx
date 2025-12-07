@@ -11,15 +11,26 @@ const FONT_SIZES = [
   'text-3xl'
 ];
 
+const MAX_DISPLAY_WORDS = 40;
+
+// Fisher-Yates shuffle for unbiased randomization
+function shuffleArray(array) {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
 export default function WordCloud() {
   const { filteredWords } = useConstraints();
 
-  // Select 40 random words to display and assign random font sizes
+  // Select random words to display and assign random font sizes
   const wordsWithSizes = useMemo(() => {
-    // If 40 or fewer words, show all
-    const wordsToShow = filteredWords.length <= 40
+    const wordsToShow = filteredWords.length <= MAX_DISPLAY_WORDS
       ? filteredWords
-      : [...filteredWords].sort(() => Math.random() - 0.5).slice(0, 40);
+      : shuffleArray(filteredWords).slice(0, MAX_DISPLAY_WORDS);
 
     return wordsToShow.map((word, index) => ({
       word,
@@ -28,7 +39,7 @@ export default function WordCloud() {
     }));
   }, [filteredWords]);
 
-  const displayCount = Math.min(filteredWords.length, 40);
+  const displayCount = Math.min(filteredWords.length, MAX_DISPLAY_WORDS);
 
   return (
     <div className="bg-white rounded-3xl shadow-xl shadow-purple-200/50 p-8 h-full overflow-auto border border-purple-100/50">

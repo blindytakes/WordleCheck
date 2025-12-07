@@ -1,18 +1,14 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useConstraints } from '../context/ConstraintContext';
 
 export default function YellowRow({ isFocused, onFocusChange }) {
   const { yellow, addYellow, removeYellow } = useConstraints();
-  const rowRef = useRef(null);
   const [selectedPosition, setSelectedPosition] = useState(0);
 
   useEffect(() => {
     if (!isFocused) return;
 
     const handleKeyDown = (e) => {
-      // Only handle keyboard input when focused
-      if (!isFocused) return;
-
       // Handle letter keys (A-Z)
       if (e.key.length === 1 && /^[a-zA-Z]$/.test(e.key)) {
         e.preventDefault();
@@ -20,6 +16,11 @@ export default function YellowRow({ isFocused, onFocusChange }) {
 
         // Add to the selected position
         addYellow(selectedPosition, letter);
+
+        // Move to next position if not at the end
+        if (selectedPosition < 4) {
+          setSelectedPosition(selectedPosition + 1);
+        }
       }
 
       // Handle Backspace
@@ -69,7 +70,6 @@ export default function YellowRow({ isFocused, onFocusChange }) {
 
   return (
     <div
-      ref={rowRef}
       onClick={handleClick}
       className={`bg-white rounded-2xl p-4 cursor-pointer transition-all shadow-lg border ${
         isFocused
@@ -113,15 +113,9 @@ export default function YellowRow({ isFocused, onFocusChange }) {
                   className="bg-gradient-to-br from-yellow-100 to-yellow-200 border border-yellow-300 rounded px-2 py-1 text-sm font-semibold text-yellow-800 flex items-center justify-between cursor-pointer hover:from-yellow-200 hover:to-yellow-300 transition-all group shadow-sm hover:shadow-md"
                 >
                   <span>{letter}</span>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleLetterRemove(position, letter);
-                    }}
-                    className="text-red-500 opacity-0 group-hover:opacity-100 transition-opacity text-xs ml-1"
-                  >
+                  <span className="text-red-500 opacity-0 group-hover:opacity-100 transition-opacity text-xs ml-1">
                     ✕
-                  </button>
+                  </span>
                 </div>
               ))
             ) : null}

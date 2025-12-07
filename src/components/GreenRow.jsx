@@ -1,18 +1,14 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useConstraints } from '../context/ConstraintContext';
 
 export default function GreenRow({ isFocused, onFocusChange }) {
   const { green, addGreen, removeGreen } = useConstraints();
-  const rowRef = useRef(null);
   const [selectedPosition, setSelectedPosition] = useState(0);
 
   useEffect(() => {
     if (!isFocused) return;
 
     const handleKeyDown = (e) => {
-      // Only handle keyboard input when focused
-      if (!isFocused) return;
-
       // Handle letter keys (A-Z)
       if (e.key.length === 1 && /^[a-zA-Z]$/.test(e.key)) {
         e.preventDefault();
@@ -73,7 +69,6 @@ export default function GreenRow({ isFocused, onFocusChange }) {
 
   return (
     <div
-      ref={rowRef}
       onClick={handleClick}
       className={`bg-white rounded-2xl p-4 cursor-pointer transition-all shadow-lg border ${
         isFocused

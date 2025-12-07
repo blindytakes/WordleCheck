@@ -58,7 +58,7 @@ export default function Keyboard() {
   };
 
   return (
-    <div className="bg-white rounded-2xl p-4 shadow-lg border border-gray-100">
+    <div className="bg-white rounded-2xl p-4 shadow-lg border-2 border-transparent">
       <div className="text-sm font-medium text-gray-600 mb-3">
         Keyboard Status
       </div>
