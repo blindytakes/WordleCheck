@@ -61,9 +61,14 @@ export function ConstraintProvider({ children }) {
 
   // Green letter actions
   const addGreen = useCallback((position, letter) => {
-    saveToHistory();
     const upperLetter = letter.toUpperCase();
 
+    // Don't save history if letter is already the same
+    if (green[position] === upperLetter) {
+      return;
+    }
+
+    saveToHistory();
     setGreen(prev => ({
       ...prev,
       [position]: upperLetter
@@ -71,15 +76,20 @@ export function ConstraintProvider({ children }) {
 
     // Automatically remove from gray if it's there
     setGray(prev => prev.filter(l => l !== upperLetter));
-  }, [saveToHistory]);
+  }, [green, saveToHistory]);
 
   const removeGreen = useCallback((position) => {
+    // Don't save history if position is already empty
+    if (green[position] === null) {
+      return;
+    }
+
     saveToHistory();
     setGreen(prev => ({
       ...prev,
       [position]: null
     }));
-  }, [saveToHistory]);
+  }, [green, saveToHistory]);
 
   // Yellow letter actions
   const addYellow = useCallback((position, letter) => {
@@ -108,12 +118,17 @@ export function ConstraintProvider({ children }) {
   }, [green, yellow, saveToHistory]);
 
   const removeYellow = useCallback((position, letter) => {
+    // Don't save history if letter is not at this position
+    if (!yellow[position].includes(letter)) {
+      return;
+    }
+
     saveToHistory();
     setYellow(prev => ({
       ...prev,
       [position]: prev[position].filter(l => l !== letter)
     }));
-  }, [saveToHistory]);
+  }, [yellow, saveToHistory]);
 
   // Gray letter actions - returns validation result
   const addGray = useCallback((letter) => {
@@ -127,22 +142,26 @@ export function ConstraintProvider({ children }) {
       return { success: false, error: 'This letter is already in the word' };
     }
 
+    // Don't save history if letter is already in gray
+    if (gray.includes(upperLetter)) {
+      return { success: false };
+    }
+
     saveToHistory();
-    setGray(prev => {
-      // Prevent duplicates
-      if (prev.includes(upperLetter)) {
-        return prev;
-      }
-      return [...prev, upperLetter];
-    });
+    setGray(prev => [...prev, upperLetter]);
 
     return { success: true };
-  }, [green, yellow, saveToHistory]);
+  }, [green, yellow, gray, saveToHistory]);
 
   const removeGray = useCallback((letter) => {
+    // Don't save history if letter is not in gray
+    if (!gray.includes(letter)) {
+      return;
+    }
+
     saveToHistory();
     setGray(prev => prev.filter(l => l !== letter));
-  }, [saveToHistory]);
+  }, [gray, saveToHistory]);
 
   // Undo last action
   const undo = useCallback(() => {
