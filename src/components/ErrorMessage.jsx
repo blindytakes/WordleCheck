@@ -6,7 +6,7 @@ export default function ErrorMessage({ message, onClose }) {
     if (message) {
       const timer = setTimeout(() => {
         onClose();
-      }, 3000);
+      }, 2000);
       return () => clearTimeout(timer);
     }
   }, [message, onClose]);
