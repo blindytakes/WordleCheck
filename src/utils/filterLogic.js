@@ -52,9 +52,11 @@ export function filterWordList(constraints, solutionsList) {
         }
 
         // 3. --- GRAY (Not In Word) CHECK ---
-        // Must NOT contain any gray letters (unless they're also green)
+        // Must NOT contain any gray letters (unless they're also green or yellow)
         for (const letter of gray) {
-            if (!greenLetters.includes(letter) && wordUpper.includes(letter)) {
+            const isInGreen = greenLetters.includes(letter);
+            const isInYellow = allYellowLetters.has(letter);
+            if (!isInGreen && !isInYellow && wordUpper.includes(letter)) {
                 return false;
             }
         }

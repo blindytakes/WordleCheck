@@ -10,15 +10,10 @@ import WordCloud from './components/WordCloud';
 
 function AppContent() {
   const [focusedRow, setFocusedRow] = useState('green');
-  const [theme, setTheme] = useState('light');
   const { clearAll, undo } = useConstraints();
 
   const handleFocusChange = (row) => {
     setFocusedRow(row);
-  };
-
-  const handleThemeToggle = () => {
-    setTheme(prev => prev === 'light' ? 'dark' : 'light');
   };
 
   // Global keyboard shortcuts
@@ -49,7 +44,7 @@ function AppContent() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
       >
-        <Header theme={theme} onThemeToggle={handleThemeToggle} />
+        <Header />
 
         <div className="flex gap-6">
           {/* Left Panel - 40% width */}

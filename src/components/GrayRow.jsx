@@ -1,19 +1,15 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useConstraints } from '../context/ConstraintContext';
 import ErrorMessage from './ErrorMessage';
 
 export default function GrayRow({ isFocused, onFocusChange }) {
   const { gray, addGray, removeGray } = useConstraints();
-  const rowRef = useRef(null);
   const [errorMessage, setErrorMessage] = useState(null);
 
   useEffect(() => {
     if (!isFocused) return;
 
     const handleKeyDown = (e) => {
-      // Only handle keyboard input when focused
-      if (!isFocused) return;
-
       // Handle letter keys (A-Z)
       if (e.key.length === 1 && /^[a-zA-Z]$/.test(e.key)) {
         e.preventDefault();
@@ -58,7 +54,6 @@ export default function GrayRow({ isFocused, onFocusChange }) {
 
   return (
     <div
-      ref={rowRef}
       onClick={handleClick}
       className={`bg-white rounded-2xl p-4 cursor-pointer transition-all relative shadow-lg border ${
         isFocused
