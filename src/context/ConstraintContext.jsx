@@ -50,16 +50,6 @@ export function ConstraintProvider({ children }) {
     setFilteredWords(filtered);
   }, [green, yellow, gray, hasConstraints]);
 
-  // Helper to check if letter is in green
-  const isLetterInGreen = useCallback((letter) => {
-    return Object.values(green).some(l => l === letter.toUpperCase());
-  }, [green]);
-
-  // Helper to check if letter is in yellow
-  const isLetterInYellow = useCallback((letter) => {
-    return Object.values(yellow).some(arr => arr.includes(letter.toUpperCase()));
-  }, [yellow]);
-
   // Save current state to history
   const saveToHistory = useCallback(() => {
     setHistory(prev => {
@@ -93,26 +83,29 @@ export function ConstraintProvider({ children }) {
 
   // Yellow letter actions
   const addYellow = useCallback((position, letter) => {
+    const upperLetter = letter.toUpperCase();
+
+    // Check if this letter is already green at this position
+    if (green[position] === upperLetter) {
+      return { success: false, error: 'This letter is already green at this position' };
+    }
+
+    // Check for duplicates in the same position
+    if (yellow[position].includes(upperLetter)) {
+      return { success: false };
+    }
+
     saveToHistory();
-    setYellow(prev => {
-      const current = prev[position];
-      const upperLetter = letter.toUpperCase();
-
-      // Prevent duplicates in the same position
-      if (current.includes(upperLetter)) {
-        return prev;
-      }
-
-      return {
-        ...prev,
-        [position]: [...current, upperLetter]
-      };
-    });
+    setYellow(prev => ({
+      ...prev,
+      [position]: [...prev[position], upperLetter]
+    }));
 
     // Automatically remove from gray if it's there
-    const upperLetter = letter.toUpperCase();
     setGray(prev => prev.filter(l => l !== upperLetter));
-  }, [saveToHistory]);
+
+    return { success: true };
+  }, [green, yellow, saveToHistory]);
 
   const removeYellow = useCallback((position, letter) => {
     saveToHistory();

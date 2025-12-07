@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useConstraints } from '../context/ConstraintContext';
+import ErrorMessage from './ErrorMessage';
 
 export default function YellowRow({ isFocused, onFocusChange }) {
   const { yellow, addYellow, removeYellow } = useConstraints();
   const [selectedPosition, setSelectedPosition] = useState(0);
+  const [errorMessage, setErrorMessage] = useState(null);
 
   useEffect(() => {
     if (!isFocused) return;
@@ -15,11 +17,16 @@ export default function YellowRow({ isFocused, onFocusChange }) {
         const letter = e.key.toUpperCase();
 
         // Add to the selected position
-        addYellow(selectedPosition, letter);
+        const result = addYellow(selectedPosition, letter);
 
-        // Move to next position if not at the end
-        if (selectedPosition < 4) {
-          setSelectedPosition(selectedPosition + 1);
+        if (result.success) {
+          setErrorMessage(null);
+          // Move to next position if not at the end
+          if (selectedPosition < 4) {
+            setSelectedPosition(selectedPosition + 1);
+          }
+        } else if (result.error) {
+          setErrorMessage(result.error);
         }
       }
 
@@ -71,12 +78,13 @@ export default function YellowRow({ isFocused, onFocusChange }) {
   return (
     <div
       onClick={handleClick}
-      className={`bg-white rounded-2xl p-4 cursor-pointer transition-all shadow-lg border ${
+      className={`bg-white rounded-2xl p-4 cursor-pointer transition-all relative shadow-lg border ${
         isFocused
           ? 'border-2 border-yellow-400 shadow-yellow-200/50'
           : 'border-2 border-transparent hover:border-yellow-200 hover:shadow-xl'
       }`}
     >
+      <ErrorMessage message={errorMessage} onClose={() => setErrorMessage(null)} />
       <div className="text-sm font-medium text-gray-600 mb-2">
         Wrong Position Letters (Yellow)
       </div>
