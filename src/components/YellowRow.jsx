@@ -21,10 +21,6 @@ export default function YellowRow({ isFocused, onFocusChange }) {
 
         if (result.success) {
           setErrorMessage(null);
-          // Move to next position if not at the end
-          if (selectedPosition < 4) {
-            setSelectedPosition(selectedPosition + 1);
-          }
         } else if (result.error) {
           setErrorMessage(result.error);
         }
