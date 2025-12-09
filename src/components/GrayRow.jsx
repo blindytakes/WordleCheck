@@ -55,42 +55,44 @@ export default function GrayRow({ isFocused, onFocusChange }) {
   return (
     <div
       onClick={handleClick}
-      className={`bg-white rounded-2xl p-4 cursor-pointer transition-all relative shadow-lg border ${
+      className={`bg-white rounded-2xl cursor-pointer transition-all relative shadow-lg border-4 ${
         isFocused
-          ? 'border-2 border-gray-400 shadow-gray-200/50'
-          : 'border-2 border-transparent hover:border-gray-300 hover:shadow-xl'
+          ? 'border-gray-500 shadow-gray-200/50'
+          : 'border-gray-400 hover:border-gray-500 hover:shadow-xl'
       }`}
     >
       <ErrorMessage message={errorMessage} onClose={() => setErrorMessage(null)} />
-      <div className="text-sm font-medium text-gray-600 mb-2">
-        Absent Letters (Gray)
-      </div>
-      <div className="min-h-12 bg-gray-50 rounded-lg border-2 border-gray-200 p-2 flex flex-wrap gap-2">
-        {gray.length === 0 ? (
-          <div className="text-gray-400 text-sm">No absent letters yet...</div>
-        ) : (
-          gray.map((letter, idx) => (
-            <div
-              key={`${letter}-${idx}`}
-              onClick={(e) => {
-                e.stopPropagation();
-                handleLetterRemove(letter);
-              }}
-              className="bg-gradient-to-br from-gray-300 to-gray-400 border border-gray-400 rounded px-3 py-1 text-sm font-semibold text-gray-700 flex items-center gap-2 cursor-pointer hover:from-gray-400 hover:to-gray-500 transition-all group shadow-sm hover:shadow-md"
-            >
-              <span>{letter}</span>
-              <button
+      <div className="p-6 pb-8">
+        <div className="text-base font-semibold text-gray-600 mb-3">
+          Absent Letters (Gray)
+        </div>
+        <div className="min-h-24 bg-gray-50 rounded-xl border-2 border-gray-200 p-4 flex flex-wrap gap-2 justify-center items-center">
+          {gray.length === 0 ? (
+            <div className="text-gray-400 text-base">No absent letters yet...</div>
+          ) : (
+            gray.map((letter, idx) => (
+              <div
+                key={`${letter}-${idx}`}
                 onClick={(e) => {
                   e.stopPropagation();
                   handleLetterRemove(letter);
                 }}
-                className="text-red-500 opacity-0 group-hover:opacity-100 transition-opacity text-xs"
+                className="bg-gradient-to-br from-gray-200 to-gray-300 border border-gray-300 rounded-lg px-8 py-6 text-3xl font-bold text-gray-700 flex items-center justify-center cursor-pointer hover:from-gray-300 hover:to-gray-400 transition-all group shadow-md hover:shadow-lg relative"
               >
-                ✕
-              </button>
-            </div>
-          ))
-        )}
+                <span>{letter}</span>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleLetterRemove(letter);
+                  }}
+                  className="absolute right-2 text-red-500 opacity-0 group-hover:opacity-100 transition-opacity text-sm"
+                >
+                  ✕
+                </button>
+              </div>
+            ))
+          )}
+        </div>
       </div>
     </div>
   );
