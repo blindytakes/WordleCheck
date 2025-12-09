@@ -1,4 +1,20 @@
-// src/utils/filterLogic.js
+/**
+ * WORD FILTERING LOGIC
+ *
+ * This file contains the core algorithm that filters the Wordle word list
+ * based on the constraints you've entered (green, yellow, and gray letters).
+ *
+ * Think of it like a detective narrowing down suspects:
+ * - 🟢 Green letters: "The letter MUST be in this exact position"
+ * - 🟡 Yellow letters: "The letter MUST be in the word, but NOT in this position"
+ * - ⚫ Gray letters: "The letter MUST NOT be in the word at all"
+ *
+ * The filter runs through all ~2,300 possible Wordle answers and only keeps
+ * the words that satisfy ALL your constraints.
+ *
+ * Special case: A letter can be both gray AND green/yellow when dealing with
+ * duplicate letters (e.g., if "SPEED" has one E in the right spot and one E not used)
+ */
 
 /**
  * Filters the master word list against the user-defined constraints.
@@ -19,11 +35,10 @@ export function filterWordList(constraints, solutionsList) {
     });
 
     const filteredWords = solutionsList.filter(word => {
-        // Normalize word to uppercase for comparison with constraints
         const wordUpper = word.toUpperCase();
 
-        // 1. --- GREEN (Correct Position) CHECK ---
-        // Must contain all green letters in their exact positions
+        // 1. 🟢 --- GREEN (Correct Position) CHECK ---
+        // Word must have the specified letter at the specified position.
         for (let i = 0; i < 5; i++) {
             const requiredLetter = green[i];
             if (requiredLetter && wordUpper[i] !== requiredLetter) {
@@ -31,7 +46,7 @@ export function filterWordList(constraints, solutionsList) {
             }
         }
 
-        // 2. --- YELLOW (In Word, Wrong Spot) CHECK ---
+        // 2. 🟡 --- YELLOW (In Word, Wrong Spot) CHECK ---
         // Must contain all yellow letters
         for (const letter of allYellowLetters) {
             if (!wordUpper.includes(letter)) {
@@ -51,7 +66,7 @@ export function filterWordList(constraints, solutionsList) {
             }
         }
 
-        // 3. --- GRAY (Not In Word) CHECK ---
+        // 3. 🚫 --- GRAY (Not In Word) CHECK ---
         // Must NOT contain any gray letters (unless they're also green or yellow)
         for (const letter of gray) {
             const isInGreen = greenLetters.includes(letter);

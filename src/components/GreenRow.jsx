@@ -1,10 +1,42 @@
+/**
+ * GREEN ROW COMPONENT
+ *
+ * Input row for green letters (correct letters in correct positions).
+ * This is like filling in the exact spots you know from Wordle's green squares.
+ *
+ * Features:
+ * - 5 tiles representing positions 0-4
+ * - Only one letter per position allowed
+ * - Keyboard navigation (arrow keys, tab to move to next row)
+ * - Auto-advance to next position after typing
+ * - Click any tile to select it
+ * - Backspace deletes current or previous letter
+ *
+ * Keyboard shortcuts:
+ * - A-Z: Type a letter at the selected position
+ * - Backspace: Delete current or previous letter
+ * - Arrow Left/Right: Navigate between positions
+ * - Tab: Move focus to YellowRow
+ *
+ * Props:
+ * - isFocused: Whether this row has keyboard focus
+ * - onFocusChange: Callback to change which row is focused
+ */
+
 import { useEffect, useState } from 'react';
 import { useConstraints } from '../context/ConstraintContext';
 
 export default function GreenRow({ isFocused, onFocusChange }) {
   const { green, addGreen, removeGreen } = useConstraints();
+
+  // Track which position (0-4) is currently selected
   const [selectedPosition, setSelectedPosition] = useState(0);
 
+  // ========================================
+  // KEYBOARD INPUT HANDLING
+  // ========================================
+
+  // Listen for keyboard input when this row is focused
   useEffect(() => {
     if (!isFocused) return;
 
@@ -58,16 +90,27 @@ export default function GreenRow({ isFocused, onFocusChange }) {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isFocused, green, addGreen, removeGreen, onFocusChange, selectedPosition]);
 
+  // ========================================
+  // MOUSE CLICK HANDLERS
+  // ========================================
+
+  // When clicking anywhere in the row, focus it
   const handleClick = () => {
     onFocusChange('green');
   };
 
+  // When clicking a specific tile, select that position and focus the row
   const handleTileClick = (position) => {
     setSelectedPosition(position);
     onFocusChange('green');
   };
 
+  // ========================================
+  // RENDER
+  // ========================================
+
   return (
+    // Outer container: Changes border color when focused
     <div
       onClick={handleClick}
       className={`bg-white rounded-2xl cursor-pointer transition-all shadow-lg border-4 ${
@@ -77,11 +120,12 @@ export default function GreenRow({ isFocused, onFocusChange }) {
       }`}
     >
       <div className="p-6">
+        {/* Row title */}
         <div className="text-base font-semibold text-gray-600 mb-3">
           Correct Letters (Green)
         </div>
         <div className="pb-8">
-          {/* Position labels */}
+          {/* Position labels (1-5) */}
           <div className="grid grid-cols-5 gap-3 mb-2">
           {[1, 2, 3, 4, 5].map((num) => (
             <div key={num} className="text-center text-sm font-bold text-gray-500">
@@ -89,6 +133,7 @@ export default function GreenRow({ isFocused, onFocusChange }) {
             </div>
           ))}
         </div>
+        {/* Tile grid: 5 letter tiles */}
         <div className="grid grid-cols-5 gap-3">
           {[0, 1, 2, 3, 4].map((position) => (
             <div

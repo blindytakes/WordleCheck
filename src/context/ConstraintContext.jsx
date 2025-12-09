@@ -1,3 +1,22 @@
+/**
+ * CONSTRAINT CONTEXT - Global State Management
+ *
+ * This is the "brain" of the app - it manages all the letter constraints
+ * and keeps track of which words are still possible.
+ *
+ * What it does:
+ * - Stores green, yellow, and gray letter constraints
+ * - Automatically filters the word list when constraints change
+ * - Provides functions to add/remove letters from each category
+ * - Implements undo functionality (stores last 20 states)
+ * - Validates constraints (e.g., can't add a green letter to gray)
+ *
+ * React Context Pattern:
+ * - ConstraintProvider wraps the app and provides the state
+ * - useConstraints() hook lets any component access the state
+ * - This avoids "prop drilling" (passing props through many components)
+ */
+
 import { createContext, useContext, useState, useCallback, useEffect, useMemo } from 'react';
 import { SOLUTIONS_LIST } from '../data/solutions';
 import { filterWordList } from '../utils/filterLogic';
@@ -5,7 +24,12 @@ import { filterWordList } from '../utils/filterLogic';
 const ConstraintContext = createContext();
 
 export function ConstraintProvider({ children }) {
-  // State for constraints
+  // ========================================
+  // STATE: Store all constraint data
+  // ========================================
+
+  // Green letters: { 0: 'A', 1: null, 2: 'T', ... }
+  // Position -> Letter (single letter per position)
   const [green, setGreen] = useState({
     0: null,
     1: null,
@@ -14,6 +38,8 @@ export function ConstraintProvider({ children }) {
     4: null
   });
 
+  // Yellow letters: { 0: ['A', 'E'], 1: [], 2: ['T'], ... }
+  // Position -> Array of letters (multiple letters can be wrong at the same position)
   const [yellow, setYellow] = useState({
     0: [],
     1: [],
@@ -22,15 +48,23 @@ export function ConstraintProvider({ children }) {
     4: []
   });
 
+  // Gray letters: ['A', 'B', 'C']
+  // Simple array of letters that are NOT in the word
   const [gray, setGray] = useState([]);
 
-  // History for undo functionality (keep last 20 states)
+  // History for undo functionality (keeps last 20 states)
+  // Each entry is a snapshot: { green: {...}, yellow: {...}, gray: [...] }
   const [history, setHistory] = useState([]);
 
-  // Filtered words based on constraints (all words initially)
+  // Filtered words based on current constraints
+  // Starts with all ~2,300 words, gets smaller as you add constraints
   const [filteredWords, setFilteredWords] = useState(SOLUTIONS_LIST);
 
-  // Check if any constraints are set
+  // ========================================
+  // COMPUTED VALUES: Automatically recalculate when state changes
+  // ========================================
+
+  // Check if any constraints are set (used to show all words vs filtered words)
   const hasConstraints = useMemo(() => {
     const hasGreen = Object.values(green).some(v => v !== null);
     const hasYellow = Object.values(yellow).some(arr => arr.length > 0);
@@ -38,7 +72,12 @@ export function ConstraintProvider({ children }) {
     return hasGreen || hasYellow || hasGray;
   }, [green, yellow, gray]);
 
+  // ========================================
+  // SIDE EFFECTS: React to state changes
+  // ========================================
+
   // Update filtered words whenever constraints change
+  // This runs automatically every time green, yellow, or gray changes
   useEffect(() => {
     if (!hasConstraints) {
       setFilteredWords(SOLUTIONS_LIST);
@@ -50,7 +89,12 @@ export function ConstraintProvider({ children }) {
     setFilteredWords(filtered);
   }, [green, yellow, gray, hasConstraints]);
 
-  // Save current state to history
+  // ========================================
+  // HELPER FUNCTIONS
+  // ========================================
+
+  // Save current state to history (for undo functionality)
+  // Called before any state change so we can undo back to this point
   const saveToHistory = useCallback(() => {
     setHistory(prev => {
       const newHistory = [...prev, { green, yellow, gray }];
@@ -59,7 +103,11 @@ export function ConstraintProvider({ children }) {
     });
   }, [green, yellow, gray]);
 
-  // Green letter actions
+  // ========================================
+  // GREEN LETTER ACTIONS
+  // ========================================
+
+  // Add a green letter at a specific position (0-4)
   const addGreen = useCallback((position, letter) => {
     const upperLetter = letter.toUpperCase();
 
@@ -91,7 +139,12 @@ export function ConstraintProvider({ children }) {
     }));
   }, [green, saveToHistory]);
 
-  // Yellow letter actions
+  // ========================================
+  // YELLOW LETTER ACTIONS
+  // ========================================
+
+  // Add a yellow letter at a position (means: letter is in word, but NOT at this position)
+  // Returns { success: true/false, error?: string } for validation feedback
   const addYellow = useCallback((position, letter) => {
     const upperLetter = letter.toUpperCase();
 
@@ -130,7 +183,12 @@ export function ConstraintProvider({ children }) {
     }));
   }, [yellow, saveToHistory]);
 
-  // Gray letter actions - returns validation result
+  // ========================================
+  // GRAY LETTER ACTIONS
+  // ========================================
+
+  // Add a gray letter (means: letter is NOT in the word at all)
+  // Returns { success: true/false, error?: string } for validation feedback
   const addGray = useCallback((letter) => {
     const upperLetter = letter.toUpperCase();
 
@@ -163,7 +221,11 @@ export function ConstraintProvider({ children }) {
     setGray(prev => prev.filter(l => l !== letter));
   }, [gray, saveToHistory]);
 
-  // Undo last action
+  // ========================================
+  // UTILITY ACTIONS
+  // ========================================
+
+  // Undo last action - restores previous state from history
   const undo = useCallback(() => {
     if (history.length === 0) return;
 
@@ -196,6 +258,10 @@ export function ConstraintProvider({ children }) {
     setGray([]);
   }, [saveToHistory]);
 
+  // ========================================
+  // CONTEXT VALUE: Everything we want to share with components
+  // ========================================
+
   const value = {
     green,
     yellow,
@@ -218,6 +284,15 @@ export function ConstraintProvider({ children }) {
   );
 }
 
+/**
+ * Custom Hook: useConstraints()
+ *
+ * Use this in any component to access the constraint state and actions.
+ * Example: const { green, addGreen, filteredWords } = useConstraints();
+ *
+ * NOTE: This hook must be used inside a component that's wrapped by ConstraintProvider,
+ * otherwise it will throw an error.
+ */
 export function useConstraints() {
   const context = useContext(ConstraintContext);
   if (!context) {

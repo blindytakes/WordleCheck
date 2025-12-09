@@ -1,12 +1,50 @@
+/**
+ * YELLOW ROW COMPONENT
+ *
+ * Input row for yellow letters (correct letters but wrong positions).
+ * This is for letters you know are in the word, but NOT at specific positions.
+ *
+ * Key difference from GreenRow: Multiple letters can be added to each position.
+ * For example, if you've tried 'A' and 'E' at position 1 and both were yellow,
+ * you can add both letters to position 1.
+ *
+ * Features:
+ * - 5 cells representing positions 0-4
+ * - Multiple letters per position allowed (stacked vertically)
+ * - Keyboard navigation (arrow keys, tab to move to next row)
+ * - Click any letter to remove it
+ * - Backspace removes the last letter in the selected position
+ * - Error validation (can't add a letter that's already green at this position)
+ *
+ * Keyboard shortcuts:
+ * - A-Z: Add a letter to the selected position
+ * - Backspace: Remove last letter from selected position
+ * - Arrow Left/Right: Navigate between positions
+ * - Tab: Move focus to GrayRow
+ *
+ * Props:
+ * - isFocused: Whether this row has keyboard focus
+ * - onFocusChange: Callback to change which row is focused
+ */
+
 import { useEffect, useState } from 'react';
 import { useConstraints } from '../context/ConstraintContext';
 import ErrorMessage from './ErrorMessage';
 
 export default function YellowRow({ isFocused, onFocusChange }) {
   const { yellow, addYellow, removeYellow } = useConstraints();
+
+  // Track which position (0-4) is currently selected
   const [selectedPosition, setSelectedPosition] = useState(0);
+
+  // Error message shown when validation fails (e.g., letter is already green)
   const [errorMessage, setErrorMessage] = useState(null);
 
+  // ========================================
+  // KEYBOARD INPUT HANDLING
+  // ========================================
+
+  // Listen for keyboard input when this row is focused
   useEffect(() => {
     if (!isFocused) return;
 
@@ -16,7 +54,7 @@ export default function YellowRow({ isFocused, onFocusChange }) {
         e.preventDefault();
         const letter = e.key.toUpperCase();
 
-        // Add to the selected position
+        // Add to the selected position (may return error if validation fails)
         const result = addYellow(selectedPosition, letter);
 
         if (result.success) {
@@ -58,20 +96,32 @@ export default function YellowRow({ isFocused, onFocusChange }) {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isFocused, yellow, addYellow, removeYellow, onFocusChange, selectedPosition]);
 
+  // ========================================
+  // MOUSE CLICK HANDLERS
+  // ========================================
+
+  // When clicking anywhere in the row, focus it
   const handleClick = () => {
     onFocusChange('yellow');
   };
 
+  // When clicking a specific cell, select that position and focus the row
   const handleCellClick = (position) => {
     setSelectedPosition(position);
     onFocusChange('yellow');
   };
 
+  // When clicking a letter badge, remove that letter
   const handleLetterRemove = (position, letter) => {
     removeYellow(position, letter);
   };
 
+  // ========================================
+  // RENDER
+  // ========================================
+
   return (
+    // Outer container: Changes border color when focused
     <div
       onClick={handleClick}
       className={`bg-white rounded-2xl cursor-pointer transition-all relative shadow-lg border-4 ${
@@ -80,13 +130,15 @@ export default function YellowRow({ isFocused, onFocusChange }) {
           : 'border-yellow-300 hover:border-yellow-400 hover:shadow-xl'
       }`}
     >
+      {/* Error message (shown at top when validation fails) */}
       <ErrorMessage message={errorMessage} onClose={() => setErrorMessage(null)} />
       <div className="p-6">
+        {/* Row title */}
         <div className="text-base font-semibold text-gray-600 mb-3">
-          Wrong Position Letters (Yellow)
+          Correct Letters, Wrong Position (Yellow)
         </div>
         <div className="pb-8">
-          {/* Position labels */}
+          {/* Position labels (1-5) */}
           <div className="grid grid-cols-5 gap-3 mb-2">
           {[1, 2, 3, 4, 5].map((num) => (
             <div key={num} className="text-center text-sm font-bold text-gray-500">
@@ -94,6 +146,7 @@ export default function YellowRow({ isFocused, onFocusChange }) {
             </div>
           ))}
         </div>
+        {/* Cell grid: 5 cells that can hold multiple letters each */}
         <div className="grid grid-cols-5 gap-3">
           {[0, 1, 2, 3, 4].map((position) => (
             <div

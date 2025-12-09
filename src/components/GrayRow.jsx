@@ -1,11 +1,44 @@
+/**
+ * GRAY ROW COMPONENT
+ *
+ * Input row for gray letters (letters NOT in the word at all).
+ * This is the simplest of the three rows - just a flat list of excluded letters.
+ *
+ * Key difference from other rows: No position tracking needed.
+ * Just type letters to add them to the "not in word" list.
+ *
+ * Features:
+ * - Simple list of gray letters (no positions)
+ * - Letters displayed as large badges in a flex container
+ * - Click any letter to remove it
+ * - Backspace removes the most recently added letter
+ * - Error validation (can't add a letter that's already green/yellow)
+ *
+ * Keyboard shortcuts:
+ * - A-Z: Add a letter to the gray list
+ * - Backspace: Remove last letter from the list
+ * - Tab: Cycle back to GreenRow
+ *
+ * Props:
+ * - isFocused: Whether this row has keyboard focus
+ * - onFocusChange: Callback to change which row is focused
+ */
+
 import { useEffect, useState } from 'react';
 import { useConstraints } from '../context/ConstraintContext';
 import ErrorMessage from './ErrorMessage';
 
 export default function GrayRow({ isFocused, onFocusChange }) {
   const { gray, addGray, removeGray } = useConstraints();
+
+  // Error message shown when validation fails (e.g., letter is already green/yellow)
   const [errorMessage, setErrorMessage] = useState(null);
 
+  // ========================================
+  // KEYBOARD INPUT HANDLING
+  // ========================================
+
+  // Listen for keyboard input when this row is focused
   useEffect(() => {
     if (!isFocused) return;
 
@@ -16,7 +49,7 @@ export default function GrayRow({ isFocused, onFocusChange }) {
         const letter = e.key.toUpperCase();
         const result = addGray(letter);
 
-        // Show error if validation failed
+        // Show error if validation failed (letter is already green/yellow)
         if (result && !result.success) {
           setErrorMessage(result.error);
         }
@@ -44,15 +77,26 @@ export default function GrayRow({ isFocused, onFocusChange }) {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isFocused, gray, addGray, removeGray, onFocusChange]);
 
+  // ========================================
+  // MOUSE CLICK HANDLERS
+  // ========================================
+
+  // When clicking anywhere in the row, focus it
   const handleClick = () => {
     onFocusChange('gray');
   };
 
+  // When clicking a letter badge, remove that letter
   const handleLetterRemove = (letter) => {
     removeGray(letter);
   };
 
+  // ========================================
+  // RENDER
+  // ========================================
+
   return (
+    // Outer container: Changes border color when focused
     <div
       onClick={handleClick}
       className={`bg-white rounded-2xl cursor-pointer transition-all relative shadow-lg border-4 ${
@@ -61,11 +105,14 @@ export default function GrayRow({ isFocused, onFocusChange }) {
           : 'border-gray-400 hover:border-gray-500 hover:shadow-xl'
       }`}
     >
+      {/* Error message (shown at top when validation fails) */}
       <ErrorMessage message={errorMessage} onClose={() => setErrorMessage(null)} />
       <div className="p-6 pb-8">
+        {/* Row title */}
         <div className="text-base font-semibold text-gray-600 mb-3">
-          Absent Letters (Gray)
+          Incorrect Letters (Gray)
         </div>
+        {/* Letter list container (flex wrap for dynamic layout) */}
         <div className="min-h-24 bg-gray-50 rounded-xl border-2 border-gray-200 p-4 flex flex-wrap gap-2 justify-center items-center">
           {gray.length === 0 ? (
             <div className="text-gray-400 text-base">No absent letters yet...</div>
