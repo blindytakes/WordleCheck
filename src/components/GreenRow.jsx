@@ -122,7 +122,7 @@ export default function GreenRow({ isFocused, onFocusChange }) {
     >
       <div>
         {/* Row title */}
-        <div className="text-base font-semibold text-gray-600 mb-3 text-center">
+        <div className="text-base font-semibold text-green-600 mb-3 text-center">
           Correct Letters (Green)
         </div>
         <div className="pb-8">
@@ -159,8 +159,7 @@ export default function GreenRow({ isFocused, onFocusChange }) {
                       e.stopPropagation();
                       removeGreen(position);
                     }}
-                    className="absolute top-1 right-1 w-5 h-5 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity text-xs"
-                  >
+                    className="absolute top-1 right-1 w-5 h-5 flex items-center justify-center text-red opacity-0 group-hover:opacity-100 transition-opacity text-xs"                  >
                     ✕
                   </button>
                 </>

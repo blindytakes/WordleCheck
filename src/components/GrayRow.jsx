@@ -101,8 +101,8 @@ export default function GrayRow({ isFocused, onFocusChange }) {
       onClick={handleClick}
       className={`bg-white rounded-2xl cursor-pointer transition-all relative shadow-lg border-4 ${
         isFocused
-          ? 'border-gray-500 shadow-gray-200/50'
-          : 'border-gray-400 hover:border-gray-500 hover:shadow-xl'
+          ? 'border-gray-900 shadow-gray-200/50' // <<< Focused border is now gray-900
+          : 'border-gray-500 hover:border-gray-900 hover:shadow-xl' // <<< Default/Hover borders are a dark gray/gray-900
       }`}
     >
       {/* Error message (shown at top when validation fails) */}
@@ -110,7 +110,7 @@ export default function GrayRow({ isFocused, onFocusChange }) {
       <div className="p-6 pb-8">
         {/* Row title */}
         <div className="text-base font-semibold text-gray-600 mb-3 text-center">
-          Incorrect Letters (Gray)
+          Incorrect Letters 
         </div>
         {/* Letter list container (flex wrap for dynamic layout) */}
         <div className="min-h-24 bg-gray-50 rounded-xl border-2 border-gray-200 p-4 flex flex-wrap gap-2 justify-center items-center">
@@ -132,7 +132,7 @@ export default function GrayRow({ isFocused, onFocusChange }) {
                     e.stopPropagation();
                     handleLetterRemove(letter);
                   }}
-                  className="absolute right-2 text-red-500 opacity-0 group-hover:opacity-100 transition-opacity text-sm"
+                  className="absolute top-1 right-1 w-5 h-5 flex items-center justify-center text-red-500 opacity-0 group-hover:opacity-100 transition-opacity text-xs"
                 >
                   ✕
                 </button>

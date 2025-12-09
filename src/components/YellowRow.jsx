@@ -135,7 +135,7 @@ export default function YellowRow({ isFocused, onFocusChange }) {
       <ErrorMessage message={errorMessage} onClose={() => setErrorMessage(null)} />
       <div>
         {/* Row title */}
-        <div className="text-base font-semibold text-gray-600 mb-3 text-center">
+        <div className="text-base font-semibold text-yellow-600 mb-3 text-center">
           Correct Letters, Wrong Position (Yellow)
         </div>
         <div className="pb-8">
@@ -170,11 +170,11 @@ export default function YellowRow({ isFocused, onFocusChange }) {
                       e.stopPropagation();
                       handleLetterRemove(position, letter);
                     }}
-                    className="bg-gradient-to-br from-yellow-100 to-yellow-200 border border-yellow-300 rounded px-4 py-2 text-lg font-bold text-yellow-800 flex items-center justify-center cursor-pointer hover:from-yellow-200 hover:to-yellow-300 transition-all group shadow-sm hover:shadow-md relative w-full"
+                    // Note the change from 'yellow' to 'amber' for a punchier color:
+                    className="bg-gradient-to-br from-amber-200 to-amber-300 border border-amber-400 rounded px-4 py-2 text-lg font-bold text-amber-800 flex items-center justify-center cursor-pointer hover:from-amber-300 hover:to-amber-400 transition-all group shadow-sm hover:shadow-md relative w-full"
                   >
                     <span>{letter}</span>
-                    <span className="absolute right-2 text-red-500 opacity-0 group-hover:opacity-100 transition-opacity text-xs">
-                      ✕
+                    <span className="absolute top-1 right-2 text-red-500 opacity-0 group-hover:opacity-100 transition-opacity text-xs">                      ✕
                     </span>
                   </div>
                 ))
