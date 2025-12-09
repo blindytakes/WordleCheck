@@ -10,7 +10,6 @@
  * - Right panel (990px): WordCloud showing possible words
  *
  * Global keyboard shortcuts:
- * - ESC: Clear all constraints
  * - Cmd+Z / Ctrl+Z: Undo last action
  *
  * The app is split into two components:
@@ -37,7 +36,7 @@ function AppContent() {
   const [focusedRow, setFocusedRow] = useState('green');
 
   // Get global actions from context
-  const { clearAll, undo } = useConstraints();
+  const { undo } = useConstraints();
 
   // Called by rows when they receive focus
   const handleFocusChange = (row) => {
@@ -47,12 +46,6 @@ function AppContent() {
   // Global keyboard shortcuts
   useEffect(() => {
     const handleGlobalKeyDown = (e) => {
-      // ESC to clear all
-      if (e.key === 'Escape') {
-        e.preventDefault();
-        clearAll();
-      }
-
       // Ctrl+Z or Cmd+Z to undo
       if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
         e.preventDefault();
@@ -62,7 +55,7 @@ function AppContent() {
 
     window.addEventListener('keydown', handleGlobalKeyDown);
     return () => window.removeEventListener('keydown', handleGlobalKeyDown);
-  }, [clearAll, undo]);
+  }, [undo]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-100 via-rose-50 to-pink-50">

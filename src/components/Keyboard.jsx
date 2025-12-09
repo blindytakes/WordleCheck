@@ -16,7 +16,6 @@
  * Features:
  * - Standard QWERTY layout (3 rows)
  * - Auto-updates colors as you add constraints
- * - Clear All button with trash icon
  * - Keyboard shortcut hints at the bottom
  */
 
@@ -31,7 +30,7 @@ const KEYBOARD_LAYOUT = [
 ];
 
 export default function Keyboard() {
-  const { green, yellow, gray, clearAll } = useConstraints();
+  const { green, yellow, gray } = useConstraints();
 
   // ========================================
   // COLOR LOGIC
@@ -80,7 +79,7 @@ export default function Keyboard() {
   const getKeyClasses = (letter) => {
     const color = getLetterColor(letter);
 
-    const baseClasses = 'px-4 py-3 rounded-lg font-bold text-base transition-all shadow-md hover:shadow-lg transform hover:scale-105';
+    const baseClasses = 'px-10 py-8 rounded-lg font-bold text-xl transition-all shadow-md hover:shadow-lg transform hover:scale-105';
 
     switch (color) {
       case 'green':
@@ -99,9 +98,12 @@ export default function Keyboard() {
   // ========================================
 
   return (
-    <div className="bg-white rounded-2xl px-8 py-16 shadow-lg border-4 border-pink-300 hover:border-pink-400 transition-all">
+    <div
+      className="bg-white rounded-2xl shadow-lg border-4 border-pink-300 hover:border-pink-400 transition-all"
+      style={{ padding: '24px' }}
+    >
       {/* Keyboard layout: 3 rows in QWERTY format */}
-      <div className="flex flex-col gap-4 pt-12">
+      <div className="flex flex-col gap-4">
         {KEYBOARD_LAYOUT.map((row, rowIndex) => (
           <div key={rowIndex} className="flex justify-center gap-2.5">
             {row.map((letter) => (
@@ -115,22 +117,6 @@ export default function Keyboard() {
             ))}
           </div>
         ))}
-      </div>
-
-      {/* Clear All button and keyboard shortcut hints */}
-      <div className="mt-16 space-y-6">
-        <div className="flex justify-center">
-          <button
-            onClick={clearAll}
-            className="px-12 py-5 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold rounded-lg transition-all transform hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl text-lg"
-          >
-            🗑️ Clear All
-          </button>
-        </div>
-        <div className="text-base text-gray-400 text-center flex justify-center gap-8">
-          <div>Press <kbd className="px-2 py-1 bg-gray-100 rounded border border-gray-300 font-mono text-xs">ESC</kbd> to clear all</div>
-          <div>Press <kbd className="px-2 py-1 bg-gray-100 rounded border border-gray-300 font-mono text-xs">Ctrl+Z</kbd> to undo</div>
-        </div>
       </div>
     </div>
   );

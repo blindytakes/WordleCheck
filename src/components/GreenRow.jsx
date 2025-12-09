@@ -118,10 +118,11 @@ export default function GreenRow({ isFocused, onFocusChange }) {
           ? 'border-green-400 shadow-green-200/50'
           : 'border-green-300 hover:border-green-400 hover:shadow-xl'
       }`}
+      style={{ padding: '20px' }}
     >
-      <div className="p-6">
+      <div>
         {/* Row title */}
-        <div className="text-base font-semibold text-gray-600 mb-3">
+        <div className="text-base font-semibold text-gray-600 mb-3 text-center">
           Correct Letters (Green)
         </div>
         <div className="pb-8">

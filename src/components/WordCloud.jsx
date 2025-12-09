@@ -86,7 +86,7 @@ export default function WordCloud() {
     <div className="relative h-full w-full flex flex-col items-center justify-center mt-16">
       {/* Title: "Wordle Fun" with gradient text */}
       <motion.div
-        className="text-8xl font-black bg-gradient-to-r from-blue-600 via-cyan-500 to-sky-500 text-transparent bg-clip-text mb-2"
+        className="text-8xl font-black bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 text-transparent bg-clip-text mb-2"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
@@ -97,7 +97,7 @@ export default function WordCloud() {
       {/* Word count: Shows how many words match the constraints */}
       {filteredWords.length > 0 && (
         <motion.div
-          className="text-center mb-0 text-5xl text-blue-600 font-bold"
+          className="text-center mb-0 text-5xl bg-gradient-to-r from-pink-500 to-blue-500 text-transparent bg-clip-text font-bold"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
@@ -177,7 +177,7 @@ export default function WordCloud() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                 >
-                  No words yet...
+                  No Winning Words...
                 </motion.div>
               ) : (
                 // Word grid: Flex wrap layout with animated words
@@ -205,7 +205,7 @@ export default function WordCloud() {
                           rotate: [-2, 2, -2, 0],
                           transition: { duration: 0.3 }
                         }}
-                        className={`${size} font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700 cursor-default select-none transition-all uppercase drop-shadow-sm`}
+                        className={`${size} font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-pink-400 via-purple-500 to-blue-500 cursor-default select-none transition-all uppercase drop-shadow-sm`}
                       >
                         {word}
                       </motion.div>

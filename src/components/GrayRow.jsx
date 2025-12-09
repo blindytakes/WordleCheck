@@ -109,13 +109,13 @@ export default function GrayRow({ isFocused, onFocusChange }) {
       <ErrorMessage message={errorMessage} onClose={() => setErrorMessage(null)} />
       <div className="p-6 pb-8">
         {/* Row title */}
-        <div className="text-base font-semibold text-gray-600 mb-3">
+        <div className="text-base font-semibold text-gray-600 mb-3 text-center">
           Incorrect Letters (Gray)
         </div>
         {/* Letter list container (flex wrap for dynamic layout) */}
         <div className="min-h-24 bg-gray-50 rounded-xl border-2 border-gray-200 p-4 flex flex-wrap gap-2 justify-center items-center">
           {gray.length === 0 ? (
-            <div className="text-gray-400 text-base">No absent letters yet...</div>
+            <div className="text-gray-400 text-base">Enter Incorrect Letters Here</div>
           ) : (
             gray.map((letter, idx) => (
               <div

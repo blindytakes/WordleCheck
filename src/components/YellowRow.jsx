@@ -129,12 +129,13 @@ export default function YellowRow({ isFocused, onFocusChange }) {
           ? 'border-yellow-400 shadow-yellow-200/50'
           : 'border-yellow-300 hover:border-yellow-400 hover:shadow-xl'
       }`}
+      style={{ padding: '20px' }}
     >
       {/* Error message (shown at top when validation fails) */}
       <ErrorMessage message={errorMessage} onClose={() => setErrorMessage(null)} />
-      <div className="p-6">
+      <div>
         {/* Row title */}
-        <div className="text-base font-semibold text-gray-600 mb-3">
+        <div className="text-base font-semibold text-gray-600 mb-3 text-center">
           Correct Letters, Wrong Position (Yellow)
         </div>
         <div className="pb-8">
