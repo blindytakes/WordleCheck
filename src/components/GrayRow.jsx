@@ -77,7 +77,7 @@ export default function GrayRow({ isFocused, onFocusChange }) {
                   e.stopPropagation();
                   handleLetterRemove(letter);
                 }}
-                className="bg-gradient-to-br from-gray-200 to-gray-300 border border-gray-300 rounded-lg px-8 py-6 text-3xl font-bold text-gray-700 flex items-center justify-center cursor-pointer hover:from-gray-300 hover:to-gray-400 transition-all group shadow-md hover:shadow-lg relative"
+                className="bg-gradient-to-br from-gray-200 to-gray-300 border border-gray-300 rounded-lg px-8 py-6 text-4xl font-bold text-gray-700 flex items-center justify-center cursor-pointer hover:from-gray-300 hover:to-gray-400 transition-all group shadow-md hover:shadow-lg relative"
               >
                 <span>{letter}</span>
                 <button

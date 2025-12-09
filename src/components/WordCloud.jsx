@@ -3,12 +3,12 @@ import { useConstraints } from '../context/ConstraintContext';
 import { useMemo } from 'react';
 
 const FONT_SIZES = [
-  'text-sm',
-  'text-base',
   'text-lg',
   'text-xl',
   'text-2xl',
-  'text-3xl'
+  'text-3xl',
+  'text-4xl',
+  'text-5xl'
 ];
 
 const MAX_DISPLAY_WORDS = 40;
@@ -92,51 +92,57 @@ export default function WordCloud() {
           }}
         >
           {/* Cloud shape made of overlapping circles */}
-          <div className="relative w-[700px] h-[500px]">
+          <div className="relative w-[990px] h-[715px]">
             {/* Main cloud body */}
             <div className="absolute inset-0 flex items-center justify-center">
               {/* Left puff */}
-              <div className="absolute left-8 top-1/4 w-48 h-48 bg-gradient-to-br from-blue-50 to-blue-100 rounded-full blur-sm opacity-90"></div>
+              <div className="absolute left-4 top-1/4 w-72 h-72 bg-gradient-to-br from-blue-50 to-blue-100 rounded-full blur-md opacity-95"></div>
 
-              {/* Center large puff */}
-              <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-64 bg-gradient-to-br from-white via-blue-50 to-blue-100 rounded-full blur-sm"></div>
+              {/* Center large puff - the main body */}
+              <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-80 bg-gradient-to-br from-white via-blue-50 to-blue-100 rounded-full blur-md"></div>
 
               {/* Right puff */}
-              <div className="absolute right-8 top-1/3 w-52 h-52 bg-gradient-to-br from-blue-50 to-blue-100 rounded-full blur-sm opacity-90"></div>
+              <div className="absolute right-4 top-1/3 w-80 h-80 bg-gradient-to-br from-blue-50 to-blue-100 rounded-full blur-md opacity-95"></div>
 
               {/* Top left puff */}
-              <div className="absolute left-24 top-12 w-40 h-40 bg-gradient-to-br from-white to-blue-50 rounded-full blur-sm"></div>
+              <div className="absolute left-28 top-8 w-60 h-60 bg-gradient-to-br from-white to-blue-50 rounded-full blur-md"></div>
+
+              {/* Top center puff */}
+              <div className="absolute left-1/2 -translate-x-1/2 top-12 w-56 h-56 bg-gradient-to-br from-white to-blue-50 rounded-full blur-md"></div>
 
               {/* Top right puff */}
-              <div className="absolute right-24 top-16 w-36 h-36 bg-gradient-to-br from-white to-blue-50 rounded-full blur-sm"></div>
+              <div className="absolute right-28 top-12 w-52 h-52 bg-gradient-to-br from-white to-blue-50 rounded-full blur-md"></div>
 
               {/* Bottom puffs for fullness */}
-              <div className="absolute left-32 bottom-16 w-44 h-44 bg-gradient-to-br from-blue-50 to-blue-100 rounded-full blur-sm opacity-80"></div>
-              <div className="absolute right-32 bottom-20 w-40 h-40 bg-gradient-to-br from-blue-50 to-blue-100 rounded-full blur-sm opacity-80"></div>
+              <div className="absolute left-36 bottom-12 w-64 h-64 bg-gradient-to-br from-blue-50 to-blue-100 rounded-full blur-md opacity-85"></div>
+              <div className="absolute right-36 bottom-16 w-60 h-60 bg-gradient-to-br from-blue-50 to-blue-100 rounded-full blur-md opacity-85"></div>
+
+              {/* Middle bottom puff for cloud shape */}
+              <div className="absolute left-1/2 -translate-x-1/2 bottom-20 w-72 h-72 bg-gradient-to-br from-blue-50 to-blue-100 rounded-full blur-md opacity-90"></div>
             </div>
 
             {/* Soft drop shadow underneath */}
-            <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 w-96 h-12 bg-blue-200/30 rounded-full blur-2xl"></div>
+            <div className="absolute -bottom-12 left-1/2 -translate-x-1/2 w-[500px] h-16 bg-blue-200/40 rounded-full blur-3xl"></div>
 
             {/* Content container - words inside the cloud */}
-            <div className="absolute inset-0 flex flex-col items-center justify-center p-12">
+            <div className="absolute inset-0 flex flex-col items-center justify-center px-20 py-16">
               {filteredWords.length === 0 ? (
                 <motion.div
-                  className="text-blue-300 text-2xl font-medium text-center"
+                  className="text-blue-300 text-3xl font-medium text-center"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                 >
                   No words yet...
                 </motion.div>
               ) : (
-                <div className="flex flex-wrap gap-3 justify-center items-center max-w-lg">
+                <div className="flex flex-wrap gap-3 justify-center items-center max-w-3xl">
                   <AnimatePresence mode="popLayout">
                     {wordsWithSizes.map(({ word, size, id }, index) => (
                       <motion.div
                         key={id}
                         layout
                         initial={{ opacity: 0, scale: 0.8, y: 20 }}
-                        animate={{ opacity: 0.8, scale: 1, y: 0 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.8, y: -20 }}
                         transition={{
                           duration: 0.4,
@@ -152,7 +158,7 @@ export default function WordCloud() {
                           rotate: [-2, 2, -2, 0],
                           transition: { duration: 0.3 }
                         }}
-                        className={`${size} font-bold text-transparent bg-clip-text bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700 cursor-default select-none transition-all uppercase drop-shadow-sm`}
+                        className={`${size} font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700 cursor-default select-none transition-all uppercase drop-shadow-sm`}
                       >
                         {word}
                       </motion.div>

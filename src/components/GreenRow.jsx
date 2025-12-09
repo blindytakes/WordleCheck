@@ -97,7 +97,7 @@ export default function GreenRow({ isFocused, onFocusChange }) {
                 e.stopPropagation();
                 handleTileClick(position);
               }}
-              className={`aspect-square rounded-xl border-2 flex items-center justify-center text-4xl font-bold relative group transition-all cursor-pointer shadow-md hover:shadow-lg ${
+              className={`aspect-square rounded-xl border-2 flex items-center justify-center text-5xl font-bold relative group transition-all cursor-pointer shadow-md hover:shadow-lg ${
                 green[position]
                   ? 'bg-gradient-to-br from-green-400 to-green-600 border-green-600 text-white'
                   : isFocused && selectedPosition === position

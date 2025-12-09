@@ -37,19 +37,19 @@ function AppContent() {
   }, [clearAll, undo]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-100 via-rose-50 to-pink-50 p-8">
+    <div className="min-h-screen bg-gradient-to-br from-pink-100 via-rose-50 to-pink-50">
       <motion.div
-        className="max-w-7xl mx-auto h-[calc(100vh-4rem)]"
+        className="w-full mx-auto h-screen pt-16"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
       >
         <Header />
 
-        <div className="flex gap-8 h-[calc(100%-100px)] pl-48 pr-8 mt-16">
-          {/* Left Panel - 45% width */}
+        <div className="flex justify-center gap-12 h-[calc(100%-120px)] max-w-[1600px] mx-auto px-4">
+          {/* Left Panel - fixed max width */}
           <motion.div
-            className="w-[45%] flex flex-col gap-6"
+            className="flex-shrink-0 w-[500px] flex flex-col gap-6"
             initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
@@ -69,9 +69,9 @@ function AppContent() {
             <Keyboard />
           </motion.div>
 
-          {/* Right Panel - 55% width */}
+          {/* Right Panel - takes remaining space */}
           <motion.div
-            className="w-[55%] h-full"
+            className="flex-shrink-0 w-[990px] h-full"
             initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.3, ease: "easeOut" }}

@@ -43,7 +43,7 @@ export default function Keyboard() {
   const getKeyClasses = (letter) => {
     const color = getLetterColor(letter);
 
-    const baseClasses = 'px-5 py-4 rounded-lg font-bold text-base transition-all shadow-md hover:shadow-lg transform hover:scale-105';
+    const baseClasses = 'px-3 py-2 rounded-lg font-bold text-sm transition-all shadow-md hover:shadow-lg transform hover:scale-105';
 
     switch (color) {
       case 'green':
@@ -58,18 +58,15 @@ export default function Keyboard() {
   };
 
   return (
-    <div className="bg-white rounded-2xl p-8 shadow-lg border-4 border-pink-300 hover:border-pink-400 transition-all">
-      <div className="text-lg font-semibold text-gray-600 mb-6">
-        Keyboard Status
-      </div>
-      <div className="flex flex-col gap-4">
+    <div className="bg-white rounded-2xl p-6 shadow-lg border-4 border-pink-300 hover:border-pink-400 transition-all">
+      <div className="flex flex-col gap-2 pt-8">
         {KEYBOARD_LAYOUT.map((row, rowIndex) => (
-          <div key={rowIndex} className="flex justify-center gap-3">
+          <div key={rowIndex} className="flex justify-center gap-2">
             {row.map((letter) => (
               <div
                 key={letter}
                 className={getKeyClasses(letter)}
-                style={{ minWidth: '42px', textAlign: 'center' }}
+                style={{ minWidth: '36px', textAlign: 'center' }}
               >
                 {letter}
               </div>
@@ -79,7 +76,7 @@ export default function Keyboard() {
       </div>
 
       {/* Clear button and shortcuts */}
-      <div className="mt-8 space-y-4">
+      <div className="mt-12 space-y-4">
         <div className="flex justify-center">
           <button
             onClick={clearAll}
@@ -88,7 +85,7 @@ export default function Keyboard() {
             🗑️ Clear All
           </button>
         </div>
-        <div className="text-sm text-gray-400 text-center space-y-1">
+        <div className="text-sm text-gray-400 text-center flex justify-center gap-6">
           <div>Press <kbd className="px-2 py-1 bg-gray-100 rounded border border-gray-300 font-mono text-xs">ESC</kbd> to clear all</div>
           <div>Press <kbd className="px-2 py-1 bg-gray-100 rounded border border-gray-300 font-mono text-xs">Ctrl+Z</kbd> to undo</div>
         </div>
