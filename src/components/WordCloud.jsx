@@ -27,6 +27,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useConstraints } from '../context/ConstraintContext';
 import { useMemo, useState, useEffect } from 'react';
 import DefinitionModal from './DefinitionModal';
+import { getRUM } from '../rum.js';
 
 // Available font sizes for words (from small to large)
 const FONT_SIZES = [
@@ -166,6 +167,15 @@ export default function WordCloud() {
     if (definitionCache[wordLower]) {
       setDefinition(definitionCache[wordLower]);
       setDefinitionError(false);
+
+      // Track cached definition fetch
+      getRUM().addEvent('definition.fetched', {
+        word: wordLower,
+        cached: true,
+        success: true,
+        timestamp: Date.now()
+      });
+
       return;
     }
 
@@ -189,10 +199,26 @@ export default function WordCloud() {
 
       setDefinition(data);
       setDefinitionError(false);
+
+      // Track successful definition fetch
+      getRUM().addEvent('definition.fetched', {
+        word: wordLower,
+        cached: false,
+        success: true,
+        timestamp: Date.now()
+      });
     } catch (error) {
       console.error('Error fetching definition:', error);
       setDefinitionError(true);
       setDefinition(null);
+
+      // Track failed definition fetch
+      getRUM().addEvent('definition.fetched', {
+        word: wordLower,
+        success: false,
+        error: error.message,
+        timestamp: Date.now()
+      });
     } finally {
       setIsLoadingDefinition(false);
     }
@@ -202,6 +228,14 @@ export default function WordCloud() {
    * Handles word click - opens modal and fetches definition
    */
   const handleWordClick = (word) => {
+    // Track word click event in Splunk
+    getRUM().addEvent('word.clicked', {
+      word: word,
+      totalWords: filteredWords.length,
+      cloudMode: isStableMode ? 'stable' : 'dynamic',
+      timestamp: Date.now()
+    });
+
     setSelectedWord(word);
     setDefinition(null);
     fetchDefinition(word);
@@ -211,6 +245,13 @@ export default function WordCloud() {
    * Closes the definition modal
    */
   const handleCloseModal = () => {
+    // Track modal close
+    getRUM().addEvent('modal.closed', {
+      word: selectedWord,
+      hadDefinition: definition !== null,
+      timestamp: Date.now()
+    });
+
     setSelectedWord(null);
     setDefinition(null);
     setDefinitionError(false);

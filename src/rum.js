@@ -82,10 +82,28 @@ export function initRUM() {
     }
   });
 
+  // Generate and set session ID
+  const sessionId = generateSessionId();
+  SplunkRum.setGlobalAttributes({
+    'session.id': sessionId,
+    'app.version': import.meta.env.VITE_APP_VERSION || '1.0.0'
+  });
+
   console.log('✅ Splunk RUM initialized');
+  console.log('📊 Session ID:', sessionId);
 
   // Enable console log tracking
   setupConsoleTracking();
+}
+
+/**
+ * Generate a unique session ID
+ * Format: timestamp-random (e.g., 1702234567890-abc123)
+ */
+function generateSessionId() {
+  const timestamp = Date.now();
+  const random = Math.random().toString(36).substring(2, 8);
+  return `${timestamp}-${random}`;
 }
 
 /**
