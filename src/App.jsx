@@ -69,7 +69,7 @@ function AppContent() {
         <Header />
 
         {/* Two-column layout: Input panel (left) + Word cloud (right) */}
-        <div className="flex justify-center items-center gap-12 h-[calc(100%-120px)] max-w-[1700px] mx-auto px-4">
+        <div className="flex justify-center items-center gap-20 h-[calc(100%-120px)] max-w-[1900px] mx-auto px-4">
           {/* Left Panel - Input rows and keyboard (580px fixed width) */}
           <motion.div
             className="flex-shrink-0 w-[580px] flex flex-col gap-4"

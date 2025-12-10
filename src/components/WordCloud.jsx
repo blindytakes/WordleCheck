@@ -83,10 +83,10 @@ export default function WordCloud() {
   // ========================================
 
   return (
-    <div className="relative h-full w-full flex flex-col items-center justify-center mt-16">
+    <div className="relative h-full w-full flex flex-col items-center justify-start mt-48">
       {/* Title: "Wordle Fun" with gradient text */}
       <motion.div
-        className="text-8xl font-black bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 text-transparent bg-clip-text mb-2"
+        className="text-8xl font-black bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 text-transparent bg-clip-text mb-4"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
@@ -97,7 +97,7 @@ export default function WordCloud() {
       {/* Word count: Shows how many words match the constraints */}
       {filteredWords.length > 0 && (
         <motion.div
-          className="text-center mb-0 text-5xl bg-gradient-to-r from-pink-500 to-blue-500 text-transparent bg-clip-text font-bold"
+          className="text-center mb-8 text-5xl bg-gradient-to-r from-pink-500 to-blue-500 text-transparent bg-clip-text font-bold"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
