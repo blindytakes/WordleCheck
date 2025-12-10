@@ -262,10 +262,10 @@ export default function WordCloud() {
   // ========================================
 
   return (
-    <div className="relative h-full w-full flex flex-col items-center justify-start mt-48">
-      {/* Title: "Wordle Fun" with gradient text */}
+    <div className="relative h-full w-full flex flex-col items-center justify-start mt-8 md:mt-24 lg:mt-48">
+      {/* Title: "Wordle Fun" with gradient text (responsive sizing) */}
       <motion.div
-        className="text-8xl font-black bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 dark:from-pink-400 dark:via-purple-400 dark:to-blue-400 text-transparent bg-clip-text mb-4"
+        className="text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-black bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 dark:from-pink-400 dark:via-purple-400 dark:to-blue-400 text-transparent bg-clip-text mb-2 md:mb-4"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
@@ -273,10 +273,10 @@ export default function WordCloud() {
         Wordle Fun
       </motion.div>
 
-      {/* Word count: Shows how many words match the constraints */}
+      {/* Word count: Shows how many words match the constraints (responsive sizing) */}
       {filteredWords.length > 0 && (
         <motion.div
-          className="text-center mb-8 text-5xl bg-gradient-to-r from-pink-500 to-blue-500 dark:from-pink-400 dark:to-blue-400 text-transparent bg-clip-text font-bold"
+          className="text-center mb-4 md:mb-8 text-2xl sm:text-3xl md:text-4xl lg:text-5xl bg-gradient-to-r from-pink-500 to-blue-500 dark:from-pink-400 dark:to-blue-400 text-transparent bg-clip-text font-bold"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
@@ -314,8 +314,8 @@ export default function WordCloud() {
             ease: "easeInOut"
           }}
         >
-          {/* Cloud shape: Made of multiple overlapping gradient circles with blur */}
-          <div className="relative w-[990px] h-[715px]">
+          {/* Cloud shape: Made of multiple overlapping gradient circles with blur (responsive sizing) */}
+          <div className="relative w-[95vw] max-w-[990px] h-[68vw] max-h-[715px] sm:w-[90vw] sm:h-[65vw] md:w-[85vw] md:h-[61vw] lg:w-[990px] lg:h-[715px]">
             {/* Main cloud body: 13 overlapping circles create the fluffy shape */}
             <div className="absolute inset-0 flex items-center justify-center" style={{ filter: 'drop-shadow(0 0 10px rgba(255, 255, 255, 0.5)) drop-shadow(0 0 10px rgba(128, 90, 213, 0.3))' }}>
               {/* Left puff */}
@@ -360,12 +360,12 @@ export default function WordCloud() {
             {/* Soft drop shadow underneath cloud for depth */}
             <div className="absolute -bottom-12 left-1/2 -translate-x-1/2 w-[500px] h-16 bg-blue-300/40 dark:bg-purple-900/40 rounded-full blur-3xl"></div>
 
-            {/* CONTENT: Words displayed inside the cloud */}
-            <div className="absolute inset-0 flex flex-col items-center justify-center px-20 py-16">
+            {/* CONTENT: Words displayed inside the cloud (responsive padding) */}
+            <div className="absolute inset-0 flex flex-col items-center justify-center px-4 py-8 sm:px-8 sm:py-10 md:px-12 md:py-12 lg:px-20 lg:py-16">
               {filteredWords.length === 0 ? (
-                // Empty state: Show placeholder text when no constraints are set
+                // Empty state: Show placeholder text when no constraints are set (responsive sizing)
                 <motion.div
-                  className="text-slate-700 dark:text-gray-300 text-6xl font-bold text-center"
+                  className="text-slate-700 dark:text-gray-300 text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-bold text-center"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                 >
@@ -442,18 +442,18 @@ export default function WordCloud() {
         />
       )}
 
-      {/* Subtle Footer Hint - appears after 3 seconds */}
+      {/* Subtle Footer Hint - appears after 3 seconds (responsive) */}
       <AnimatePresence>
         {showFooterHint && (
           <motion.div
-            className="fixed bottom-4 left-1/2 -translate-x-1/2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm px-6 py-3 rounded-full shadow-lg border border-purple-200 dark:border-purple-600"
+            className="fixed bottom-4 left-1/2 -translate-x-1/2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm px-4 py-2 sm:px-6 sm:py-3 rounded-full shadow-lg border border-purple-200 dark:border-purple-600 max-w-[90vw]"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
             transition={{ duration: 0.5 }}
           >
-            <p className="text-purple-700 dark:text-purple-300 text-sm font-medium">
-              💡 Tip: Hover and click words for definitions
+            <p className="text-purple-700 dark:text-purple-300 text-xs sm:text-sm font-medium text-center">
+              💡 Tip: <span className="hidden sm:inline">Hover and </span>Click words for definitions
             </p>
           </motion.div>
         )}

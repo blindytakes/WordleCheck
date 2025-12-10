@@ -68,11 +68,11 @@ function AppContent() {
       >
         <Header />
 
-        {/* Two-column layout: Input panel (left) + Word cloud (right) */}
-        <div className="flex justify-center items-center gap-20 h-[calc(100%-120px)] max-w-[1900px] mx-auto px-4">
-          {/* Left Panel - Input rows and keyboard (580px fixed width) */}
+        {/* Responsive layout: Stacks vertically on mobile, side-by-side on desktop */}
+        <div className="flex flex-col lg:flex-row justify-center items-center gap-8 lg:gap-20 h-auto lg:h-[calc(100%-120px)] max-w-[1900px] mx-auto px-4 pb-8">
+          {/* Left Panel - Input rows and keyboard (responsive width) */}
           <motion.div
-            className="flex-shrink-0 w-[580px] flex flex-col gap-4"
+            className="flex-shrink-0 w-full max-w-[580px] lg:w-[580px] flex flex-col gap-4"
             initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
@@ -92,9 +92,9 @@ function AppContent() {
             <Keyboard />
           </motion.div>
 
-          {/* Right Panel - Word cloud display (990px fixed width) */}
+          {/* Right Panel - Word cloud display (responsive width) */}
           <motion.div
-            className="flex-shrink-0 w-[990px] h-full"
+            className="flex-shrink-0 w-full max-w-[990px] lg:w-[990px] h-full min-h-[500px]"
             initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.3, ease: "easeOut" }}
