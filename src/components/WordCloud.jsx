@@ -25,7 +25,8 @@
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { useConstraints } from '../context/ConstraintContext';
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
+import DefinitionModal from './DefinitionModal';
 
 // Available font sizes for words (from small to large)
 const FONT_SIZES = [
@@ -39,6 +40,9 @@ const FONT_SIZES = [
 
 // Maximum words to show (prevents cloud from getting too crowded)
 const MAX_DISPLAY_WORDS = 40;
+
+// Dictionary cache to avoid repeated API calls
+const definitionCache = {};
 
 /**
  * Fisher-Yates shuffle algorithm
@@ -90,6 +94,16 @@ export default function WordCloud() {
   const { filteredWords } = useConstraints();
 
   // ========================================
+  // DEFINITION MODAL STATE
+  // ========================================
+
+  const [selectedWord, setSelectedWord] = useState(null);
+  const [definition, setDefinition] = useState(null);
+  const [isLoadingDefinition, setIsLoadingDefinition] = useState(false);
+  const [definitionError, setDefinitionError] = useState(false);
+  const [showFooterHint, setShowFooterHint] = useState(false);
+
+  // ========================================
   // WORD SELECTION & SIZING
   // ========================================
 
@@ -123,6 +137,84 @@ export default function WordCloud() {
 
     return { wordsWithSizes, isStableMode };
   }, [filteredWords]);
+
+  // ========================================
+  // FOOTER HINT TIMER
+  // ========================================
+
+  // Show footer hint after 3 seconds
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowFooterHint(true);
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  // ========================================
+  // DICTIONARY API FUNCTIONS
+  // ========================================
+
+  /**
+   * Fetches word definition from Free Dictionary API
+   * Uses cache to avoid repeated requests for the same word
+   */
+  const fetchDefinition = async (word) => {
+    const wordLower = word.toLowerCase();
+
+    // Check cache first
+    if (definitionCache[wordLower]) {
+      setDefinition(definitionCache[wordLower]);
+      setDefinitionError(false);
+      return;
+    }
+
+    // Fetch from API
+    setIsLoadingDefinition(true);
+    setDefinitionError(false);
+
+    try {
+      const response = await fetch(
+        `https://api.dictionaryapi.dev/api/v2/entries/en/${wordLower}`
+      );
+
+      if (!response.ok) {
+        throw new Error('Definition not found');
+      }
+
+      const data = await response.json();
+
+      // Cache the result
+      definitionCache[wordLower] = data;
+
+      setDefinition(data);
+      setDefinitionError(false);
+    } catch (error) {
+      console.error('Error fetching definition:', error);
+      setDefinitionError(true);
+      setDefinition(null);
+    } finally {
+      setIsLoadingDefinition(false);
+    }
+  };
+
+  /**
+   * Handles word click - opens modal and fetches definition
+   */
+  const handleWordClick = (word) => {
+    setSelectedWord(word);
+    setDefinition(null);
+    fetchDefinition(word);
+  };
+
+  /**
+   * Closes the definition modal
+   */
+  const handleCloseModal = () => {
+    setSelectedWord(null);
+    setDefinition(null);
+    setDefinitionError(false);
+  };
 
   // ========================================
   // RENDER
@@ -248,6 +340,7 @@ export default function WordCloud() {
                         key={id}
                         layout  // Layout animation for smooth position tracking
                         layoutId={isStableMode ? word : undefined}  // Stable position tracking in stable mode
+                        onClick={() => handleWordClick(word)}  // Click to show definition
                         // CONDITIONAL ANIMATIONS:
                         // Stable mode: Smooth fades with slow layout transitions
                         // Dynamic mode: Fun bouncy animations with stagger
@@ -279,11 +372,12 @@ export default function WordCloud() {
                         }
                         whileHover={{
                           opacity: 1,
-                          scale: 1.15,
+                          scale: 1.2,  // Slightly bigger for more emphasis
                           rotate: [-2, 2, -2, 0],
+                          filter: "brightness(1.2) drop-shadow(0 0 12px rgba(168, 85, 247, 0.7))",  // Purple glow
                           transition: { duration: 0.3 }
                         }}
-                        className={`${size} font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-slate-800 via-purple-900 to-slate-900 cursor-default select-none transition-all uppercase drop-shadow-[0_0_8px_rgba(255,255,255,0.7)] drop-shadow-md`}
+                        className={`${size} font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-slate-800 via-purple-900 to-slate-900 cursor-pointer select-none transition-all uppercase drop-shadow-[0_0_8px_rgba(255,255,255,0.7)] drop-shadow-md`}
                       >
                         {word}
                       </motion.div>
@@ -295,6 +389,34 @@ export default function WordCloud() {
           </div>
         </motion.div>
       </motion.div>
+
+      {/* Definition Modal */}
+      {selectedWord && (
+        <DefinitionModal
+          word={selectedWord}
+          definition={definition}
+          isLoading={isLoadingDefinition}
+          error={definitionError}
+          onClose={handleCloseModal}
+        />
+      )}
+
+      {/* Subtle Footer Hint - appears after 3 seconds */}
+      <AnimatePresence>
+        {showFooterHint && (
+          <motion.div
+            className="fixed bottom-4 left-1/2 -translate-x-1/2 bg-white/80 backdrop-blur-sm px-6 py-3 rounded-full shadow-lg border border-purple-200"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            transition={{ duration: 0.5 }}
+          >
+            <p className="text-purple-700 text-sm font-medium">
+              💡 Tip: Hover and click words for definitions
+            </p>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
