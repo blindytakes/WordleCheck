@@ -83,6 +83,76 @@ export function initRUM() {
   });
 
   console.log('✅ Splunk RUM initialized');
+
+  // Enable console log tracking
+  setupConsoleTracking();
+}
+
+/**
+ * Intercept console methods and send logs to Splunk
+ * Captures console.log, console.warn, console.error, console.info
+ */
+function setupConsoleTracking() {
+  // Store original console methods
+  const originalConsole = {
+    log: console.log,
+    warn: console.warn,
+    error: console.error,
+    info: console.info
+  };
+
+  // Helper to send console logs to Splunk
+  function sendToSplunk(level, args) {
+    try {
+      // Convert arguments to a readable message
+      const message = args
+        .map(arg => {
+          if (typeof arg === 'object') {
+            try {
+              return JSON.stringify(arg);
+            } catch {
+              return String(arg);
+            }
+          }
+          return String(arg);
+        })
+        .join(' ');
+
+      // Send as custom event to Splunk
+      SplunkRum.addEvent('browser.console', {
+        level: level,
+        message: message,
+        timestamp: Date.now(),
+        url: window.location.href
+      });
+    } catch (error) {
+      // Fail silently - don't break the app if logging fails
+    }
+  }
+
+  // Intercept console.log
+  console.log = function(...args) {
+    originalConsole.log.apply(console, args);
+    sendToSplunk('info', args);
+  };
+
+  // Intercept console.warn
+  console.warn = function(...args) {
+    originalConsole.warn.apply(console, args);
+    sendToSplunk('warn', args);
+  };
+
+  // Intercept console.error
+  console.error = function(...args) {
+    originalConsole.error.apply(console, args);
+    sendToSplunk('error', args);
+  };
+
+  // Intercept console.info
+  console.info = function(...args) {
+    originalConsole.info.apply(console, args);
+    sendToSplunk('info', args);
+  };
 }
 
 /**
