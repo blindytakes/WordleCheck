@@ -54,6 +54,38 @@ function shuffleArray(array) {
   return shuffled;
 }
 
+/**
+ * Hash function for deterministic word ordering and sizing
+ * Converts a word to a consistent number based on character codes
+ * Same word always produces the same hash
+ */
+function hashWord(word) {
+  let hash = 0;
+  for (let i = 0; i < word.length; i++) {
+    hash += word.charCodeAt(i);
+  }
+  return hash;
+}
+
+/**
+ * Determines available font sizes based on word count (PROGRESSIVE DRAMATIC SCALING)
+ * Fewer words = larger fonts by eliminating small sizes from the range
+ * This creates a noticeable "growing" effect as you narrow down options
+ *
+ * Progressive strategy (minimum size increases as count decreases):
+ * - 30-40 words: text-2xl to text-5xl (min: 2xl)
+ * - 20-30 words: text-3xl to text-5xl (min: 3xl) ← no more small sizes!
+ * - 10-20 words: text-4xl to text-5xl (min: 4xl) ← only large sizes!
+ * - 1-10 words: ALL text-5xl (everything HUGE!)
+ */
+function getFontSizeRange(wordCount) {
+  if (wordCount <= 10) return [FONT_SIZES[5]];           // Only text-5xl
+  if (wordCount <= 20) return FONT_SIZES.slice(4);       // text-4xl, text-5xl
+  if (wordCount <= 30) return FONT_SIZES.slice(3);       // text-3xl, text-4xl, text-5xl
+  if (wordCount <= 40) return FONT_SIZES.slice(2);       // text-2xl, text-3xl, text-4xl, text-5xl
+  return FONT_SIZES;                                      // All sizes (shouldn't reach here in stable mode)
+}
+
 export default function WordCloud() {
   const { filteredWords } = useConstraints();
 
@@ -61,21 +93,35 @@ export default function WordCloud() {
   // WORD SELECTION & SIZING
   // ========================================
 
-  // Select which words to display and assign random font sizes
+  // Select which words to display and assign font sizes
   // This recalculates whenever filteredWords changes (useMemo for performance)
-  const wordsWithSizes = useMemo(() => {
-    // If 40 or fewer words, show all of them
-    // If more than 40, randomly pick 40 to prevent overcrowding
-    const wordsToShow = filteredWords.length <= MAX_DISPLAY_WORDS
-      ? filteredWords
-      : shuffleArray(filteredWords).slice(0, MAX_DISPLAY_WORDS);
+  //
+  // TWO MODES:
+  // 1. Stable Mode (≤40 words): Hash-based ordering, deterministic sizes, dramatic scaling
+  // 2. Dynamic Mode (>40 words): Random selection, random sizes
+  const { wordsWithSizes, isStableMode } = useMemo(() => {
+    const isStableMode = filteredWords.length <= MAX_DISPLAY_WORDS;
 
-    // Assign each word a random font size and a unique ID (for animation keys)
-    return wordsToShow.map((word, index) => ({
+    // STEP 1: Select which words to display
+    const wordsToShow = isStableMode
+      ? [...filteredWords].sort((a, b) => hashWord(a) - hashWord(b))  // Stable: hash-based "random" order
+      : shuffleArray(filteredWords).slice(0, MAX_DISPLAY_WORDS);      // Dynamic: true random selection
+
+    // STEP 2: Determine available font sizes (dramatic scaling in stable mode)
+    const availableSizes = isStableMode
+      ? getFontSizeRange(filteredWords.length)  // Fewer words = larger fonts
+      : FONT_SIZES;                              // All sizes available
+
+    // STEP 3: Assign sizes and create display objects
+    const wordsWithSizes = wordsToShow.map((word, index) => ({
       word,
-      size: FONT_SIZES[Math.floor(Math.random() * FONT_SIZES.length)],
-      id: `${word}-${index}` // Unique key for React/Framer Motion
+      size: isStableMode
+        ? availableSizes[hashWord(word) % availableSizes.length]        // Deterministic size
+        : availableSizes[Math.floor(Math.random() * availableSizes.length)],  // Random size
+      id: isStableMode ? word : `${word}-${index}`  // Stable keys prevent re-animation
     }));
+
+    return { wordsWithSizes, isStableMode };
   }, [filteredWords]);
 
   // ========================================
@@ -200,18 +246,37 @@ export default function WordCloud() {
                     {wordsWithSizes.map(({ word, size, id }, index) => (
                       <motion.div
                         key={id}
-                        layout
-                        initial={{ opacity: 0, scale: 0.8, y: 20 }}
+                        layout  // Layout animation for smooth position tracking
+                        layoutId={isStableMode ? word : undefined}  // Stable position tracking in stable mode
+                        // CONDITIONAL ANIMATIONS:
+                        // Stable mode: Smooth fades with slow layout transitions
+                        // Dynamic mode: Fun bouncy animations with stagger
+                        initial={
+                          isStableMode
+                            ? { opacity: 0 }  // Stable: just fade in
+                            : { opacity: 0, scale: 0.8, y: 20 }  // Dynamic: bounce in from below
+                        }
                         animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.8, y: -20 }}
-                        transition={{
-                          duration: 0.4,
-                          delay: index * 0.01,
-                          layout: { duration: 0.3 },
-                          type: "spring",
-                          stiffness: 300,
-                          damping: 24
-                        }}
+                        exit={
+                          isStableMode
+                            ? { opacity: 0 }  // Stable: just fade out
+                            : { opacity: 0, scale: 0.8, y: -20 }  // Dynamic: bounce out upward
+                        }
+                        transition={
+                          isStableMode
+                            ? {
+                                duration: 0.4,
+                                layout: { type: "spring", duration: 0.6, bounce: 0 }  // Slow, smooth spring with no bounce
+                              }
+                            : {
+                                duration: 0.4,
+                                delay: index * 0.01,  // Stagger effect
+                                layout: { duration: 0.3 },
+                                type: "spring",
+                                stiffness: 300,
+                                damping: 24
+                              }
+                        }
                         whileHover={{
                           opacity: 1,
                           scale: 1.15,
