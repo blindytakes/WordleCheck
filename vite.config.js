@@ -6,6 +6,6 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   build: {
-    sourcemap: true  // Enable source maps for better error debugging in production
+    sourcemap: false  // Disable source maps in production to protect source code and reduce bundle size
   }
 })
