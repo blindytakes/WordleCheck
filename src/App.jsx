@@ -58,7 +58,7 @@ function AppContent() {
   }, [undo]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-100 via-rose-50 to-pink-50">
+    <div className="min-h-screen bg-gradient-to-br from-purple-300 via-indigo-200 to-purple-100">
       {/* Main container with fade-in animation */}
       <motion.div
         className="w-full mx-auto h-screen pt-16"

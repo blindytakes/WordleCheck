@@ -137,43 +137,56 @@ export default function WordCloud() {
         >
           {/* Cloud shape: Made of multiple overlapping gradient circles with blur */}
           <div className="relative w-[990px] h-[715px]">
-            {/* Main cloud body: 9 overlapping circles create the fluffy shape */}
-            <div className="absolute inset-0 flex items-center justify-center">
+            {/* Main cloud body: 13 overlapping circles create the fluffy shape */}
+            <div className="absolute inset-0 flex items-center justify-center" style={{ filter: 'drop-shadow(0 0 10px rgba(255, 255, 255, 1))' }}>
               {/* Left puff */}
-              <div className="absolute left-4 top-1/4 w-72 h-72 bg-gradient-to-br from-blue-50 to-blue-100 rounded-full blur-md opacity-95"></div>
+              <div className="absolute left-4 top-1/4 w-72 h-72 bg-gradient-to-br from-blue-200 to-blue-300 rounded-full blur-lg opacity-95"></div>
 
               {/* Center large puff - the main body */}
-              <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-80 bg-gradient-to-br from-white via-blue-50 to-blue-100 rounded-full blur-md"></div>
+              <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-80 bg-gradient-to-br from-blue-100 via-blue-200 to-blue-300 rounded-full blur-lg"></div>
 
               {/* Right puff */}
-              <div className="absolute right-4 top-1/3 w-80 h-80 bg-gradient-to-br from-blue-50 to-blue-100 rounded-full blur-md opacity-95"></div>
+              <div className="absolute right-4 top-1/3 w-80 h-80 bg-gradient-to-br from-blue-200 to-blue-300 rounded-full blur-lg opacity-95"></div>
 
               {/* Top left puff */}
-              <div className="absolute left-28 top-8 w-60 h-60 bg-gradient-to-br from-white to-blue-50 rounded-full blur-md"></div>
+              <div className="absolute left-28 top-8 w-60 h-60 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full blur-lg"></div>
 
               {/* Top center puff */}
-              <div className="absolute left-1/2 -translate-x-1/2 top-12 w-56 h-56 bg-gradient-to-br from-white to-blue-50 rounded-full blur-md"></div>
+              <div className="absolute left-1/2 -translate-x-1/2 top-12 w-56 h-56 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full blur-lg"></div>
 
               {/* Top right puff */}
-              <div className="absolute right-28 top-12 w-52 h-52 bg-gradient-to-br from-white to-blue-50 rounded-full blur-md"></div>
+              <div className="absolute right-28 top-12 w-52 h-52 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full blur-lg"></div>
+
+              {/* Additional puffs to fill gaps */}
+              {/* Upper left fill */}
+              <div className="absolute left-48 top-20 w-56 h-56 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full blur-lg opacity-90"></div>
+
+              {/* Upper right fill */}
+              <div className="absolute right-48 top-24 w-52 h-52 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full blur-lg opacity-90"></div>
+
+              {/* Middle left fill */}
+              <div className="absolute left-12 top-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-to-br from-blue-200 to-blue-300 rounded-full blur-lg opacity-85"></div>
+
+              {/* Middle right fill */}
+              <div className="absolute right-12 top-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-to-br from-blue-200 to-blue-300 rounded-full blur-lg opacity-85"></div>
 
               {/* Bottom puffs for fullness */}
-              <div className="absolute left-36 bottom-12 w-64 h-64 bg-gradient-to-br from-blue-50 to-blue-100 rounded-full blur-md opacity-85"></div>
-              <div className="absolute right-36 bottom-16 w-60 h-60 bg-gradient-to-br from-blue-50 to-blue-100 rounded-full blur-md opacity-85"></div>
+              <div className="absolute left-36 bottom-12 w-64 h-64 bg-gradient-to-br from-blue-200 to-blue-300 rounded-full blur-lg opacity-85"></div>
+              <div className="absolute right-36 bottom-16 w-60 h-60 bg-gradient-to-br from-blue-200 to-blue-300 rounded-full blur-lg opacity-85"></div>
 
               {/* Middle bottom puff for cloud shape */}
-              <div className="absolute left-1/2 -translate-x-1/2 bottom-20 w-72 h-72 bg-gradient-to-br from-blue-50 to-blue-100 rounded-full blur-md opacity-90"></div>
+              <div className="absolute left-1/2 -translate-x-1/2 bottom-20 w-72 h-72 bg-gradient-to-br from-blue-200 to-blue-300 rounded-full blur-lg opacity-90"></div>
             </div>
 
             {/* Soft drop shadow underneath cloud for depth */}
-            <div className="absolute -bottom-12 left-1/2 -translate-x-1/2 w-[500px] h-16 bg-blue-200/40 rounded-full blur-3xl"></div>
+            <div className="absolute -bottom-12 left-1/2 -translate-x-1/2 w-[500px] h-16 bg-blue-300/40 rounded-full blur-3xl"></div>
 
             {/* CONTENT: Words displayed inside the cloud */}
             <div className="absolute inset-0 flex flex-col items-center justify-center px-20 py-16">
               {filteredWords.length === 0 ? (
                 // Empty state: Show placeholder text when no constraints are set
                 <motion.div
-                  className="text-blue-300 text-3xl font-medium text-center"
+                  className="text-slate-700 text-6xl font-bold text-center"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                 >
@@ -205,7 +218,7 @@ export default function WordCloud() {
                           rotate: [-2, 2, -2, 0],
                           transition: { duration: 0.3 }
                         }}
-                        className={`${size} font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-pink-400 via-purple-500 to-blue-500 cursor-default select-none transition-all uppercase drop-shadow-sm`}
+                        className={`${size} font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-slate-800 via-purple-900 to-slate-900 cursor-default select-none transition-all uppercase drop-shadow-[0_0_8px_rgba(255,255,255,0.7)] drop-shadow-md`}
                       >
                         {word}
                       </motion.div>
