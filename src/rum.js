@@ -84,13 +84,25 @@ export function initRUM() {
 
   // Generate and set session ID
   const sessionId = generateSessionId();
+
+  // Get user location metadata
+  const locationData = getUserLocationMetadata();
+
+  // Set global attributes (added to all events)
   SplunkRum.setGlobalAttributes({
     'session.id': sessionId,
-    'app.version': import.meta.env.VITE_APP_VERSION || '1.0.0'
+    'app.version': import.meta.env.VITE_APP_VERSION || '1.0.0',
+    'user.timezone': locationData.timezone,
+    'user.language': locationData.language,
+    'user.locale': locationData.locale
   });
 
   console.log('✅ Splunk RUM initialized');
   console.log('📊 Session ID:', sessionId);
+  console.log('🌍 Location:', locationData);
+
+  // Fetch IP-based geolocation (async, will update attributes when ready)
+  fetchIPGeolocation();
 
   // Enable console log tracking
   setupConsoleTracking();
@@ -104,6 +116,62 @@ function generateSessionId() {
   const timestamp = Date.now();
   const random = Math.random().toString(36).substring(2, 8);
   return `${timestamp}-${random}`;
+}
+
+/**
+ * Get user location metadata from browser
+ * Returns timezone, language, and locale information
+ */
+function getUserLocationMetadata() {
+  try {
+    return {
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'unknown',
+      language: navigator.language || 'unknown',
+      locale: navigator.languages ? navigator.languages[0] : navigator.language || 'unknown'
+    };
+  } catch (error) {
+    return {
+      timezone: 'unknown',
+      language: 'unknown',
+      locale: 'unknown'
+    };
+  }
+}
+
+/**
+ * Fetch IP-based geolocation data
+ * Uses ipapi.co free API (1000 requests/day limit)
+ * Updates global attributes when data is available
+ */
+async function fetchIPGeolocation() {
+  try {
+    const response = await fetch('https://ipapi.co/json/');
+    if (!response.ok) {
+      throw new Error('Geolocation API failed');
+    }
+
+    const data = await response.json();
+
+    // Update global attributes with location data
+    SplunkRum.setGlobalAttributes({
+      'user.city': data.city || 'unknown',
+      'user.region': data.region || 'unknown',
+      'user.country': data.country_name || 'unknown',
+      'user.country_code': data.country_code || 'unknown',
+      'user.latitude': data.latitude || null,
+      'user.longitude': data.longitude || null,
+      'user.ip': data.ip || 'unknown'
+    });
+
+    console.log('🌍 Geolocation updated:', {
+      city: data.city,
+      region: data.region,
+      country: data.country_name
+    });
+  } catch (error) {
+    // Fail silently - geolocation is optional
+    console.warn('⚠️ Could not fetch geolocation:', error.message);
+  }
 }
 
 /**
