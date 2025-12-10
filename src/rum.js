@@ -1,0 +1,94 @@
+/**
+ * SPLUNK RUM (REAL USER MONITORING) INITIALIZATION
+ *
+ * This module initializes Splunk's OpenTelemetry-based RUM to capture:
+ * - Page loads and navigation
+ * - User interactions (clicks, form submissions)
+ * - Network requests (fetch, XHR)
+ * - Errors and exceptions
+ * - Web Vitals (LCP, FID, CLS, etc.)
+ *
+ * Configuration is loaded from environment variables (see .env file)
+ */
+
+import SplunkRum from '@splunk/otel-web';
+
+/**
+ * Initialize Splunk RUM
+ * Call this BEFORE rendering your React app for best results
+ */
+export function initRUM() {
+  // Skip initialization if required env vars are missing
+  if (!import.meta.env.VITE_SPLUNK_RUM_TOKEN || !import.meta.env.VITE_SPLUNK_REALM) {
+    console.warn('Splunk RUM not initialized: missing VITE_SPLUNK_RUM_TOKEN or VITE_SPLUNK_REALM');
+    return;
+  }
+
+  SplunkRum.init({
+    // Your Splunk realm (e.g., 'us1', 'us0', 'eu0')
+    realm: import.meta.env.VITE_SPLUNK_REALM,
+
+    // Your RUM access token from Splunk Observability Cloud
+    rumAccessToken: import.meta.env.VITE_SPLUNK_RUM_TOKEN,
+
+    // Application name (shows up in Splunk UI)
+    applicationName: import.meta.env.VITE_SPLUNK_APP_NAME || 'wordle-wordcloud',
+
+    // Environment name (dev, staging, prod)
+    deploymentEnvironment: import.meta.env.VITE_SPLUNK_ENVIRONMENT || import.meta.env.MODE,
+
+    // Application version (useful for tracking releases)
+    version: import.meta.env.VITE_APP_VERSION || '1.0.0',
+
+    // Enable debug logging in development
+    debug: import.meta.env.DEV,
+
+    // Automatically instrument common interactions
+    instrumentations: {
+      // Track clicks and form submissions
+      interactions: true,
+
+      // Track fetch and XHR requests
+      fetch: true,
+      xhr: true,
+
+      // Track navigation and route changes
+      document: true,
+
+      // Collect Web Vitals (Core Web Vitals + more)
+      webvitals: true,
+
+      // Track long tasks (tasks blocking the main thread >50ms)
+      longtask: true,
+
+      // Track errors
+      errors: true
+    },
+
+    // Control what data is sent (privacy/cost optimization)
+    ignoreUrls: [
+      // Ignore health checks, analytics, etc.
+      /\/_next\/static/,
+      /\/favicon\.ico/,
+      /\/analytics/,
+      /googletagmanager/,
+      /google-analytics/
+    ],
+
+    // Custom context attributes (added to all spans)
+    globalAttributes: {
+      'app.feature': 'word-cloud',
+      // Add any custom attributes you want to track
+    }
+  });
+
+  console.log('✅ Splunk RUM initialized');
+}
+
+/**
+ * Get the RUM instance for custom instrumentation
+ * Use this to add custom spans or events
+ */
+export function getRUM() {
+  return SplunkRum;
+}
