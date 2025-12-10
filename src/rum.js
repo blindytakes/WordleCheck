@@ -139,34 +139,43 @@ function getUserLocationMetadata() {
 }
 
 /**
- * Fetch IP-based geolocation data
- * Uses ipapi.co free API (1000 requests/day limit)
- * Updates global attributes when data is available
+ * Fetch geolocation data from Vercel's built-in headers
+ * Uses internal API route that exposes Vercel's geo headers
+ * No rate limits, instant, and reliable!
  */
 async function fetchIPGeolocation() {
   try {
-    const response = await fetch('https://ipapi.co/json/');
+    const response = await fetch('/api/geo');
     if (!response.ok) {
       throw new Error('Geolocation API failed');
     }
 
     const data = await response.json();
 
+    // Check if we got actual data (Vercel headers only exist in production)
+    if (!data.country) {
+      console.log('🌍 Geolocation: Running on localhost (no Vercel headers)');
+      return;
+    }
+
+    // Decode URL-encoded city name (e.g., "New%20York" -> "New York")
+    const city = data.city ? decodeURIComponent(data.city) : 'unknown';
+
     // Update global attributes with location data
     SplunkRum.setGlobalAttributes({
-      'user.city': data.city || 'unknown',
+      'user.city': city,
       'user.region': data.region || 'unknown',
-      'user.country': data.country_name || 'unknown',
-      'user.country_code': data.country_code || 'unknown',
-      'user.latitude': data.latitude || null,
-      'user.longitude': data.longitude || null,
+      'user.country': data.country || 'unknown',
+      'user.latitude': data.latitude ? parseFloat(data.latitude) : null,
+      'user.longitude': data.longitude ? parseFloat(data.longitude) : null,
       'user.ip': data.ip || 'unknown'
     });
 
     console.log('🌍 Geolocation updated:', {
-      city: data.city,
+      city: city,
       region: data.region,
-      country: data.country_name
+      country: data.country,
+      source: 'Vercel Edge Network'
     });
   } catch (error) {
     // Fail silently - geolocation is optional
