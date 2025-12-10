@@ -1,5 +1,11 @@
 @import "tailwindcss";
 
+@theme {
+  --color-scheme: light dark;
+}
+
+@variant dark (&:is(.dark *));
+
 * {
   margin: 0;
   padding: 0;

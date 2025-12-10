@@ -124,10 +124,10 @@ export default function YellowRow({ isFocused, onFocusChange }) {
     // Outer container: Changes border color when focused
     <div
       onClick={handleClick}
-      className={`bg-white rounded-2xl cursor-pointer transition-all relative shadow-lg border-4 ${
+      className={`bg-white dark:bg-gray-800 rounded-2xl cursor-pointer transition-all relative shadow-lg border-4 ${
         isFocused
-          ? 'border-yellow-400 shadow-yellow-200/50'
-          : 'border-yellow-300 hover:border-yellow-400 hover:shadow-xl'
+          ? 'border-yellow-400 dark:border-yellow-500 shadow-yellow-200/50 dark:shadow-yellow-900/50'
+          : 'border-yellow-300 dark:border-yellow-600 hover:border-yellow-400 dark:hover:border-yellow-500 hover:shadow-xl'
       }`}
       style={{ padding: '20px' }}
     >
@@ -135,14 +135,14 @@ export default function YellowRow({ isFocused, onFocusChange }) {
       <ErrorMessage message={errorMessage} onClose={() => setErrorMessage(null)} />
       <div>
         {/* Row title */}
-        <div className="text-base font-semibold text-yellow-600 mb-3 text-center">
+        <div className="text-base font-semibold text-yellow-600 dark:text-yellow-400 mb-3 text-center">
           Correct Letters, Wrong Position (Yellow)
         </div>
         <div className="pb-8">
           {/* Position labels (1-5) */}
           <div className="grid grid-cols-5 gap-3 mb-2">
           {[1, 2, 3, 4, 5].map((num) => (
-            <div key={num} className="text-center text-sm font-bold text-gray-500">
+            <div key={num} className="text-center text-sm font-bold text-gray-500 dark:text-gray-400">
               {num}
             </div>
           ))}
@@ -156,10 +156,10 @@ export default function YellowRow({ isFocused, onFocusChange }) {
                 e.stopPropagation();
                 handleCellClick(position);
               }}
-              className={`aspect-square bg-gray-50 rounded-xl border-2 p-2 flex flex-col gap-1 items-center justify-center hover:border-yellow-300 transition-all cursor-pointer shadow-md hover:shadow-lg ${
+              className={`aspect-square bg-gray-50 dark:bg-gray-700 rounded-xl border-2 p-2 flex flex-col gap-1 items-center justify-center hover:border-yellow-300 dark:hover:border-yellow-500 transition-all cursor-pointer shadow-md hover:shadow-lg ${
                 isFocused && selectedPosition === position
-                  ? 'border-yellow-500 bg-gradient-to-br from-yellow-50 to-yellow-100 shadow-yellow-200'
-                  : 'border-gray-200'
+                  ? 'border-yellow-500 dark:border-yellow-400 bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-yellow-950 dark:to-yellow-900 shadow-yellow-200 dark:shadow-yellow-900'
+                  : 'border-gray-200 dark:border-gray-600'
               }`}
             >
               {yellow[position] && yellow[position].length > 0 ? (

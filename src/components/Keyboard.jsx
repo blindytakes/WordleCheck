@@ -89,7 +89,7 @@ export default function Keyboard() {
       case 'gray':
         return `${baseClasses} bg-gradient-to-br from-gray-400 to-gray-600 text-white`;
       default:
-        return `${baseClasses} bg-gradient-to-br from-gray-100 to-gray-200 text-gray-800 hover:from-gray-200 hover:to-gray-300`;
+        return `${baseClasses} bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-600 dark:to-gray-700 text-gray-800 dark:text-gray-100 hover:from-gray-200 hover:to-gray-300 dark:hover:from-gray-500 dark:hover:to-gray-600`;
     }
   };
 
@@ -99,7 +99,7 @@ export default function Keyboard() {
 
   return (
     <div
-      className="bg-white rounded-2xl shadow-lg border-4 border-pink-300 hover:border-pink-400 transition-all"
+      className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border-4 border-pink-300 dark:border-purple-600 hover:border-pink-400 dark:hover:border-purple-500 transition-all"
       style={{ padding: '24px' }}
     >
       {/* Keyboard layout: 3 rows in QWERTY format */}

@@ -113,23 +113,23 @@ export default function GreenRow({ isFocused, onFocusChange }) {
     // Outer container: Changes border color when focused
     <div
       onClick={handleClick}
-      className={`bg-white rounded-2xl cursor-pointer transition-all shadow-lg border-4 ${
+      className={`bg-white dark:bg-gray-800 rounded-2xl cursor-pointer transition-all shadow-lg border-4 ${
         isFocused
-          ? 'border-green-400 shadow-green-200/50'
-          : 'border-green-300 hover:border-green-400 hover:shadow-xl'
+          ? 'border-green-400 dark:border-green-500 shadow-green-200/50 dark:shadow-green-900/50'
+          : 'border-green-300 dark:border-green-600 hover:border-green-400 dark:hover:border-green-500 hover:shadow-xl'
       }`}
       style={{ padding: '20px' }}
     >
       <div>
         {/* Row title */}
-        <div className="text-base font-semibold text-green-600 mb-3 text-center">
+        <div className="text-base font-semibold text-green-600 dark:text-green-400 mb-3 text-center">
           Correct Letters (Green)
         </div>
         <div className="pb-8">
           {/* Position labels (1-5) */}
           <div className="grid grid-cols-5 gap-3 mb-2">
           {[1, 2, 3, 4, 5].map((num) => (
-            <div key={num} className="text-center text-sm font-bold text-gray-500">
+            <div key={num} className="text-center text-sm font-bold text-gray-500 dark:text-gray-400">
               {num}
             </div>
           ))}
@@ -147,8 +147,8 @@ export default function GreenRow({ isFocused, onFocusChange }) {
                 green[position]
                   ? 'bg-gradient-to-br from-green-400 to-green-600 border-green-600 text-white'
                   : isFocused && selectedPosition === position
-                  ? 'border-green-500 bg-gradient-to-br from-green-50 to-green-100 shadow-green-200'
-                  : 'bg-gray-50 border-gray-200 hover:border-green-300'
+                  ? 'border-green-500 dark:border-green-400 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-950 dark:to-green-900 shadow-green-200 dark:shadow-green-900'
+                  : 'bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600 hover:border-green-300 dark:hover:border-green-500'
               }`}
             >
               {green[position] ? (
