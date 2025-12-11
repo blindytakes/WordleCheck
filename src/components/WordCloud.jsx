@@ -280,10 +280,10 @@ export default function WordCloud() {
   // ========================================
 
   return (
-    <div className="relative h-full w-full flex flex-col items-center justify-start mt-2 md:mt-24 lg:mt-48">
+    <div className="relative h-full w-full flex flex-col items-center justify-start mt-0 md:mt-24 lg:mt-48">
       {/* Title: "Wordle Fun" with gradient text (responsive sizing) */}
       <motion.div
-        className="text-3xl sm:text-4xl md:text-6xl lg:text-8xl font-black bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 dark:from-pink-400 dark:via-purple-400 dark:to-blue-400 text-transparent bg-clip-text mb-1 md:mb-4"
+        className="text-3xl sm:text-4xl md:text-6xl lg:text-8xl font-black bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 dark:from-pink-400 dark:via-purple-400 dark:to-blue-400 text-transparent bg-clip-text mb-0 md:mb-4"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
@@ -294,7 +294,7 @@ export default function WordCloud() {
       {/* Word count: Shows how many words match the constraints (responsive sizing) */}
       {filteredWords.length > 0 && (
         <motion.div
-          className="text-center mb-2 md:mb-8 text-xl sm:text-2xl md:text-4xl lg:text-5xl bg-gradient-to-r from-pink-500 to-blue-500 dark:from-pink-400 dark:to-blue-400 text-transparent bg-clip-text font-bold"
+          className="text-center mb-1 md:mb-8 text-xl sm:text-2xl md:text-4xl lg:text-5xl bg-gradient-to-r from-pink-500 to-blue-500 dark:from-pink-400 dark:to-blue-400 text-transparent bg-clip-text font-bold"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
