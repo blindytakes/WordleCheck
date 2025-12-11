@@ -43,17 +43,17 @@ const FONT_SIZES_DESKTOP = [
 
 // Mobile: smaller fonts to fit more words comfortably
 const FONT_SIZES_MOBILE = [
-  'text-xs',
   'text-sm',
   'text-base',
   'text-lg',
   'text-xl',
-  'text-2xl'
+  'text-2xl',
+  'text-3xl'
 ];
 
 // Maximum words to show (prevents cloud from getting too crowded)
 const MAX_DISPLAY_WORDS_DESKTOP = 40;
-const MAX_DISPLAY_WORDS_MOBILE = 15;
+const MAX_DISPLAY_WORDS_MOBILE = 12;
 
 // Dictionary cache to avoid repeated API calls
 const definitionCache = {};
@@ -108,9 +108,21 @@ export default function WordCloud() {
   const { filteredWords } = useConstraints();
   const isTouchDevice = useTouchDevice();
 
+  // Screen size detection for word limit (more reliable than touch detection)
+  const [isMobileScreen, setIsMobileScreen] = useState(typeof window !== 'undefined' && window.innerWidth < 1024);
+
+  // Update isMobileScreen on window resize
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobileScreen(window.innerWidth < 1024);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   // Device-specific settings
-  const FONT_SIZES = isTouchDevice ? FONT_SIZES_MOBILE : FONT_SIZES_DESKTOP;
-  const MAX_DISPLAY_WORDS = isTouchDevice ? MAX_DISPLAY_WORDS_MOBILE : MAX_DISPLAY_WORDS_DESKTOP;
+  const FONT_SIZES = isMobileScreen ? FONT_SIZES_MOBILE : FONT_SIZES_DESKTOP;
+  const MAX_DISPLAY_WORDS = isMobileScreen ? MAX_DISPLAY_WORDS_MOBILE : MAX_DISPLAY_WORDS_DESKTOP;
 
   // Separate detection for definition feature: use screen size (more reliable than touch)
   // Desktop = screen width >= 1024px (lg breakpoint)
@@ -314,32 +326,10 @@ export default function WordCloud() {
 
   return (
     <div className="relative h-full w-full flex flex-col items-center justify-start mt-0 md:mt-24 lg:mt-48">
-      {/* Title: "Wordle Fun" with gradient text (responsive sizing) */}
-      <motion.div
-        className="text-xl sm:text-4xl md:text-6xl lg:text-8xl font-black bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 dark:from-pink-400 dark:via-purple-400 dark:to-blue-400 text-transparent bg-clip-text mb-0 md:mb-4"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-      >
-        Wordle Fun
-      </motion.div>
-
-      {/* Word count: Shows how many words match the constraints (responsive sizing) */}
-      {filteredWords.length > 0 && (
-        <motion.div
-          className="text-center mb-0 md:mb-8 text-sm sm:text-2xl md:text-4xl lg:text-5xl bg-gradient-to-r from-pink-500 to-blue-500 dark:from-pink-400 dark:to-blue-400 text-transparent bg-clip-text font-bold"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-        >
-          {filteredWords.length.toLocaleString()} words
-        </motion.div>
-      )}
-
       {/* FLUFFY CLOUD CONTAINER */}
       {/* Outer container: Initial scale/fade-in animation */}
       <motion.div
-        className="relative w-full h-full flex items-center justify-center"
+        className="relative w-full h-auto lg:h-full flex items-center justify-center"
         initial={{ y: -20, scale: 0.9, opacity: 0 }}
         animate={{
           y: 0,
@@ -366,9 +356,9 @@ export default function WordCloud() {
           }}
         >
           {/* Cloud shape: Made of multiple overlapping gradient circles with blur (responsive sizing) */}
-          <div className="relative w-[95vw] max-w-[700px] h-[70vw] max-h-[500px] sm:w-[85vw] sm:h-[58vw] md:w-[85vw] md:h-[61vw] lg:w-[1200px] lg:h-[865px]">
+          <div className="relative w-[75vw] max-w-[700px] h-[55vw] max-h-[500px] sm:w-[70vw] sm:h-[50vw] md:w-[70vw] md:h-[52vw] lg:w-[1200px] lg:h-[865px] scale-[0.6] lg:scale-125">
             {/* Main cloud body: 13 overlapping circles create the fluffy shape */}
-            <div className="absolute inset-0 flex items-center justify-center lg:scale-125" style={{ filter: 'drop-shadow(0 0 10px rgba(255, 255, 255, 1))' }}>
+            <div className="absolute inset-0 hidden lg:flex items-center justify-center" style={{ filter: 'drop-shadow(0 0 10px rgba(255, 255, 255, 1))' }}>
               {/* Left puff */}
               <div className="absolute left-4 top-1/4 w-72 h-72 bg-gradient-to-br from-blue-200 to-blue-300 dark:from-purple-800 dark:to-purple-900 rounded-full blur-lg opacity-95"></div>
 
@@ -481,6 +471,28 @@ export default function WordCloud() {
           </div>
         </motion.div>
       </motion.div>
+
+      {/* Title: "Wordle Fun" with gradient text (responsive sizing) */}
+      <motion.div
+        className="text-xl sm:text-4xl md:text-6xl lg:text-8xl font-black bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 dark:from-pink-400 dark:via-purple-400 dark:to-blue-400 text-transparent bg-clip-text mt-4 md:mt-8"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+      >
+        Wordle Fun
+      </motion.div>
+
+      {/* Word count: Shows how many words match the constraints (responsive sizing) */}
+      {filteredWords.length > 0 && (
+        <motion.div
+          className="text-center mt-2 md:mt-4 text-sm sm:text-2xl md:text-4xl lg:text-5xl bg-gradient-to-r from-pink-500 to-blue-500 dark:from-pink-400 dark:to-blue-400 text-transparent bg-clip-text font-bold"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+        >
+          {filteredWords.length.toLocaleString()} words
+        </motion.div>
+      )}
 
       {/* Definition Modal */}
       {selectedWord && (
