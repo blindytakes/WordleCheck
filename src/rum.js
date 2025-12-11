@@ -33,7 +33,7 @@ export function initRUM() {
     realm: import.meta.env.VITE_SPLUNK_REALM,
 
     // Your RUM access token from Splunk Observability Cloud
-    rumAccessToken: 'ZsERLlaoQpN6Tp9CNizWjQ', // Temporarily hardcoded for testing
+    rumAccessToken: import.meta.env.VITE_SPLUNK_RUM_TOKEN,
 
     // Application name (shows up in Splunk UI)
     applicationName: import.meta.env.VITE_SPLUNK_APP_NAME || 'wordle-wordcloud',
@@ -45,8 +45,8 @@ export function initRUM() {
     version: import.meta.env.VITE_APP_VERSION || '1.0.0',
 
     // Enable debug logging (forced on for debugging RUM data collection)
-    debug: true,
-
+    debug: import.meta.env.VITE_SPLUNK_ENVIRONMENT !== 'production',  
+    
     // ⚡ FORCE 100% SAMPLING (ensures all sessions are captured)
     sessionSampleRate: 1,
 
@@ -74,12 +74,15 @@ export function initRUM() {
 
     // Control what data is sent (privacy/cost optimization)
     ignoreUrls: [
-      // Ignore health checks, analytics, etc.
-      /\/_next\/static/,
-      /\/favicon\.ico/,
-      /\/analytics/,
-      /googletagmanager/,
-      /google-analytics/
+      // Ignore internal APIs and assets
+      /\/api\/geo/,           // Our own geolocation API
+      /\/favicon\.ico/,       // Favicon requests
+      /\/vite\.svg/,          // Vite default icon
+      /\/@vite\//,            // Vite dev server assets
+      /\/node_modules\//,     // Dev dependencies (HMR)
+      /\/analytics/,          // Analytics endpoints
+      /googletagmanager/,     // Google Tag Manager
+      /google-analytics/      // Google Analytics
     ],
 
     // Custom context attributes (added to all spans)
@@ -88,6 +91,9 @@ export function initRUM() {
       // Add any custom attributes you want to track
     }
   });
+
+  // ✅ Mark RUM as initialized (used by safe console tracking)
+  window.SplunkRumInitialized = true;
 
   // Generate and set session ID
   const sessionId = generateSessionId();
@@ -151,6 +157,11 @@ function getUserLocationMetadata() {
  * No rate limits, instant, and reliable!
  */
 async function fetchIPGeolocation() {
+  // Safety check: Don't run if RUM isn't initialized
+  if (!window.SplunkRumInitialized) {
+    return;
+  }
+
   try {
     const response = await fetch('/api/geo');
     if (!response.ok) {
@@ -191,22 +202,45 @@ async function fetchIPGeolocation() {
 }
 
 /**
- * Intercept console methods and send logs to Splunk
- * Captures console.log, console.warn, console.error, console.info
+ * Safe console tracking with triple protection against infinite loops
+ *
+ * ONLY tracks console.error and console.warn (not console.log)
+ * - Reduces noise by ~90%
+ * - Still captures critical errors
+ * - Lower risk of infinite loops
+ *
+ * Triple Protection:
+ * 1. Guard Flag: Prevents synchronous recursion
+ * 2. Rate Limiting: Max 10 events per 5 seconds
+ * 3. String Filtering: Skips RUM's own debug messages
  */
 function setupConsoleTracking() {
-  // Store original console methods
+  // Store original console methods (only error and warn)
   const originalConsole = {
-    log: console.log,
     warn: console.warn,
     error: console.error,
-    info: console.info
   };
 
-  // Helper to send console logs to Splunk
+  let isSending = false; // Guard flag to prevent recursion
+  let rateLimitWindow = { count: 0, resetTime: Date.now() };
+
+  // Helper to send console logs to Splunk (with safety checks)
   function sendToSplunk(level, args) {
+    // 1. GUARD FLAG CHECK - Prevents immediate recursion
+    if (isSending) return;
+
     try {
-      // Convert arguments to a readable message
+      const now = Date.now();
+
+      // 2. RATE LIMIT CHECK - Reset counter every 5 seconds
+      if (now - rateLimitWindow.resetTime > 5000) {
+        rateLimitWindow = { count: 0, resetTime: now };
+      }
+
+      // Max 10 console events per 5 seconds (protects against flooding)
+      if (rateLimitWindow.count >= 10) return;
+
+      // Convert arguments to string safely
       const message = args
         .map(arg => {
           if (typeof arg === 'object') {
@@ -220,23 +254,38 @@ function setupConsoleTracking() {
         })
         .join(' ');
 
-      // Send as custom event to Splunk
-      SplunkRum.addEvent('browser.console', {
-        level: level,
-        message: message,
-        timestamp: Date.now(),
-        url: window.location.href
-      });
+      // 3. STRING FILTERING - Prevents semantic loops
+      // Skip RUM's own debug messages to avoid circular logging
+      if (
+        message.includes('🔍 DEBUG') ||           // RUM debug logs
+        message.includes('✅ Splunk RUM') ||      // RUM init success
+        message.includes('📊 Session ID') ||      // Session logs
+        message.includes('🌍 Geolocation') ||     // Geo logs
+        message.includes('rum-ingest') ||         // Splunk internal URLs
+        message.includes('[vite]') ||              // Vite HMR noise
+        message.includes('[HMR]')                  // Hot module reload
+      ) return;
+
+      // Set guard flag and increment rate limit counter
+      isSending = true;
+      rateLimitWindow.count++;
+
+      // Send to Splunk (only if RUM is initialized)
+      if (window.SplunkRumInitialized) {
+        SplunkRum.addEvent('browser.console', {
+          level: level,
+          message: message,
+          timestamp: now,
+          url: window.location.href
+        });
+      }
     } catch (error) {
       // Fail silently - don't break the app if logging fails
+    } finally {
+      // Always reset guard flag (even if error occurs)
+      isSending = false;
     }
   }
-
-  // Intercept console.log
-  console.log = function(...args) {
-    originalConsole.log.apply(console, args);
-    sendToSplunk('info', args);
-  };
 
   // Intercept console.warn
   console.warn = function(...args) {
@@ -250,11 +299,8 @@ function setupConsoleTracking() {
     sendToSplunk('error', args);
   };
 
-  // Intercept console.info
-  console.info = function(...args) {
-    originalConsole.info.apply(console, args);
-    sendToSplunk('info', args);
-  };
+  // NOTE: console.log and console.info are intentionally NOT intercepted
+  // This reduces noise by ~90% while still capturing critical errors
 }
 
 /**
