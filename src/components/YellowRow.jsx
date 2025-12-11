@@ -174,6 +174,10 @@ export default function YellowRow({ isFocused, onFocusChange }) {
                   ref={(el) => (inputRefs.current[position] = el)}
                   type="text"
                   inputMode="text"
+                  autoComplete="off"
+                  autoCorrect="off"
+                  autoCapitalize="characters"
+                  spellCheck="false"
                   maxLength={1}
                   value=""
                   onChange={(e) => {
