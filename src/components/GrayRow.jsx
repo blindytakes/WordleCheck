@@ -24,7 +24,7 @@
  * - onFocusChange: Callback to change which row is focused
  */
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { useConstraints } from '../context/ConstraintContext';
 import ErrorMessage from './ErrorMessage';
 import useTouchDevice from '../hooks/useTouchDevice';
@@ -32,7 +32,6 @@ import useTouchDevice from '../hooks/useTouchDevice';
 export default function GrayRow({ isFocused, onFocusChange }) {
   const { gray, addGray, removeGray } = useConstraints();
   const isTouchDevice = useTouchDevice();
-  const inputRef = useRef(null);
 
   // Error message shown when validation fails (e.g., letter is already green/yellow)
   const [errorMessage, setErrorMessage] = useState(null);
@@ -119,40 +118,13 @@ export default function GrayRow({ isFocused, onFocusChange }) {
         <div
           className="min-h-24 bg-gray-50 dark:bg-gray-700 rounded-xl border-2 border-gray-200 dark:border-gray-600 p-4 flex flex-wrap gap-2 justify-center items-center"
           onClick={() => {
-            if (isTouchDevice && inputRef.current) {
-              inputRef.current.focus();
-            }
+            onFocusChange('gray');
           }}
         >
-          {isTouchDevice && (
-            // Mobile: Input field for adding letters
-            <input
-              ref={inputRef}
-              type="text"
-              inputMode="text"
-              maxLength={1}
-              value=""
-              onChange={(e) => {
-                const letter = e.target.value.toUpperCase();
-                if (/^[A-Z]$/.test(letter)) {
-                  const result = addGray(letter);
-                  if (result && !result.success) {
-                    setErrorMessage(result.error);
-                  } else {
-                    setErrorMessage(null);
-                  }
-                  e.target.value = ''; // Clear input for next letter
-                }
-              }}
-              onFocus={() => {
-                onFocusChange('gray');
-              }}
-              placeholder="Type letters"
-              className="w-24 h-12 bg-white dark:bg-gray-600 border-2 border-dashed border-gray-400 dark:border-gray-500 rounded text-center text-xl font-bold outline-none focus:border-gray-600 dark:focus:border-gray-400 placeholder:text-gray-400 dark:placeholder:text-gray-500 placeholder:text-sm"
-            />
-          )}
-          {gray.length === 0 && !isTouchDevice ? (
-            <div className="text-gray-400 dark:text-gray-500 text-base">Enter Incorrect Letters Here</div>
+          {gray.length === 0 ? (
+            <div className="text-gray-400 dark:text-gray-500 text-base">
+              {isTouchDevice ? 'Tap to add letters' : 'Enter Incorrect Letters Here'}
+            </div>
           ) : (
             gray.map((letter, idx) => (
               <div

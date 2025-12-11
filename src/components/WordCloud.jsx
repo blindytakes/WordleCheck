@@ -280,10 +280,10 @@ export default function WordCloud() {
   // ========================================
 
   return (
-    <div className="relative h-full w-full flex flex-col items-center justify-start mt-8 md:mt-24 lg:mt-48">
+    <div className="relative h-full w-full flex flex-col items-center justify-start mt-2 md:mt-24 lg:mt-48">
       {/* Title: "Wordle Fun" with gradient text (responsive sizing) */}
       <motion.div
-        className="text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-black bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 dark:from-pink-400 dark:via-purple-400 dark:to-blue-400 text-transparent bg-clip-text mb-2 md:mb-4"
+        className="text-3xl sm:text-4xl md:text-6xl lg:text-8xl font-black bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 dark:from-pink-400 dark:via-purple-400 dark:to-blue-400 text-transparent bg-clip-text mb-1 md:mb-4"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
@@ -294,7 +294,7 @@ export default function WordCloud() {
       {/* Word count: Shows how many words match the constraints (responsive sizing) */}
       {filteredWords.length > 0 && (
         <motion.div
-          className="text-center mb-4 md:mb-8 text-2xl sm:text-3xl md:text-4xl lg:text-5xl bg-gradient-to-r from-pink-500 to-blue-500 dark:from-pink-400 dark:to-blue-400 text-transparent bg-clip-text font-bold"
+          className="text-center mb-2 md:mb-8 text-xl sm:text-2xl md:text-4xl lg:text-5xl bg-gradient-to-r from-pink-500 to-blue-500 dark:from-pink-400 dark:to-blue-400 text-transparent bg-clip-text font-bold"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
@@ -333,7 +333,7 @@ export default function WordCloud() {
           }}
         >
           {/* Cloud shape: Made of multiple overlapping gradient circles with blur (responsive sizing) */}
-          <div className="relative w-[95vw] max-w-[990px] h-[68vw] max-h-[715px] sm:w-[90vw] sm:h-[65vw] md:w-[85vw] md:h-[61vw] lg:w-[990px] lg:h-[715px]">
+          <div className="relative w-[90vw] max-w-[700px] h-[60vw] max-h-[500px] sm:w-[85vw] sm:h-[58vw] md:w-[85vw] md:h-[61vw] lg:w-[990px] lg:h-[715px]">
             {/* Main cloud body: 13 overlapping circles create the fluffy shape */}
             <div className="absolute inset-0 flex items-center justify-center" style={{ filter: 'drop-shadow(0 0 10px rgba(255, 255, 255, 0.5)) drop-shadow(0 0 10px rgba(128, 90, 213, 0.3))' }}>
               {/* Left puff */}
@@ -379,7 +379,7 @@ export default function WordCloud() {
             <div className="absolute -bottom-12 left-1/2 -translate-x-1/2 w-[500px] h-16 bg-blue-300/40 dark:bg-purple-900/40 rounded-full blur-3xl"></div>
 
             {/* CONTENT: Words displayed inside the cloud (responsive padding) */}
-            <div className="absolute inset-0 flex flex-col items-center justify-center px-4 py-8 sm:px-8 sm:py-10 md:px-12 md:py-12 lg:px-20 lg:py-16">
+            <div className="absolute inset-0 flex flex-col items-center justify-center px-2 py-4 sm:px-8 sm:py-10 md:px-12 md:py-12 lg:px-20 lg:py-16">
               {filteredWords.length === 0 ? (
                 // Empty state: Show placeholder text when no constraints are set (responsive sizing)
                 <motion.div

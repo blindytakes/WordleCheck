@@ -62,10 +62,10 @@ function AppContent() {
   }, [undo]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-300 via-indigo-200 to-purple-100 dark:from-gray-900 dark:via-purple-950 dark:to-gray-900 transition-colors duration-300">
+    <div className="min-h-screen bg-gradient-to-br from-purple-300 via-indigo-200 to-purple-100 dark:from-gray-900 dark:via-purple-950 dark:to-gray-900 transition-colors duration-300 overflow-x-hidden">
       {/* Main container with fade-in animation */}
       <motion.div
-        className="w-full mx-auto h-screen pt-16"
+        className="w-full mx-auto h-screen pt-16 overflow-x-hidden"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
@@ -73,7 +73,7 @@ function AppContent() {
         <Header />
 
         {/* Responsive layout: Stacks vertically on mobile, side-by-side on desktop */}
-        <div className="flex flex-col lg:flex-row justify-center items-center gap-8 lg:gap-20 h-auto lg:h-[calc(100%-120px)] max-w-[1900px] mx-auto px-4 pb-8">
+        <div className="flex flex-col lg:flex-row justify-center items-center gap-8 lg:gap-20 h-auto lg:h-[calc(100%-120px)] max-w-[1900px] mx-auto px-4 pb-8 overflow-x-hidden">
           {/* Left Panel - Input rows and keyboard (responsive width) */}
           <motion.div
             className="flex-shrink-0 w-full max-w-[580px] lg:w-[580px] flex flex-col gap-4"
