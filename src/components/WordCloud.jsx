@@ -366,9 +366,9 @@ export default function WordCloud() {
           }}
         >
           {/* Cloud shape: Made of multiple overlapping gradient circles with blur (responsive sizing) */}
-          <div className="relative w-[95vw] max-w-[700px] h-[70vw] max-h-[500px] sm:w-[85vw] sm:h-[58vw] md:w-[85vw] md:h-[61vw] lg:w-[990px] lg:h-[715px]">
+          <div className="relative w-[95vw] max-w-[700px] h-[70vw] max-h-[500px] sm:w-[85vw] sm:h-[58vw] md:w-[85vw] md:h-[61vw] lg:w-[1200px] lg:h-[865px]">
             {/* Main cloud body: 13 overlapping circles create the fluffy shape */}
-            <div className="absolute inset-0 flex items-center justify-center" style={{ filter: 'drop-shadow(0 0 10px rgba(255, 255, 255, 1))' }}>
+            <div className="absolute inset-0 flex items-center justify-center lg:scale-125" style={{ filter: 'drop-shadow(0 0 10px rgba(255, 255, 255, 1))' }}>
               {/* Left puff */}
               <div className="absolute left-4 top-1/4 w-72 h-72 bg-gradient-to-br from-blue-200 to-blue-300 dark:from-purple-800 dark:to-purple-900 rounded-full blur-lg opacity-95"></div>
 
@@ -424,7 +424,7 @@ export default function WordCloud() {
                 </motion.div>
               ) : (
                 // Word grid: Flex wrap layout with animated words
-                <div className="flex flex-wrap gap-3 justify-center items-center max-w-3xl">
+                <div className="flex flex-wrap gap-3 justify-center items-center max-w-3xl lg:max-w-5xl">
                   {/* AnimatePresence handles smooth transitions when words change */}
                   <AnimatePresence mode="popLayout">
                     {wordsWithSizes.map(({ word, size, id }, index) => (
