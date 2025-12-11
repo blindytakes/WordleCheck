@@ -253,7 +253,22 @@ function setupConsoleTracking() {
 /**
  * Get the RUM instance for custom instrumentation
  * Use this to add custom spans or events
+ *
+ * Returns a safe mock object if RUM is not initialized (missing env vars)
+ * to prevent errors when calling addEvent() or other RUM methods
  */
 export function getRUM() {
+  // Check if RUM was properly initialized
+  // If initRUM() returned early, SplunkRum might not have these methods
+  if (!SplunkRum || typeof SplunkRum.addEvent !== 'function') {
+    // Return a safe mock that does nothing
+    return {
+      addEvent: () => {},
+      setGlobalAttributes: () => {},
+      setGlobalAttribute: () => {},
+      addError: () => {}
+    };
+  }
+
   return SplunkRum;
 }
