@@ -112,6 +112,19 @@ export default function WordCloud() {
   const FONT_SIZES = isTouchDevice ? FONT_SIZES_MOBILE : FONT_SIZES_DESKTOP;
   const MAX_DISPLAY_WORDS = isTouchDevice ? MAX_DISPLAY_WORDS_MOBILE : MAX_DISPLAY_WORDS_DESKTOP;
 
+  // Separate detection for definition feature: use screen size (more reliable than touch)
+  // Desktop = screen width >= 1024px (lg breakpoint)
+  const [isDesktop, setIsDesktop] = useState(typeof window !== 'undefined' && window.innerWidth >= 1024);
+
+  // Update isDesktop on window resize
+  useEffect(() => {
+    const handleResize = () => {
+      setIsDesktop(window.innerWidth >= 1024);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   // ========================================
   // DEFINITION MODAL STATE
   // ========================================
@@ -335,7 +348,7 @@ export default function WordCloud() {
           {/* Cloud shape: Made of multiple overlapping gradient circles with blur (responsive sizing) */}
           <div className="relative w-[95vw] max-w-[700px] h-[70vw] max-h-[500px] sm:w-[85vw] sm:h-[58vw] md:w-[85vw] md:h-[61vw] lg:w-[990px] lg:h-[715px]">
             {/* Main cloud body: 13 overlapping circles create the fluffy shape */}
-            <div className="absolute inset-0 flex items-center justify-center" style={{ filter: 'drop-shadow(0 0 10px rgba(255, 255, 255, 0.5)) drop-shadow(0 0 10px rgba(128, 90, 213, 0.3))' }}>
+            <div className="absolute inset-0 flex items-center justify-center" style={{ filter: 'drop-shadow(0 0 10px rgba(255, 255, 255, 1))' }}>
               {/* Left puff */}
               <div className="absolute left-4 top-1/4 w-72 h-72 bg-gradient-to-br from-blue-200 to-blue-300 dark:from-purple-800 dark:to-purple-900 rounded-full blur-lg opacity-95"></div>
 
