@@ -76,7 +76,7 @@ function AppContent() {
         <div className="flex flex-col lg:flex-row justify-center items-center gap-8 lg:gap-20 h-auto lg:h-[calc(100%-120px)] max-w-[1900px] mx-auto px-4 pb-8 overflow-x-hidden">
           {/* Left Panel - Input rows and keyboard (responsive width) */}
           <motion.div
-            className="flex-shrink-0 w-full max-w-[580px] lg:w-[580px] flex flex-col gap-4"
+            className="flex-shrink-0 w-full max-w-[580px] lg:w-[580px] lg:mt-12 lg:ml-8 flex flex-col gap-4"
             initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
