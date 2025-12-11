@@ -283,7 +283,7 @@ export default function WordCloud() {
     <div className="relative h-full w-full flex flex-col items-center justify-start mt-0 md:mt-24 lg:mt-48">
       {/* Title: "Wordle Fun" with gradient text (responsive sizing) */}
       <motion.div
-        className="text-3xl sm:text-4xl md:text-6xl lg:text-8xl font-black bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 dark:from-pink-400 dark:via-purple-400 dark:to-blue-400 text-transparent bg-clip-text mb-0 md:mb-4"
+        className="text-xl sm:text-4xl md:text-6xl lg:text-8xl font-black bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 dark:from-pink-400 dark:via-purple-400 dark:to-blue-400 text-transparent bg-clip-text mb-0 md:mb-4"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
@@ -294,7 +294,7 @@ export default function WordCloud() {
       {/* Word count: Shows how many words match the constraints (responsive sizing) */}
       {filteredWords.length > 0 && (
         <motion.div
-          className="text-center mb-1 md:mb-8 text-xl sm:text-2xl md:text-4xl lg:text-5xl bg-gradient-to-r from-pink-500 to-blue-500 dark:from-pink-400 dark:to-blue-400 text-transparent bg-clip-text font-bold"
+          className="text-center mb-0 md:mb-8 text-sm sm:text-2xl md:text-4xl lg:text-5xl bg-gradient-to-r from-pink-500 to-blue-500 dark:from-pink-400 dark:to-blue-400 text-transparent bg-clip-text font-bold"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
@@ -333,7 +333,7 @@ export default function WordCloud() {
           }}
         >
           {/* Cloud shape: Made of multiple overlapping gradient circles with blur (responsive sizing) */}
-          <div className="relative w-[90vw] max-w-[700px] h-[60vw] max-h-[500px] sm:w-[85vw] sm:h-[58vw] md:w-[85vw] md:h-[61vw] lg:w-[990px] lg:h-[715px]">
+          <div className="relative w-[95vw] max-w-[700px] h-[70vw] max-h-[500px] sm:w-[85vw] sm:h-[58vw] md:w-[85vw] md:h-[61vw] lg:w-[990px] lg:h-[715px]">
             {/* Main cloud body: 13 overlapping circles create the fluffy shape */}
             <div className="absolute inset-0 flex items-center justify-center" style={{ filter: 'drop-shadow(0 0 10px rgba(255, 255, 255, 0.5)) drop-shadow(0 0 10px rgba(128, 90, 213, 0.3))' }}>
               {/* Left puff */}
