@@ -23,11 +23,14 @@
  * - onFocusChange: Callback to change which row is focused
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useConstraints } from '../context/ConstraintContext';
+import useTouchDevice from '../hooks/useTouchDevice';
 
 export default function GreenRow({ isFocused, onFocusChange }) {
   const { green, addGreen, removeGreen } = useConstraints();
+  const isTouchDevice = useTouchDevice();
+  const inputRefs = useRef([]);
 
   // Track which position (0-4) is currently selected
   const [selectedPosition, setSelectedPosition] = useState(0);
@@ -136,36 +139,75 @@ export default function GreenRow({ isFocused, onFocusChange }) {
         </div>
         {/* Tile grid: 5 letter tiles */}
         <div className="grid grid-cols-5 gap-3">
-          {[0, 1, 2, 3, 4].map((position) => (
-            <div
-              key={position}
-              onClick={(e) => {
-                e.stopPropagation();
-                handleTileClick(position);
-              }}
-              className={`aspect-square rounded-xl border-2 flex items-center justify-center text-5xl font-bold relative group transition-all cursor-pointer shadow-md hover:shadow-lg ${
-                green[position]
-                  ? 'bg-gradient-to-br from-green-400 to-green-600 border-green-600 text-white'
-                  : isFocused && selectedPosition === position
-                  ? 'border-green-500 dark:border-green-400 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-950 dark:to-green-900 shadow-green-200 dark:shadow-green-900'
-                  : 'bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600 hover:border-green-300 dark:hover:border-green-500'
-              }`}
-            >
-              {green[position] ? (
-                <>
-                  <span>{green[position]}</span>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      removeGreen(position);
+          {[0, 1, 2, 3, 4].map((position) => {
+            const baseClasses = `aspect-square rounded-xl border-2 flex items-center justify-center text-5xl font-bold relative group transition-all shadow-md hover:shadow-lg ${
+              green[position]
+                ? 'bg-gradient-to-br from-green-400 to-green-600 border-green-600 text-white'
+                : isFocused && selectedPosition === position
+                ? 'border-green-500 dark:border-green-400 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-950 dark:to-green-900 shadow-green-200 dark:shadow-green-900'
+                : 'bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600 hover:border-green-300 dark:hover:border-green-500'
+            }`;
+
+            return (
+              <div
+                key={position}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleTileClick(position);
+                }}
+                className={`${baseClasses} cursor-pointer`}
+              >
+                {isTouchDevice ? (
+                  // Mobile: Native input element
+                  <input
+                    ref={(el) => (inputRefs.current[position] = el)}
+                    type="text"
+                    inputMode="text"
+                    maxLength={1}
+                    value={green[position] || ''}
+                    onChange={(e) => {
+                      const letter = e.target.value.toUpperCase();
+                      if (/^[A-Z]?$/.test(letter)) {
+                        if (letter) {
+                          addGreen(position, letter);
+                          // Auto-advance to next input
+                          if (position < 4 && inputRefs.current[position + 1]) {
+                            inputRefs.current[position + 1].focus();
+                          }
+                        } else {
+                          removeGreen(position);
+                        }
+                      }
                     }}
-                    className="absolute top-1 right-1 w-5 h-5 flex items-center justify-center text-red opacity-0 group-hover:opacity-100 transition-opacity text-xs"                  >
-                    ✕
-                  </button>
-                </>
-              ) : null}
-            </div>
-          ))}
+                    onFocus={() => {
+                      setSelectedPosition(position);
+                      onFocusChange('green');
+                    }}
+                    className="w-full h-full bg-transparent border-0 outline-none text-center text-5xl font-bold text-white caret-transparent"
+                    style={{ caretColor: 'transparent' }}
+                  />
+                ) : (
+                  // Desktop: Display only (keyboard controlled)
+                  <>
+                    {green[position] ? (
+                      <>
+                        <span>{green[position]}</span>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            removeGreen(position);
+                          }}
+                          className="absolute top-1 right-1 w-5 h-5 flex items-center justify-center text-red opacity-0 group-hover:opacity-100 transition-opacity text-xs"
+                        >
+                          ✕
+                        </button>
+                      </>
+                    ) : null}
+                  </>
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
       </div>

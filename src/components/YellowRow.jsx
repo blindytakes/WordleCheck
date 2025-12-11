@@ -27,12 +27,15 @@
  * - onFocusChange: Callback to change which row is focused
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useConstraints } from '../context/ConstraintContext';
 import ErrorMessage from './ErrorMessage';
+import useTouchDevice from '../hooks/useTouchDevice';
 
 export default function YellowRow({ isFocused, onFocusChange }) {
   const { yellow, addYellow, removeYellow } = useConstraints();
+  const isTouchDevice = useTouchDevice();
+  const inputRefs = useRef([]);
 
   // Track which position (0-4) is currently selected
   const [selectedPosition, setSelectedPosition] = useState(0);
@@ -155,13 +158,44 @@ export default function YellowRow({ isFocused, onFocusChange }) {
               onClick={(e) => {
                 e.stopPropagation();
                 handleCellClick(position);
+                if (isTouchDevice && inputRefs.current[position]) {
+                  inputRefs.current[position].focus();
+                }
               }}
-              className={`aspect-square bg-gray-50 dark:bg-gray-700 rounded-xl border-2 p-2 flex flex-col gap-1 items-center justify-center hover:border-yellow-300 dark:hover:border-yellow-500 transition-all cursor-pointer shadow-md hover:shadow-lg ${
+              className={`aspect-square bg-gray-50 dark:bg-gray-700 rounded-xl border-2 p-2 flex flex-col gap-1 items-center justify-start hover:border-yellow-300 dark:hover:border-yellow-500 transition-all cursor-pointer shadow-md hover:shadow-lg overflow-y-auto ${
                 isFocused && selectedPosition === position
                   ? 'border-yellow-500 dark:border-yellow-400 bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-yellow-950 dark:to-yellow-900 shadow-yellow-200 dark:shadow-yellow-900'
                   : 'border-gray-200 dark:border-gray-600'
               }`}
             >
+              {isTouchDevice && (
+                // Mobile: Input field at top of cell
+                <input
+                  ref={(el) => (inputRefs.current[position] = el)}
+                  type="text"
+                  inputMode="text"
+                  maxLength={1}
+                  value=""
+                  onChange={(e) => {
+                    const letter = e.target.value.toUpperCase();
+                    if (/^[A-Z]$/.test(letter)) {
+                      const result = addYellow(position, letter);
+                      if (result.success) {
+                        setErrorMessage(null);
+                        e.target.value = ''; // Clear input for next letter
+                      } else if (result.error) {
+                        setErrorMessage(result.error);
+                      }
+                    }
+                  }}
+                  onFocus={() => {
+                    setSelectedPosition(position);
+                    onFocusChange('yellow');
+                  }}
+                  placeholder="+"
+                  className="w-full h-8 bg-white dark:bg-gray-600 border border-gray-300 dark:border-gray-500 rounded text-center text-lg font-bold outline-none focus:border-yellow-400"
+                />
+              )}
               {yellow[position] && yellow[position].length > 0 ? (
                 yellow[position].map((letter, idx) => (
                   <div
@@ -170,12 +204,10 @@ export default function YellowRow({ isFocused, onFocusChange }) {
                       e.stopPropagation();
                       handleLetterRemove(position, letter);
                     }}
-                    // Note the change from 'yellow' to 'amber' for a punchier color:
                     className="bg-gradient-to-br from-amber-200 to-amber-300 border border-amber-400 rounded px-4 py-2 text-lg font-bold text-amber-800 flex items-center justify-center cursor-pointer hover:from-amber-300 hover:to-amber-400 transition-all group shadow-sm hover:shadow-md relative w-full"
                   >
                     <span>{letter}</span>
-                    <span className="absolute top-1 right-2 text-red-500 opacity-0 group-hover:opacity-100 transition-opacity text-xs">                      ✕
-                    </span>
+                    <span className="absolute top-1 right-2 text-red-500 opacity-0 group-hover:opacity-100 transition-opacity text-xs">✕</span>
                   </div>
                 ))
               ) : null}
