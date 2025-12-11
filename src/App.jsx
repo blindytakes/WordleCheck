@@ -26,6 +26,7 @@ import YellowRow from './components/YellowRow';
 import GrayRow from './components/GrayRow';
 import Keyboard from './components/Keyboard';
 import WordCloud from './components/WordCloud';
+import useTouchDevice from './hooks/useTouchDevice';
 
 /**
  * AppContent - The main app UI
@@ -34,6 +35,9 @@ import WordCloud from './components/WordCloud';
 function AppContent() {
   // Track which row is currently focused (for keyboard input)
   const [focusedRow, setFocusedRow] = useState('green');
+
+  // Detect touch devices to hide visual keyboard on mobile
+  const isTouchDevice = useTouchDevice();
 
   // Get global actions from context
   const { undo } = useConstraints();
@@ -89,7 +93,8 @@ function AppContent() {
               isFocused={focusedRow === 'gray'}
               onFocusChange={handleFocusChange}
             />
-            <Keyboard />
+            {/* Only show visual keyboard on desktop (not needed on mobile with native inputs) */}
+            {!isTouchDevice && <Keyboard />}
           </motion.div>
 
           {/* Right Panel - Word cloud display (responsive width) */}

@@ -28,9 +28,11 @@ import { useConstraints } from '../context/ConstraintContext';
 import { useMemo, useState, useEffect } from 'react';
 import DefinitionModal from './DefinitionModal';
 import { getRUM } from '../rum.js';
+import useTouchDevice from '../hooks/useTouchDevice';
 
 // Available font sizes for words (from small to large)
-const FONT_SIZES = [
+// Desktop: larger fonts for better visibility
+const FONT_SIZES_DESKTOP = [
   'text-lg',
   'text-xl',
   'text-2xl',
@@ -39,8 +41,19 @@ const FONT_SIZES = [
   'text-5xl'
 ];
 
+// Mobile: smaller fonts to fit more words comfortably
+const FONT_SIZES_MOBILE = [
+  'text-xs',
+  'text-sm',
+  'text-base',
+  'text-lg',
+  'text-xl',
+  'text-2xl'
+];
+
 // Maximum words to show (prevents cloud from getting too crowded)
-const MAX_DISPLAY_WORDS = 40;
+const MAX_DISPLAY_WORDS_DESKTOP = 40;
+const MAX_DISPLAY_WORDS_MOBILE = 25;
 
 // Dictionary cache to avoid repeated API calls
 const definitionCache = {};
@@ -83,16 +96,21 @@ function hashWord(word) {
  * - 10-20 words: text-4xl to text-5xl (min: 4xl) ← only large sizes!
  * - 1-10 words: ALL text-5xl (everything HUGE!)
  */
-function getFontSizeRange(wordCount) {
-  if (wordCount <= 10) return [FONT_SIZES[5]];           // Only text-5xl
-  if (wordCount <= 20) return FONT_SIZES.slice(4);       // text-4xl, text-5xl
-  if (wordCount <= 30) return FONT_SIZES.slice(3);       // text-3xl, text-4xl, text-5xl
-  if (wordCount <= 40) return FONT_SIZES.slice(2);       // text-2xl, text-3xl, text-4xl, text-5xl
-  return FONT_SIZES;                                      // All sizes (shouldn't reach here in stable mode)
+function getFontSizeRange(wordCount, fontSizes) {
+  if (wordCount <= 10) return [fontSizes[5]];           // Only largest size
+  if (wordCount <= 20) return fontSizes.slice(4);       // Two largest sizes
+  if (wordCount <= 30) return fontSizes.slice(3);       // Three largest sizes
+  if (wordCount <= 40) return fontSizes.slice(2);       // Four largest sizes
+  return fontSizes;                                      // All sizes
 }
 
 export default function WordCloud() {
   const { filteredWords } = useConstraints();
+  const isTouchDevice = useTouchDevice();
+
+  // Device-specific settings
+  const FONT_SIZES = isTouchDevice ? FONT_SIZES_MOBILE : FONT_SIZES_DESKTOP;
+  const MAX_DISPLAY_WORDS = isTouchDevice ? MAX_DISPLAY_WORDS_MOBILE : MAX_DISPLAY_WORDS_DESKTOP;
 
   // ========================================
   // DEFINITION MODAL STATE
@@ -124,8 +142,8 @@ export default function WordCloud() {
 
     // STEP 2: Determine available font sizes (dramatic scaling in stable mode)
     const availableSizes = isStableMode
-      ? getFontSizeRange(filteredWords.length)  // Fewer words = larger fonts
-      : FONT_SIZES;                              // All sizes available
+      ? getFontSizeRange(filteredWords.length, FONT_SIZES)  // Fewer words = larger fonts
+      : FONT_SIZES;                                           // All sizes available
 
     // STEP 3: Assign sizes and create display objects
     const wordsWithSizes = wordsToShow.map((word, index) => ({
@@ -137,7 +155,7 @@ export default function WordCloud() {
     }));
 
     return { wordsWithSizes, isStableMode };
-  }, [filteredWords]);
+  }, [filteredWords, FONT_SIZES, MAX_DISPLAY_WORDS]);
 
   // ========================================
   // FOOTER HINT TIMER
