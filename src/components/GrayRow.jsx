@@ -24,7 +24,7 @@
  * - onFocusChange: Callback to change which row is focused
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useConstraints } from '../context/ConstraintContext';
 import ErrorMessage from './ErrorMessage';
 import useTouchDevice from '../hooks/useTouchDevice';
@@ -32,6 +32,7 @@ import useTouchDevice from '../hooks/useTouchDevice';
 export default function GrayRow({ isFocused, onFocusChange }) {
   const { gray, addGray, removeGray } = useConstraints();
   const isTouchDevice = useTouchDevice();
+  const inputRef = useRef(null);
 
   // Error message shown when validation fails (e.g., letter is already green/yellow)
   const [errorMessage, setErrorMessage] = useState(null);
@@ -116,11 +117,41 @@ export default function GrayRow({ isFocused, onFocusChange }) {
         </div>
         {/* Letter list container (flex wrap for dynamic layout) */}
         <div
-          className="min-h-24 bg-gray-50 dark:bg-gray-700 rounded-xl border-2 border-gray-200 dark:border-gray-600 p-4 flex flex-wrap gap-2 justify-center items-center"
+          className="min-h-24 bg-gray-50 dark:bg-gray-700 rounded-xl border-2 border-gray-200 dark:border-gray-600 p-4 flex flex-wrap gap-2 justify-center items-center relative"
           onClick={() => {
             onFocusChange('gray');
+            if (isTouchDevice && inputRef.current) {
+              inputRef.current.focus();
+            }
           }}
         >
+          {/* Hidden input for mobile keyboard trigger */}
+          {isTouchDevice && (
+            <input
+              ref={inputRef}
+              type="text"
+              inputMode="text"
+              maxLength={1}
+              value=""
+              onChange={(e) => {
+                const letter = e.target.value.toUpperCase();
+                if (/^[A-Z]$/.test(letter)) {
+                  const result = addGray(letter);
+                  if (result && !result.success) {
+                    setErrorMessage(result.error);
+                  } else {
+                    setErrorMessage(null);
+                  }
+                  e.target.value = ''; // Clear input for next letter
+                }
+              }}
+              onFocus={() => {
+                onFocusChange('gray');
+              }}
+              className="absolute opacity-0 pointer-events-none w-0 h-0"
+              aria-label="Type letters to add"
+            />
+          )}
           {gray.length === 0 ? (
             <div className="text-gray-400 dark:text-gray-500 text-base">
               {isTouchDevice ? 'Tap to add letters' : 'Enter Incorrect Letters Here'}
