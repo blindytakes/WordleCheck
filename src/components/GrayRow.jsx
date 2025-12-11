@@ -147,8 +147,8 @@ export default function GrayRow({ isFocused, onFocusChange }) {
               onFocus={() => {
                 onFocusChange('gray');
               }}
-              placeholder="Type letter"
-              className="w-24 h-12 bg-white dark:bg-gray-600 border-2 border-dashed border-gray-400 dark:border-gray-500 rounded text-center text-xl font-bold outline-none focus:border-gray-600 dark:focus:border-gray-400"
+              placeholder="Type letters"
+              className="w-24 h-12 bg-white dark:bg-gray-600 border-2 border-dashed border-gray-400 dark:border-gray-500 rounded text-center text-xl font-bold outline-none focus:border-gray-600 dark:focus:border-gray-400 placeholder:text-gray-400 dark:placeholder:text-gray-500 placeholder:text-sm"
             />
           )}
           {gray.length === 0 && !isTouchDevice ? (

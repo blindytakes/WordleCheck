@@ -162,7 +162,7 @@ export default function YellowRow({ isFocused, onFocusChange }) {
                   inputRefs.current[position].focus();
                 }
               }}
-              className={`aspect-square bg-gray-50 dark:bg-gray-700 rounded-xl border-2 p-2 flex flex-col gap-1 items-center justify-start hover:border-yellow-300 dark:hover:border-yellow-500 transition-all cursor-pointer shadow-md hover:shadow-lg overflow-y-auto ${
+              className={`min-h-[80px] h-auto bg-gray-50 dark:bg-gray-700 rounded-xl border-2 p-2 flex flex-col gap-1 items-center justify-start hover:border-yellow-300 dark:hover:border-yellow-500 transition-all cursor-pointer shadow-md hover:shadow-lg ${
                 isFocused && selectedPosition === position
                   ? 'border-yellow-500 dark:border-yellow-400 bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-yellow-950 dark:to-yellow-900 shadow-yellow-200 dark:shadow-yellow-900'
                   : 'border-gray-200 dark:border-gray-600'
@@ -204,10 +204,10 @@ export default function YellowRow({ isFocused, onFocusChange }) {
                       e.stopPropagation();
                       handleLetterRemove(position, letter);
                     }}
-                    className="bg-gradient-to-br from-amber-200 to-amber-300 border border-amber-400 rounded px-4 py-2 text-lg font-bold text-amber-800 flex items-center justify-center cursor-pointer hover:from-amber-300 hover:to-amber-400 transition-all group shadow-sm hover:shadow-md relative w-full"
+                    className="bg-gradient-to-br from-amber-200 to-amber-300 border border-amber-400 rounded px-2 py-1 text-base font-bold text-amber-800 flex items-center justify-center gap-1 cursor-pointer hover:from-amber-300 hover:to-amber-400 active:from-amber-400 active:to-amber-500 transition-all shadow-sm hover:shadow-md relative w-full"
                   >
                     <span>{letter}</span>
-                    <span className="absolute top-1 right-2 text-red-500 opacity-0 group-hover:opacity-100 transition-opacity text-xs">✕</span>
+                    <span className={`text-red-600 font-bold text-base ${isTouchDevice ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>✕</span>
                   </div>
                 ))
               ) : null}

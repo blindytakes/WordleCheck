@@ -53,7 +53,7 @@ const FONT_SIZES_MOBILE = [
 
 // Maximum words to show (prevents cloud from getting too crowded)
 const MAX_DISPLAY_WORDS_DESKTOP = 40;
-const MAX_DISPLAY_WORDS_MOBILE = 25;
+const MAX_DISPLAY_WORDS_MOBILE = 15;
 
 // Dictionary cache to avoid repeated API calls
 const definitionCache = {};
@@ -320,13 +320,13 @@ export default function WordCloud() {
           duration: 1
         }}
       >
-        {/* Floating animation: Cloud gently bobs up and down infinitely */}
+        {/* Floating animation: Cloud gently bobs up and down infinitely (desktop only) */}
         <motion.div
           className="relative"
-          animate={{
+          animate={isTouchDevice ? {} : {
             y: [0, -15, 0], // Move up 15px, then back down
           }}
-          transition={{
+          transition={isTouchDevice ? {} : {
             duration: 4,
             repeat: Infinity,
             ease: "easeInOut"
