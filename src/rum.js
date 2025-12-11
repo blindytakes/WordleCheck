@@ -44,8 +44,11 @@ export function initRUM() {
     // Application version (useful for tracking releases)
     version: import.meta.env.VITE_APP_VERSION || '1.0.0',
 
-    // Enable debug logging in development
-    debug: import.meta.env.DEV,
+    // Enable debug logging (forced on for debugging RUM data collection)
+    debug: true,
+
+    // ⚡ FORCE 100% SAMPLING (ensures all sessions are captured)
+    sessionSampleRate: 1,
 
     // Automatically instrument common interactions
     instrumentations: {
