@@ -460,22 +460,24 @@ export default function WordCloud() {
         />
       )}
 
-      {/* Subtle Footer Hint - appears after 3 seconds (responsive) */}
-      <AnimatePresence>
-        {showFooterHint && (
-          <motion.div
-            className="fixed bottom-4 left-1/2 -translate-x-1/2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm px-4 py-2 sm:px-6 sm:py-3 rounded-full shadow-lg border border-purple-200 dark:border-purple-600 max-w-[90vw]"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
-            transition={{ duration: 0.5 }}
-          >
-            <p className="text-purple-700 dark:text-purple-300 text-xs sm:text-sm font-medium text-center">
-              💡 Tip: <span className="hidden sm:inline">Hover and </span>Click words for definitions
-            </p>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Subtle Footer Hint - appears after 3 seconds (desktop only) */}
+      {!isTouchDevice && (
+        <AnimatePresence>
+          {showFooterHint && (
+            <motion.div
+              className="fixed bottom-4 left-1/2 -translate-x-1/2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm px-4 py-2 sm:px-6 sm:py-3 rounded-full shadow-lg border border-purple-200 dark:border-purple-600 max-w-[90vw]"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 20 }}
+              transition={{ duration: 0.5 }}
+            >
+              <p className="text-purple-700 dark:text-purple-300 text-xs sm:text-sm font-medium text-center">
+                💡 Tip: Hover and Click words for definitions
+              </p>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      )}
     </div>
   );
 }
