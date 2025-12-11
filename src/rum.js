@@ -24,12 +24,16 @@ export function initRUM() {
     return;
   }
 
+  // DEBUG: Log what token we're actually using
+  console.log('🔍 DEBUG: RUM Token from env:', import.meta.env.VITE_SPLUNK_RUM_TOKEN);
+  console.log('🔍 DEBUG: All VITE env vars:', import.meta.env);
+
   SplunkRum.init({
     // Your Splunk realm (e.g., 'us1', 'us0', 'eu0')
     realm: import.meta.env.VITE_SPLUNK_REALM,
 
     // Your RUM access token from Splunk Observability Cloud
-    rumAccessToken: import.meta.env.VITE_SPLUNK_RUM_TOKEN,
+    rumAccessToken: 'ZsERLlaoQpN6Tp9CNizWjQ', // Temporarily hardcoded for testing
 
     // Application name (shows up in Splunk UI)
     applicationName: import.meta.env.VITE_SPLUNK_APP_NAME || 'wordle-wordcloud',
