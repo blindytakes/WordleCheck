@@ -21,14 +21,7 @@
  */
 
 import { useState, useEffect } from 'react';
-
-// Breakpoint constants (matching Tailwind defaults)
-const BREAKPOINTS = {
-  sm: 640,
-  md: 768,
-  lg: 1024,
-  xl: 1280,
-};
+import { BREAKPOINTS } from '../constants';
 
 export default function useResponsive() {
   const [width, setWidth] = useState(
@@ -48,10 +41,10 @@ export default function useResponsive() {
   }, []);
 
   // Calculate responsive flags based on current width
-  const isMobile = width < BREAKPOINTS.sm;
-  const isTablet = width >= BREAKPOINTS.sm && width < BREAKPOINTS.lg;
-  const isDesktop = width >= BREAKPOINTS.lg;
-  const isMobileOrTablet = width < BREAKPOINTS.lg;
+  const isMobile = width < BREAKPOINTS.SM;
+  const isTablet = width >= BREAKPOINTS.SM && width < BREAKPOINTS.LG;
+  const isDesktop = width >= BREAKPOINTS.LG;
+  const isMobileOrTablet = width < BREAKPOINTS.LG;
 
   return {
     width,
