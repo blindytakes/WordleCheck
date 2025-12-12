@@ -48,10 +48,8 @@ export default function handler(request) {
         // Cache for 24 hours (86400 seconds)
         // User's location rarely changes within a day
         // Saves API quota and improves performance
-        'Cache-Control': 'public, max-age=86400, s-maxage=86400',
-        // CORS headers (if needed for local testing)
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'GET'
+        'Cache-Control': 'public, max-age=86400, s-maxage=86400'
+        // No CORS headers needed - same-origin requests work by default
       }
     }
   );

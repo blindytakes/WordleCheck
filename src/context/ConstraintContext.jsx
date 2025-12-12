@@ -108,12 +108,13 @@ export function ConstraintProvider({ children }) {
   // ========================================
 
   // Add a green letter at a specific position (0-4)
+  // Returns { success: true/false } for consistent error handling
   const addGreen = useCallback((position, letter) => {
     const upperLetter = letter.toUpperCase();
 
     // Don't save history if letter is already the same
     if (green[position] === upperLetter) {
-      return;
+      return { success: false }; // No change needed
     }
 
     saveToHistory();
@@ -124,12 +125,16 @@ export function ConstraintProvider({ children }) {
 
     // Automatically remove from gray if it's there
     setGray(prev => prev.filter(l => l !== upperLetter));
+
+    return { success: true };
   }, [green, saveToHistory]);
 
+  // Remove a green letter from a specific position
+  // Returns { success: true/false } for consistent error handling
   const removeGreen = useCallback((position) => {
     // Don't save history if position is already empty
     if (green[position] === null) {
-      return;
+      return { success: false }; // Nothing to remove
     }
 
     saveToHistory();
@@ -137,6 +142,8 @@ export function ConstraintProvider({ children }) {
       ...prev,
       [position]: null
     }));
+
+    return { success: true };
   }, [green, saveToHistory]);
 
   // ========================================
@@ -170,10 +177,12 @@ export function ConstraintProvider({ children }) {
     return { success: true };
   }, [green, yellow, saveToHistory]);
 
+  // Remove a yellow letter from a specific position
+  // Returns { success: true/false } for consistent error handling
   const removeYellow = useCallback((position, letter) => {
     // Don't save history if letter is not at this position
     if (!yellow[position].includes(letter)) {
-      return;
+      return { success: false }; // Letter not found
     }
 
     saveToHistory();
@@ -181,6 +190,8 @@ export function ConstraintProvider({ children }) {
       ...prev,
       [position]: prev[position].filter(l => l !== letter)
     }));
+
+    return { success: true };
   }, [yellow, saveToHistory]);
 
   // ========================================
@@ -211,14 +222,18 @@ export function ConstraintProvider({ children }) {
     return { success: true };
   }, [green, yellow, gray, saveToHistory]);
 
+  // Remove a gray letter
+  // Returns { success: true/false } for consistent error handling
   const removeGray = useCallback((letter) => {
     // Don't save history if letter is not in gray
     if (!gray.includes(letter)) {
-      return;
+      return { success: false }; // Letter not found
     }
 
     saveToHistory();
     setGray(prev => prev.filter(l => l !== letter));
+
+    return { success: true };
   }, [gray, saveToHistory]);
 
   // ========================================
