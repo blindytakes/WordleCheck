@@ -29,6 +29,8 @@ import { useConstraints } from '../context/ConstraintContext';
 import ErrorMessage from './ErrorMessage';
 import useTouchDevice from '../hooks/useTouchDevice';
 import useKeyboardInput from '../hooks/useKeyboardInput';
+import { MOBILE_INPUT_PROPS } from '../constants';
+import { validateLetter } from '../utils/validateLetter';
 
 export default function GrayRow({ isFocused, onFocusChange }) {
   const { gray, addGray, removeGray } = useConstraints();
@@ -120,17 +122,11 @@ export default function GrayRow({ isFocused, onFocusChange }) {
           {isTouchDevice && (
             <input
               ref={inputRef}
-              type="text"
-              inputMode="text"
-              autoComplete="off"
-              autoCorrect="off"
-              autoCapitalize="characters"
-              spellCheck="false"
-              maxLength={1}
+              {...MOBILE_INPUT_PROPS}
               value=""
               onChange={(e) => {
-                const letter = e.target.value.toUpperCase();
-                if (/^[A-Z]$/.test(letter)) {
+                const letter = validateLetter(e.target.value);
+                if (letter) {
                   const result = addGray(letter);
                   if (result && !result.success) {
                     setErrorMessage(result.error);

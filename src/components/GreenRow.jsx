@@ -27,7 +27,8 @@ import { useState, useRef } from 'react';
 import { useConstraints } from '../context/ConstraintContext';
 import useTouchDevice from '../hooks/useTouchDevice';
 import useKeyboardInput from '../hooks/useKeyboardInput';
-import { POSITION_INDICES, POSITION_LABELS } from '../constants';
+import { POSITION_INDICES, POSITION_LABELS, MOBILE_INPUT_PROPS } from '../constants';
+import { validateLetter } from '../utils/validateLetter';
 
 export default function GreenRow({ isFocused, onFocusChange }) {
   const { green, addGreen, removeGreen } = useConstraints();
@@ -140,17 +141,11 @@ export default function GreenRow({ isFocused, onFocusChange }) {
                   // Mobile: Native input element
                   <input
                     ref={(el) => (inputRefs.current[position] = el)}
-                    type="text"
-                    inputMode="text"
-                    autoComplete="off"
-                    autoCorrect="off"
-                    autoCapitalize="characters"
-                    spellCheck="false"
-                    maxLength={1}
+                    {...MOBILE_INPUT_PROPS}
                     value={green[position] || ''}
                     onChange={(e) => {
-                      const letter = e.target.value.toUpperCase();
-                      if (/^[A-Z]?$/.test(letter)) {
+                      const letter = validateLetter(e.target.value, true);
+                      if (letter !== null) {
                         if (letter) {
                           addGreen(position, letter);
                           // Auto-advance to next input

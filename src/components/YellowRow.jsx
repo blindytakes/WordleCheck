@@ -32,7 +32,8 @@ import { useConstraints } from '../context/ConstraintContext';
 import ErrorMessage from './ErrorMessage';
 import useTouchDevice from '../hooks/useTouchDevice';
 import useKeyboardInput from '../hooks/useKeyboardInput';
-import { POSITION_INDICES, POSITION_LABELS } from '../constants';
+import { POSITION_INDICES, POSITION_LABELS, MOBILE_INPUT_PROPS } from '../constants';
+import { validateLetter } from '../utils/validateLetter';
 
 export default function YellowRow({ isFocused, onFocusChange }) {
   const { yellow, addYellow, removeYellow } = useConstraints();
@@ -152,17 +153,11 @@ export default function YellowRow({ isFocused, onFocusChange }) {
                 // Mobile: Input field at top of cell
                 <input
                   ref={(el) => (inputRefs.current[position] = el)}
-                  type="text"
-                  inputMode="text"
-                  autoComplete="off"
-                  autoCorrect="off"
-                  autoCapitalize="characters"
-                  spellCheck="false"
-                  maxLength={1}
+                  {...MOBILE_INPUT_PROPS}
                   value=""
                   onChange={(e) => {
-                    const letter = e.target.value.toUpperCase();
-                    if (/^[A-Z]$/.test(letter)) {
+                    const letter = validateLetter(e.target.value);
+                    if (letter) {
                       const result = addYellow(position, letter);
                       if (result.success) {
                         setErrorMessage(null);

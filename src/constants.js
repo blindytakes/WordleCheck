@@ -122,3 +122,22 @@ export const BREAKPOINTS = {
   /** 2XL screens */
   '2XL': 1536
 };
+
+// ========================================
+// MOBILE INPUT CONFIGURATION
+// ========================================
+
+/**
+ * Standard props for mobile text input elements
+ * Used across GreenRow, YellowRow, and GrayRow components
+ * Ensures consistent mobile keyboard behavior
+ */
+export const MOBILE_INPUT_PROPS = {
+  type: 'text',
+  inputMode: 'text',
+  autoComplete: 'off',
+  autoCorrect: 'off',
+  autoCapitalize: 'characters',
+  spellCheck: 'false',
+  maxLength: 1
+};
