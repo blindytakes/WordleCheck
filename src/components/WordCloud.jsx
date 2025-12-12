@@ -23,68 +23,22 @@
  * - Matches the overall pink/blue theme of the app
  */
 
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useConstraints } from '../context/ConstraintContext';
-import { useMemo, useState, useEffect, useRef } from 'react';
 import DefinitionModal from './DefinitionModal';
-import { safeTrackEvent } from '../rum.js';
 import useTouchDevice from '../hooks/useTouchDevice';
 import useResponsive from '../hooks/useResponsive';
 import {
   FONT_SIZES_DESKTOP,
   FONT_SIZES_MOBILE,
   MAX_DISPLAY_WORDS_DESKTOP,
-  MAX_DISPLAY_WORDS_MOBILE,
-  MAX_DEFINITION_CACHE_SIZE,
-  FOOTER_HINT_DELAY_MS,
-  FONT_SCALE_THRESHOLDS
+  MAX_DISPLAY_WORDS_MOBILE
 } from '../constants';
-
-/**
- * Fisher-Yates shuffle algorithm
- * Efficiently shuffles an array with unbiased randomization
- * Time complexity: O(n)
- */
-function shuffleArray(array) {
-  const shuffled = [...array];
-  for (let i = shuffled.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-  }
-  return shuffled;
-}
-
-/**
- * Hash function for deterministic word ordering and sizing
- * Converts a word to a consistent number based on character codes
- * Same word always produces the same hash
- */
-function hashWord(word) {
-  let hash = 0;
-  for (let i = 0; i < word.length; i++) {
-    hash += word.charCodeAt(i);
-  }
-  return hash;
-}
-
-/**
- * Determines available font sizes based on word count (PROGRESSIVE DRAMATIC SCALING)
- * Fewer words = larger fonts by eliminating small sizes from the range
- * This creates a noticeable "growing" effect as you narrow down options
- *
- * Progressive strategy (minimum size increases as count decreases):
- * - 30-40 words: text-2xl to text-5xl (min: 2xl)
- * - 20-30 words: text-3xl to text-5xl (min: 3xl) ← no more small sizes!
- * - 10-20 words: text-4xl to text-5xl (min: 4xl) ← only large sizes!
- * - 1-10 words: ALL text-5xl (everything HUGE!)
- */
-function getFontSizeRange(wordCount, fontSizes) {
-  if (wordCount <= FONT_SCALE_THRESHOLDS.LARGEST_ONLY) return [fontSizes[5]];  // Only largest size
-  if (wordCount <= FONT_SCALE_THRESHOLDS.LARGE_SIZES) return fontSizes.slice(4);  // Two largest sizes
-  if (wordCount <= FONT_SCALE_THRESHOLDS.MEDIUM_LARGE) return fontSizes.slice(3);  // Three largest sizes
-  if (wordCount <= FONT_SCALE_THRESHOLDS.MIXED_SIZES) return fontSizes.slice(2);  // Four largest sizes
-  return fontSizes;  // All sizes
-}
+import FooterHint from './FooterHint';
+import useDefinition from '../hooks/useDefinition';
+import useWordSelection from '../hooks/useWordSelection';
+import CloudShape from './CloudShape';
+import WordGrid from './WordGrid';
 
 export default function WordCloud() {
   const { filteredWords } = useConstraints();
@@ -97,178 +51,22 @@ export default function WordCloud() {
   const FONT_SIZES = isMobileOrTablet ? FONT_SIZES_MOBILE : FONT_SIZES_DESKTOP;
   const MAX_DISPLAY_WORDS = isMobileOrTablet ? MAX_DISPLAY_WORDS_MOBILE : MAX_DISPLAY_WORDS_DESKTOP;
 
-  // Component-scoped definition cache (prevents memory leaks)
-  // Using useRef so cache persists across re-renders but can be cleared
-  const definitionCacheRef = useRef({});
-  const definitionCache = definitionCacheRef.current;
+  // Definition hook
+  const {
+    selectedWord,
+    definition,
+    isLoadingDefinition,
+    definitionError,
+    openDefinition,
+    closeDefinition
+  } = useDefinition();
 
-  // ========================================
-  // DEFINITION MODAL STATE
-  // ========================================
-
-  const [selectedWord, setSelectedWord] = useState(null);
-  const [definition, setDefinition] = useState(null);
-  const [isLoadingDefinition, setIsLoadingDefinition] = useState(false);
-  const [definitionError, setDefinitionError] = useState(false);
-  const [showFooterHint, setShowFooterHint] = useState(false);
-
-  // ========================================
-  // WORD SELECTION & SIZING
-  // ========================================
-
-  // Select which words to display and assign font sizes
-  // This recalculates whenever filteredWords changes (useMemo for performance)
-  //
-  // TWO MODES:
-  // 1. Stable Mode (≤40 words): Hash-based ordering, deterministic sizes, dramatic scaling
-  // 2. Dynamic Mode (>40 words): Random selection, random sizes
-  const { wordsWithSizes, isStableMode } = useMemo(() => {
-    const isStableMode = filteredWords.length <= MAX_DISPLAY_WORDS;
-
-    // STEP 1: Select which words to display
-    const wordsToShow = isStableMode
-      ? [...filteredWords].sort((a, b) => hashWord(a) - hashWord(b))  // Stable: hash-based "random" order
-      : shuffleArray(filteredWords).slice(0, MAX_DISPLAY_WORDS);      // Dynamic: true random selection
-
-    // STEP 2: Determine available font sizes (dramatic scaling in stable mode)
-    const availableSizes = isStableMode
-      ? getFontSizeRange(filteredWords.length, FONT_SIZES)  // Fewer words = larger fonts
-      : FONT_SIZES;                                           // All sizes available
-
-    // STEP 3: Assign sizes and create display objects
-    const wordsWithSizes = wordsToShow.map((word, index) => ({
-      word,
-      size: isStableMode
-        ? availableSizes[hashWord(word) % availableSizes.length]        // Deterministic size
-        : availableSizes[Math.floor(Math.random() * availableSizes.length)],  // Random size
-      id: isStableMode ? word : `${word}-${index}`  // Stable keys prevent re-animation
-    }));
-
-    return { wordsWithSizes, isStableMode };
-  }, [filteredWords, FONT_SIZES, MAX_DISPLAY_WORDS]);
-
-  // ========================================
-  // FOOTER HINT TIMER
-  // ========================================
-
-  // Show footer hint after delay
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowFooterHint(true);
-    }, FOOTER_HINT_DELAY_MS);
-
-    return () => clearTimeout(timer);
-  }, []);
-
-  // ========================================
-  // DICTIONARY API FUNCTIONS
-  // ========================================
-
-  /**
-   * Fetches word definition from Free Dictionary API
-   * Uses cache to avoid repeated requests for the same word
-   */
-  const fetchDefinition = async (word) => {
-    const wordLower = word.toLowerCase();
-
-    // Check cache first
-    if (definitionCache[wordLower]) {
-      setDefinition(definitionCache[wordLower]);
-      setDefinitionError(false);
-
-      // Track cached definition fetch
-      safeTrackEvent('definition.fetched', {
-        word: wordLower,
-        cached: true,
-        success: true,
-        timestamp: Date.now()
-      });
-
-      return;
-    }
-
-    // Fetch from API
-    setIsLoadingDefinition(true);
-    setDefinitionError(false);
-
-    try {
-      const response = await fetch(
-        `https://api.dictionaryapi.dev/api/v2/entries/en/${wordLower}`
-      );
-
-      if (!response.ok) {
-        throw new Error('Definition not found');
-      }
-
-      const data = await response.json();
-
-      // Cache the result with size limiting (simple LRU-style)
-      const cacheKeys = Object.keys(definitionCache);
-      if (cacheKeys.length >= MAX_DEFINITION_CACHE_SIZE) {
-        // Remove oldest entry (first key in the object)
-        delete definitionCache[cacheKeys[0]];
-      }
-      definitionCache[wordLower] = data;
-
-      setDefinition(data);
-      setDefinitionError(false);
-
-      // Track successful definition fetch
-      safeTrackEvent('definition.fetched', {
-        word: wordLower,
-        cached: false,
-        success: true,
-        timestamp: Date.now()
-      });
-    } catch (error) {
-      console.error('Error fetching definition:', error);
-      setDefinitionError(true);
-      setDefinition(null);
-
-      // Track failed definition fetch
-      safeTrackEvent('definition.fetched', {
-        word: wordLower,
-        success: false,
-        error: error.message,
-        timestamp: Date.now()
-      });
-    } finally {
-      setIsLoadingDefinition(false);
-    }
-  };
-
-  /**
-   * Handles word click - opens modal and fetches definition
-   */
-  const handleWordClick = (word) => {
-    // Track word click event in Splunk
-    safeTrackEvent('word.clicked', {
-      word: word,
-      totalWords: filteredWords.length,
-      cloudMode: isStableMode ? 'stable' : 'dynamic',
-      timestamp: Date.now()
-    });
-
-    setSelectedWord(word);
-    setDefinition(null);
-    fetchDefinition(word);
-  };
-
-  /**
-   * Closes the definition modal
-   */
-  const handleCloseModal = () => {
-    // Track modal close
-    safeTrackEvent('modal.closed', {
-      word: selectedWord,
-      hadDefinition: definition !== null,
-      timestamp: Date.now()
-    });
-
-    setSelectedWord(null);
-    setDefinition(null);
-    setDefinitionError(false);
-  };
+  // Word selection and sizing hook
+  const { wordsWithSizes, isStableMode } = useWordSelection(
+    filteredWords,
+    FONT_SIZES,
+    MAX_DISPLAY_WORDS
+  );
 
   // ========================================
   // RENDER
@@ -276,151 +74,15 @@ export default function WordCloud() {
 
   return (
     <div className="relative h-full w-full flex flex-col items-center justify-start mt-0 md:mt-24 lg:mt-48">
-      {/* FLUFFY CLOUD CONTAINER */}
-      {/* Outer container: Initial scale/fade-in animation */}
-      <motion.div
-        className="relative w-full h-auto lg:h-full flex items-center justify-center"
-        initial={{ y: -20, scale: 0.9, opacity: 0 }}
-        animate={{
-          y: 0,
-          scale: 1,
-          opacity: 1,
-        }}
-        transition={{
-          type: "spring",
-          stiffness: 200,
-          damping: 15,
-          duration: 1
-        }}
-      >
-        {/* Floating animation: Cloud gently bobs up and down infinitely (desktop only) */}
-        <motion.div
-          className="relative"
-          animate={isTouchDevice ? {} : {
-            y: [0, -15, 0], // Move up 15px, then back down
-          }}
-          transition={isTouchDevice ? {} : {
-            duration: 4,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-        >
-          {/* Cloud shape: Made of multiple overlapping gradient circles with blur (responsive sizing) */}
-          <div className="relative w-[75vw] max-w-[700px] h-[55vw] max-h-[500px] sm:w-[70vw] sm:h-[50vw] md:w-[70vw] md:h-[52vw] lg:w-[1200px] lg:h-[865px] scale-[0.6] lg:scale-125">
-            {/* Main cloud body: 13 overlapping circles create the fluffy shape */}
-            <div className="absolute inset-0 hidden lg:flex items-center justify-center" style={{ filter: 'drop-shadow(0 0 10px rgba(255, 255, 255, 1))' }}>
-              {/* Left puff */}
-              <div className="absolute left-4 top-1/4 w-72 h-72 bg-gradient-to-br from-blue-200 to-blue-300 dark:from-purple-800 dark:to-purple-900 rounded-full blur-lg opacity-95"></div>
-
-              {/* Center large puff - the main body */}
-              <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-80 bg-gradient-to-br from-blue-100 via-blue-200 to-blue-300 dark:from-purple-900 dark:via-purple-800 dark:to-purple-900 rounded-full blur-lg"></div>
-
-              {/* Right puff */}
-              <div className="absolute right-4 top-1/3 w-80 h-80 bg-gradient-to-br from-blue-200 to-blue-300 dark:from-purple-800 dark:to-purple-900 rounded-full blur-lg opacity-95"></div>
-
-              {/* Top left puff */}
-              <div className="absolute left-28 top-8 w-60 h-60 bg-gradient-to-br from-blue-100 to-blue-200 dark:from-purple-900 dark:to-purple-800 rounded-full blur-lg"></div>
-
-              {/* Top center puff */}
-              <div className="absolute left-1/2 -translate-x-1/2 top-12 w-56 h-56 bg-gradient-to-br from-blue-100 to-blue-200 dark:from-purple-900 dark:to-purple-800 rounded-full blur-lg"></div>
-
-              {/* Top right puff */}
-              <div className="absolute right-28 top-12 w-52 h-52 bg-gradient-to-br from-blue-100 to-blue-200 dark:from-purple-900 dark:to-purple-800 rounded-full blur-lg"></div>
-
-              {/* Additional puffs to fill gaps */}
-              {/* Upper left fill */}
-              <div className="absolute left-48 top-20 w-56 h-56 bg-gradient-to-br from-blue-100 to-blue-200 dark:from-purple-900 dark:to-purple-800 rounded-full blur-lg opacity-90"></div>
-
-              {/* Upper right fill */}
-              <div className="absolute right-48 top-24 w-52 h-52 bg-gradient-to-br from-blue-100 to-blue-200 dark:from-purple-900 dark:to-purple-800 rounded-full blur-lg opacity-90"></div>
-
-              {/* Middle left fill */}
-              <div className="absolute left-12 top-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-to-br from-blue-200 to-blue-300 dark:from-purple-800 dark:to-purple-900 rounded-full blur-lg opacity-85"></div>
-
-              {/* Middle right fill */}
-              <div className="absolute right-12 top-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-to-br from-blue-200 to-blue-300 dark:from-purple-800 dark:to-purple-900 rounded-full blur-lg opacity-85"></div>
-
-              {/* Bottom puffs for fullness */}
-              <div className="absolute left-36 bottom-12 w-64 h-64 bg-gradient-to-br from-blue-200 to-blue-300 dark:from-purple-800 dark:to-purple-900 rounded-full blur-lg opacity-85"></div>
-              <div className="absolute right-36 bottom-16 w-60 h-60 bg-gradient-to-br from-blue-200 to-blue-300 dark:from-purple-800 dark:to-purple-900 rounded-full blur-lg opacity-85"></div>
-
-              {/* Middle bottom puff for cloud shape */}
-              <div className="absolute left-1/2 -translate-x-1/2 bottom-20 w-72 h-72 bg-gradient-to-br from-blue-200 to-blue-300 dark:from-purple-800 dark:to-purple-900 rounded-full blur-lg opacity-90"></div>
-            </div>
-
-            {/* Soft drop shadow underneath cloud for depth */}
-            <div className="absolute -bottom-12 left-1/2 -translate-x-1/2 w-[500px] h-16 bg-blue-300/40 dark:bg-purple-900/40 rounded-full blur-3xl"></div>
-
-            {/* CONTENT: Words displayed inside the cloud (responsive padding) */}
-            <div className="absolute inset-0 flex flex-col items-center justify-center px-2 py-4 sm:px-8 sm:py-10 md:px-12 md:py-12 lg:px-20 lg:py-16">
-              {filteredWords.length === 0 ? (
-                // Empty state: Show placeholder text when no constraints are set (responsive sizing)
-                <motion.div
-                  className="text-slate-700 dark:text-gray-300 text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-bold text-center"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                >
-                  No Winning Words...
-                </motion.div>
-              ) : (
-                // Word grid: Flex wrap layout with animated words
-                <div className="flex flex-wrap gap-3 justify-center items-center max-w-3xl lg:max-w-5xl">
-                  {/* AnimatePresence handles smooth transitions when words change */}
-                  <AnimatePresence mode="popLayout">
-                    {wordsWithSizes.map(({ word, size, id }, index) => (
-                      <motion.div
-                        key={id}
-                        layout  // Layout animation for smooth position tracking
-                        layoutId={isStableMode ? word : undefined}  // Stable position tracking in stable mode
-                        onClick={() => handleWordClick(word)}  // Click to show definition
-                        // CONDITIONAL ANIMATIONS:
-                        // Stable mode: Smooth fades with slow layout transitions
-                        // Dynamic mode: Fun bouncy animations with stagger
-                        initial={
-                          isStableMode
-                            ? { opacity: 0 }  // Stable: just fade in
-                            : { opacity: 0, scale: 0.8, y: 20 }  // Dynamic: bounce in from below
-                        }
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={
-                          isStableMode
-                            ? { opacity: 0 }  // Stable: just fade out
-                            : { opacity: 0, scale: 0.8, y: -20 }  // Dynamic: bounce out upward
-                        }
-                        transition={
-                          isStableMode
-                            ? {
-                                duration: 0.4,
-                                layout: { type: "spring", duration: 0.6, bounce: 0 }  // Slow, smooth spring with no bounce
-                              }
-                            : {
-                                duration: 0.4,
-                                delay: index * 0.01,  // Stagger effect
-                                layout: { duration: 0.3 },
-                                type: "spring",
-                                stiffness: 300,
-                                damping: 24
-                              }
-                        }
-                        whileHover={{
-                          opacity: 1,
-                          scale: 1.2,  // Slightly bigger for more emphasis
-                          rotate: [-2, 2, -2, 0],
-                          filter: "brightness(1.2) drop-shadow(0 0 12px rgba(168, 85, 247, 0.7))",  // Purple glow
-                          transition: { duration: 0.3 }
-                        }}
-                        className={`${size} font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-slate-800 via-purple-900 to-slate-900 dark:from-gray-100 dark:via-purple-200 dark:to-gray-100 cursor-pointer select-none transition-all uppercase drop-shadow-[0_0_8px_rgba(255,255,255,0.7)] drop-shadow-md`}
-                      >
-                        {word}
-                      </motion.div>
-                    ))}
-                  </AnimatePresence>
-                </div>
-              )}
-            </div>
-          </div>
-        </motion.div>
-      </motion.div>
+      {/* FLUFFY CLOUD */}
+      <CloudShape isTouchDevice={isTouchDevice}>
+        <WordGrid
+          filteredWords={filteredWords}
+          wordsWithSizes={wordsWithSizes}
+          isStableMode={isStableMode}
+          onWordClick={(word) => openDefinition(word, filteredWords.length, isStableMode)}
+        />
+      </CloudShape>
 
       {/* Title: "Wordle Fun" with gradient text (responsive sizing) */}
       <motion.div
@@ -451,28 +113,12 @@ export default function WordCloud() {
           definition={definition}
           isLoading={isLoadingDefinition}
           error={definitionError}
-          onClose={handleCloseModal}
+          onClose={closeDefinition}
         />
       )}
 
-      {/* Subtle Footer Hint - appears after 3 seconds (desktop only) */}
-      {!isTouchDevice && (
-        <AnimatePresence>
-          {showFooterHint && (
-            <motion.div
-              className="fixed bottom-4 left-1/2 -translate-x-1/2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm px-4 py-2 sm:px-6 sm:py-3 rounded-full shadow-lg border border-purple-200 dark:border-purple-600 max-w-[90vw]"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 20 }}
-              transition={{ duration: 0.5 }}
-            >
-              <p className="text-purple-700 dark:text-purple-300 text-xs sm:text-sm font-medium text-center">
-                💡 Tip: Hover and Click words for definitions
-              </p>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      )}
+      {/* Footer Hint */}
+      <FooterHint isTouchDevice={isTouchDevice} />
     </div>
   );
 }
