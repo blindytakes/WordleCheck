@@ -24,10 +24,11 @@
  * - onFocusChange: Callback to change which row is focused
  */
 
-import { useEffect, useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { useConstraints } from '../context/ConstraintContext';
 import ErrorMessage from './ErrorMessage';
 import useTouchDevice from '../hooks/useTouchDevice';
+import useKeyboardInput from '../hooks/useKeyboardInput';
 
 export default function GrayRow({ isFocused, onFocusChange }) {
   const { gray, addGray, removeGray } = useConstraints();
@@ -38,47 +39,37 @@ export default function GrayRow({ isFocused, onFocusChange }) {
   const [errorMessage, setErrorMessage] = useState(null);
 
   // ========================================
-  // KEYBOARD INPUT HANDLING
+  // KEYBOARD INPUT HANDLING (using custom hook)
   // ========================================
 
-  // Listen for keyboard input when this row is focused
-  useEffect(() => {
-    if (!isFocused) return;
+  // Handle letter input: add to gray list with validation
+  const handleLetterInput = (letter) => {
+    const result = addGray(letter);
 
-    const handleKeyDown = (e) => {
-      // Handle letter keys (A-Z)
-      if (e.key.length === 1 && /^[a-zA-Z]$/.test(e.key)) {
-        e.preventDefault();
-        const letter = e.key.toUpperCase();
-        const result = addGray(letter);
+    // Show error if validation failed (letter is already green/yellow)
+    if (result && !result.success) {
+      setErrorMessage(result.error);
+    } else {
+      setErrorMessage(null);
+    }
+  };
 
-        // Show error if validation failed (letter is already green/yellow)
-        if (result && !result.success) {
-          setErrorMessage(result.error);
-        }
-      }
+  // Handle backspace: remove last letter from list
+  const handleBackspace = () => {
+    if (gray.length > 0) {
+      const lastLetter = gray[gray.length - 1];
+      removeGray(lastLetter);
+    }
+  };
 
-      // Handle Backspace
-      if (e.key === 'Backspace') {
-        e.preventDefault();
-
-        // Remove last letter from list
-        if (gray.length > 0) {
-          const lastLetter = gray[gray.length - 1];
-          removeGray(lastLetter);
-        }
-      }
-
-      // Handle Tab
-      if (e.key === 'Tab') {
-        e.preventDefault();
-        onFocusChange('green'); // Cycle back to green
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isFocused, gray, addGray, removeGray, onFocusChange]);
+  // Use consolidated keyboard handling hook (no positions for gray row)
+  useKeyboardInput({
+    isFocused,
+    hasPositions: false,
+    onLetterInput: handleLetterInput,
+    onBackspace: handleBackspace,
+    onTabPress: () => onFocusChange('green'), // Cycle back to green
+  });
 
   // ========================================
   // MOUSE CLICK HANDLERS

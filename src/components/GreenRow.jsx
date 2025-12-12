@@ -23,9 +23,10 @@
  * - onFocusChange: Callback to change which row is focused
  */
 
-import { useEffect, useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { useConstraints } from '../context/ConstraintContext';
 import useTouchDevice from '../hooks/useTouchDevice';
+import useKeyboardInput from '../hooks/useKeyboardInput';
 
 export default function GreenRow({ isFocused, onFocusChange }) {
   const { green, addGreen, removeGreen } = useConstraints();
@@ -36,62 +37,39 @@ export default function GreenRow({ isFocused, onFocusChange }) {
   const [selectedPosition, setSelectedPosition] = useState(0);
 
   // ========================================
-  // KEYBOARD INPUT HANDLING
+  // KEYBOARD INPUT HANDLING (using custom hook)
   // ========================================
 
-  // Listen for keyboard input when this row is focused
-  useEffect(() => {
-    if (!isFocused) return;
+  // Handle letter input: add to current position and auto-advance
+  const handleLetterInput = (letter) => {
+    addGreen(selectedPosition, letter);
+    // Move to next position if not at the end
+    if (selectedPosition < 4) {
+      setSelectedPosition(selectedPosition + 1);
+    }
+  };
 
-    const handleKeyDown = (e) => {
-      // Handle letter keys (A-Z)
-      if (e.key.length === 1 && /^[a-zA-Z]$/.test(e.key)) {
-        e.preventDefault();
-        const letter = e.key.toUpperCase();
+  // Handle backspace: clear current or go back and clear previous
+  const handleBackspace = () => {
+    if (green[selectedPosition]) {
+      removeGreen(selectedPosition);
+    } else if (selectedPosition > 0) {
+      // If current position is empty, go back and clear previous
+      setSelectedPosition(selectedPosition - 1);
+      removeGreen(selectedPosition - 1);
+    }
+  };
 
-        // Add to the selected position
-        addGreen(selectedPosition, letter);
-
-        // Move to next position if not at the end
-        if (selectedPosition < 4) {
-          setSelectedPosition(selectedPosition + 1);
-        }
-      }
-
-      // Handle Backspace
-      if (e.key === 'Backspace') {
-        e.preventDefault();
-
-        // Clear the selected position
-        if (green[selectedPosition]) {
-          removeGreen(selectedPosition);
-        } else if (selectedPosition > 0) {
-          // If current position is empty, go back and clear previous
-          setSelectedPosition(selectedPosition - 1);
-          removeGreen(selectedPosition - 1);
-        }
-      }
-
-      // Handle Tab
-      if (e.key === 'Tab') {
-        e.preventDefault();
-        onFocusChange('yellow');
-      }
-
-      // Handle Arrow keys for navigation
-      if (e.key === 'ArrowLeft' && selectedPosition > 0) {
-        e.preventDefault();
-        setSelectedPosition(selectedPosition - 1);
-      }
-      if (e.key === 'ArrowRight' && selectedPosition < 4) {
-        e.preventDefault();
-        setSelectedPosition(selectedPosition + 1);
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isFocused, green, addGreen, removeGreen, onFocusChange, selectedPosition]);
+  // Use consolidated keyboard handling hook
+  useKeyboardInput({
+    isFocused,
+    hasPositions: true,
+    selectedPosition,
+    onPositionChange: setSelectedPosition,
+    onLetterInput: handleLetterInput,
+    onBackspace: handleBackspace,
+    onTabPress: () => onFocusChange('yellow'),
+  });
 
   // ========================================
   // MOUSE CLICK HANDLERS

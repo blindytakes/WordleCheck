@@ -18,6 +18,8 @@ import { useState, useEffect } from 'react';
 export default function useDarkMode() {
   // Initialize from localStorage, default to false (light mode)
   const [isDark, setIsDark] = useState(() => {
+    // Check if window is defined (prevents SSR errors)
+    if (typeof window === 'undefined') return false;
     const saved = localStorage.getItem('darkMode');
     return saved === 'true';
   });

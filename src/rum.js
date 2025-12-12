@@ -325,3 +325,34 @@ export function getRUM() {
 
   return SplunkRum;
 }
+
+/**
+ * Safely track a RUM event with automatic error handling
+ *
+ * This helper wraps getRUM().addEvent() with try-catch to prevent
+ * tracking errors from breaking the app. All tracking failures are
+ * silently logged to console.
+ *
+ * @param {string} eventName - The name of the event to track
+ * @param {object} eventData - The data object to send with the event
+ * @returns {boolean} - True if event was tracked successfully, false otherwise
+ *
+ * @example
+ * safeTrackEvent('word.clicked', {
+ *   word: 'hello',
+ *   timestamp: Date.now()
+ * });
+ */
+export function safeTrackEvent(eventName, eventData = {}) {
+  try {
+    getRUM().addEvent(eventName, eventData);
+    return true;
+  } catch (error) {
+    // Silently log errors to avoid breaking the app
+    // Only log in development mode to reduce noise in production
+    if (import.meta.env.DEV) {
+      console.warn(`RUM tracking failed for event "${eventName}":`, error);
+    }
+    return false;
+  }
+}

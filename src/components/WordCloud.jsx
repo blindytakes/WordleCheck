@@ -25,10 +25,11 @@
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { useConstraints } from '../context/ConstraintContext';
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState, useEffect, useRef } from 'react';
 import DefinitionModal from './DefinitionModal';
-import { getRUM } from '../rum.js';
+import { safeTrackEvent } from '../rum.js';
 import useTouchDevice from '../hooks/useTouchDevice';
+import useResponsive from '../hooks/useResponsive';
 
 // Available font sizes for words (from small to large)
 // Desktop: larger fonts for better visibility
@@ -55,8 +56,8 @@ const FONT_SIZES_MOBILE = [
 const MAX_DISPLAY_WORDS_DESKTOP = 40;
 const MAX_DISPLAY_WORDS_MOBILE = 12;
 
-// Dictionary cache to avoid repeated API calls
-const definitionCache = {};
+// Maximum cache size to prevent memory leaks (LRU-style limit)
+const MAX_CACHE_SIZE = 100;
 
 /**
  * Fisher-Yates shuffle algorithm
@@ -108,34 +109,17 @@ export default function WordCloud() {
   const { filteredWords } = useConstraints();
   const isTouchDevice = useTouchDevice();
 
-  // Screen size detection for word limit (more reliable than touch detection)
-  const [isMobileScreen, setIsMobileScreen] = useState(typeof window !== 'undefined' && window.innerWidth < 1024);
-
-  // Update isMobileScreen on window resize
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobileScreen(window.innerWidth < 1024);
-    };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  // Consolidated responsive detection (replaces duplicate screen size logic)
+  const { isMobileOrTablet } = useResponsive();
 
   // Device-specific settings
-  const FONT_SIZES = isMobileScreen ? FONT_SIZES_MOBILE : FONT_SIZES_DESKTOP;
-  const MAX_DISPLAY_WORDS = isMobileScreen ? MAX_DISPLAY_WORDS_MOBILE : MAX_DISPLAY_WORDS_DESKTOP;
+  const FONT_SIZES = isMobileOrTablet ? FONT_SIZES_MOBILE : FONT_SIZES_DESKTOP;
+  const MAX_DISPLAY_WORDS = isMobileOrTablet ? MAX_DISPLAY_WORDS_MOBILE : MAX_DISPLAY_WORDS_DESKTOP;
 
-  // Separate detection for definition feature: use screen size (more reliable than touch)
-  // Desktop = screen width >= 1024px (lg breakpoint)
-  const [isDesktop, setIsDesktop] = useState(typeof window !== 'undefined' && window.innerWidth >= 1024);
-
-  // Update isDesktop on window resize
-  useEffect(() => {
-    const handleResize = () => {
-      setIsDesktop(window.innerWidth >= 1024);
-    };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  // Component-scoped definition cache (prevents memory leaks)
+  // Using useRef so cache persists across re-renders but can be cleared
+  const definitionCacheRef = useRef({});
+  const definitionCache = definitionCacheRef.current;
 
   // ========================================
   // DEFINITION MODAL STATE
@@ -212,16 +196,12 @@ export default function WordCloud() {
       setDefinitionError(false);
 
       // Track cached definition fetch
-      try {
-        getRUM().addEvent('definition.fetched', {
-          word: wordLower,
-          cached: true,
-          success: true,
-          timestamp: Date.now()
-        });
-      } catch (error) {
-        console.warn('RUM tracking failed:', error);
-      }
+      safeTrackEvent('definition.fetched', {
+        word: wordLower,
+        cached: true,
+        success: true,
+        timestamp: Date.now()
+      });
 
       return;
     }
@@ -241,39 +221,36 @@ export default function WordCloud() {
 
       const data = await response.json();
 
-      // Cache the result
+      // Cache the result with size limiting (simple LRU-style)
+      const cacheKeys = Object.keys(definitionCache);
+      if (cacheKeys.length >= MAX_CACHE_SIZE) {
+        // Remove oldest entry (first key in the object)
+        delete definitionCache[cacheKeys[0]];
+      }
       definitionCache[wordLower] = data;
 
       setDefinition(data);
       setDefinitionError(false);
 
       // Track successful definition fetch
-      try {
-        getRUM().addEvent('definition.fetched', {
-          word: wordLower,
-          cached: false,
-          success: true,
-          timestamp: Date.now()
-        });
-      } catch (error) {
-        console.warn('RUM tracking failed:', error);
-      }
+      safeTrackEvent('definition.fetched', {
+        word: wordLower,
+        cached: false,
+        success: true,
+        timestamp: Date.now()
+      });
     } catch (error) {
       console.error('Error fetching definition:', error);
       setDefinitionError(true);
       setDefinition(null);
 
       // Track failed definition fetch
-      try {
-        getRUM().addEvent('definition.fetched', {
-          word: wordLower,
-          success: false,
-          error: error.message,
-          timestamp: Date.now()
-        });
-      } catch (rumError) {
-        console.warn('RUM tracking failed:', rumError);
-      }
+      safeTrackEvent('definition.fetched', {
+        word: wordLower,
+        success: false,
+        error: error.message,
+        timestamp: Date.now()
+      });
     } finally {
       setIsLoadingDefinition(false);
     }
@@ -283,17 +260,13 @@ export default function WordCloud() {
    * Handles word click - opens modal and fetches definition
    */
   const handleWordClick = (word) => {
-    // Track word click event in Splunk (wrapped in try-catch to prevent errors)
-    try {
-      getRUM().addEvent('word.clicked', {
-        word: word,
-        totalWords: filteredWords.length,
-        cloudMode: isStableMode ? 'stable' : 'dynamic',
-        timestamp: Date.now()
-      });
-    } catch (error) {
-      console.warn('RUM tracking failed:', error);
-    }
+    // Track word click event in Splunk
+    safeTrackEvent('word.clicked', {
+      word: word,
+      totalWords: filteredWords.length,
+      cloudMode: isStableMode ? 'stable' : 'dynamic',
+      timestamp: Date.now()
+    });
 
     setSelectedWord(word);
     setDefinition(null);
@@ -304,16 +277,12 @@ export default function WordCloud() {
    * Closes the definition modal
    */
   const handleCloseModal = () => {
-    // Track modal close (wrapped in try-catch to prevent errors)
-    try {
-      getRUM().addEvent('modal.closed', {
-        word: selectedWord,
-        hadDefinition: definition !== null,
-        timestamp: Date.now()
-      });
-    } catch (error) {
-      console.warn('RUM tracking failed:', error);
-    }
+    // Track modal close
+    safeTrackEvent('modal.closed', {
+      word: selectedWord,
+      hadDefinition: definition !== null,
+      timestamp: Date.now()
+    });
 
     setSelectedWord(null);
     setDefinition(null);

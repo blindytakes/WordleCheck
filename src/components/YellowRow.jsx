@@ -27,10 +27,11 @@
  * - onFocusChange: Callback to change which row is focused
  */
 
-import { useEffect, useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { useConstraints } from '../context/ConstraintContext';
 import ErrorMessage from './ErrorMessage';
 import useTouchDevice from '../hooks/useTouchDevice';
+import useKeyboardInput from '../hooks/useKeyboardInput';
 
 export default function YellowRow({ isFocused, onFocusChange }) {
   const { yellow, addYellow, removeYellow } = useConstraints();
@@ -44,60 +45,38 @@ export default function YellowRow({ isFocused, onFocusChange }) {
   const [errorMessage, setErrorMessage] = useState(null);
 
   // ========================================
-  // KEYBOARD INPUT HANDLING
+  // KEYBOARD INPUT HANDLING (using custom hook)
   // ========================================
 
-  // Listen for keyboard input when this row is focused
-  useEffect(() => {
-    if (!isFocused) return;
+  // Handle letter input: add to current position with validation
+  const handleLetterInput = (letter) => {
+    const result = addYellow(selectedPosition, letter);
 
-    const handleKeyDown = (e) => {
-      // Handle letter keys (A-Z)
-      if (e.key.length === 1 && /^[a-zA-Z]$/.test(e.key)) {
-        e.preventDefault();
-        const letter = e.key.toUpperCase();
+    if (result.success) {
+      setErrorMessage(null);
+    } else if (result.error) {
+      setErrorMessage(result.error);
+    }
+  };
 
-        // Add to the selected position (may return error if validation fails)
-        const result = addYellow(selectedPosition, letter);
+  // Handle backspace: remove last letter from current position
+  const handleBackspace = () => {
+    if (yellow[selectedPosition] && yellow[selectedPosition].length > 0) {
+      const lastLetter = yellow[selectedPosition][yellow[selectedPosition].length - 1];
+      removeYellow(selectedPosition, lastLetter);
+    }
+  };
 
-        if (result.success) {
-          setErrorMessage(null);
-        } else if (result.error) {
-          setErrorMessage(result.error);
-        }
-      }
-
-      // Handle Backspace
-      if (e.key === 'Backspace') {
-        e.preventDefault();
-
-        // Remove last letter from the selected position
-        if (yellow[selectedPosition] && yellow[selectedPosition].length > 0) {
-          const lastLetter = yellow[selectedPosition][yellow[selectedPosition].length - 1];
-          removeYellow(selectedPosition, lastLetter);
-        }
-      }
-
-      // Handle Tab
-      if (e.key === 'Tab') {
-        e.preventDefault();
-        onFocusChange('gray');
-      }
-
-      // Handle Arrow keys for navigation
-      if (e.key === 'ArrowLeft' && selectedPosition > 0) {
-        e.preventDefault();
-        setSelectedPosition(selectedPosition - 1);
-      }
-      if (e.key === 'ArrowRight' && selectedPosition < 4) {
-        e.preventDefault();
-        setSelectedPosition(selectedPosition + 1);
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isFocused, yellow, addYellow, removeYellow, onFocusChange, selectedPosition]);
+  // Use consolidated keyboard handling hook
+  useKeyboardInput({
+    isFocused,
+    hasPositions: true,
+    selectedPosition,
+    onPositionChange: setSelectedPosition,
+    onLetterInput: handleLetterInput,
+    onBackspace: handleBackspace,
+    onTabPress: () => onFocusChange('gray'),
+  });
 
   // ========================================
   // MOUSE CLICK HANDLERS
