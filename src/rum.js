@@ -12,6 +12,7 @@
  */
 
 import SplunkRum from '@splunk/otel-web';
+import { RUM_RATE_LIMIT_WINDOW_MS, RUM_MAX_CONSOLE_EVENTS_PER_WINDOW } from './constants';
 
 /**
  * Initialize Splunk RUM
@@ -23,10 +24,6 @@ export function initRUM() {
     console.warn('Splunk RUM not initialized: missing VITE_SPLUNK_RUM_TOKEN or VITE_SPLUNK_REALM');
     return;
   }
-
-  // DEBUG: Log what token we're actually using
-  console.log('🔍 DEBUG: RUM Token from env:', import.meta.env.VITE_SPLUNK_RUM_TOKEN);
-  console.log('🔍 DEBUG: All VITE env vars:', import.meta.env);
 
   SplunkRum.init({
     // Your Splunk realm (e.g., 'us1', 'us0', 'eu0')
@@ -110,9 +107,12 @@ export function initRUM() {
     'user.locale': locationData.locale
   });
 
-  console.log('✅ Splunk RUM initialized');
-  console.log('📊 Session ID:', sessionId);
-  console.log('🌍 Location:', locationData);
+  // Development-only logging
+  if (import.meta.env.DEV) {
+    console.log('✅ Splunk RUM initialized');
+    console.log('📊 Session ID:', sessionId);
+    console.log('🌍 Location:', locationData);
+  }
 
   // Fetch IP-based geolocation (async, will update attributes when ready)
   fetchIPGeolocation();
@@ -172,7 +172,9 @@ async function fetchIPGeolocation() {
 
     // Check if we got actual data (Vercel headers only exist in production)
     if (!data.country) {
-      console.log('🌍 Geolocation: Running on localhost (no Vercel headers)');
+      if (import.meta.env.DEV) {
+        console.log('🌍 Geolocation: Running on localhost (no Vercel headers)');
+      }
       return;
     }
 
@@ -189,12 +191,15 @@ async function fetchIPGeolocation() {
       'user.ip': data.ip || 'unknown'
     });
 
-    console.log('🌍 Geolocation updated:', {
-      city: city,
-      region: data.region,
-      country: data.country,
-      source: 'Vercel Edge Network'
-    });
+    // Development-only logging
+    if (import.meta.env.DEV) {
+      console.log('🌍 Geolocation updated:', {
+        city: city,
+        region: data.region,
+        country: data.country,
+        source: 'Vercel Edge Network'
+      });
+    }
   } catch (error) {
     // Fail silently - geolocation is optional
     console.warn('⚠️ Could not fetch geolocation:', error.message);
@@ -232,13 +237,13 @@ function setupConsoleTracking() {
     try {
       const now = Date.now();
 
-      // 2. RATE LIMIT CHECK - Reset counter every 5 seconds
-      if (now - rateLimitWindow.resetTime > 5000) {
+      // 2. RATE LIMIT CHECK - Reset counter every rate limit window
+      if (now - rateLimitWindow.resetTime > RUM_RATE_LIMIT_WINDOW_MS) {
         rateLimitWindow = { count: 0, resetTime: now };
       }
 
-      // Max 10 console events per 5 seconds (protects against flooding)
-      if (rateLimitWindow.count >= 10) return;
+      // Max console events per window (protects against flooding)
+      if (rateLimitWindow.count >= RUM_MAX_CONSOLE_EVENTS_PER_WINDOW) return;
 
       // Convert arguments to string safely
       const message = args

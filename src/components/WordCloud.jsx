@@ -30,34 +30,15 @@ import DefinitionModal from './DefinitionModal';
 import { safeTrackEvent } from '../rum.js';
 import useTouchDevice from '../hooks/useTouchDevice';
 import useResponsive from '../hooks/useResponsive';
-
-// Available font sizes for words (from small to large)
-// Desktop: larger fonts for better visibility
-const FONT_SIZES_DESKTOP = [
-  'text-lg',
-  'text-xl',
-  'text-2xl',
-  'text-3xl',
-  'text-4xl',
-  'text-5xl'
-];
-
-// Mobile: smaller fonts to fit more words comfortably
-const FONT_SIZES_MOBILE = [
-  'text-sm',
-  'text-base',
-  'text-lg',
-  'text-xl',
-  'text-2xl',
-  'text-3xl'
-];
-
-// Maximum words to show (prevents cloud from getting too crowded)
-const MAX_DISPLAY_WORDS_DESKTOP = 40;
-const MAX_DISPLAY_WORDS_MOBILE = 12;
-
-// Maximum cache size to prevent memory leaks (LRU-style limit)
-const MAX_CACHE_SIZE = 100;
+import {
+  FONT_SIZES_DESKTOP,
+  FONT_SIZES_MOBILE,
+  MAX_DISPLAY_WORDS_DESKTOP,
+  MAX_DISPLAY_WORDS_MOBILE,
+  MAX_DEFINITION_CACHE_SIZE,
+  FOOTER_HINT_DELAY_MS,
+  FONT_SCALE_THRESHOLDS
+} from '../constants';
 
 /**
  * Fisher-Yates shuffle algorithm
@@ -98,11 +79,11 @@ function hashWord(word) {
  * - 1-10 words: ALL text-5xl (everything HUGE!)
  */
 function getFontSizeRange(wordCount, fontSizes) {
-  if (wordCount <= 10) return [fontSizes[5]];           // Only largest size
-  if (wordCount <= 20) return fontSizes.slice(4);       // Two largest sizes
-  if (wordCount <= 30) return fontSizes.slice(3);       // Three largest sizes
-  if (wordCount <= 40) return fontSizes.slice(2);       // Four largest sizes
-  return fontSizes;                                      // All sizes
+  if (wordCount <= FONT_SCALE_THRESHOLDS.LARGEST_ONLY) return [fontSizes[5]];  // Only largest size
+  if (wordCount <= FONT_SCALE_THRESHOLDS.LARGE_SIZES) return fontSizes.slice(4);  // Two largest sizes
+  if (wordCount <= FONT_SCALE_THRESHOLDS.MEDIUM_LARGE) return fontSizes.slice(3);  // Three largest sizes
+  if (wordCount <= FONT_SCALE_THRESHOLDS.MIXED_SIZES) return fontSizes.slice(2);  // Four largest sizes
+  return fontSizes;  // All sizes
 }
 
 export default function WordCloud() {
@@ -170,11 +151,11 @@ export default function WordCloud() {
   // FOOTER HINT TIMER
   // ========================================
 
-  // Show footer hint after 3 seconds
+  // Show footer hint after delay
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowFooterHint(true);
-    }, 3000);
+    }, FOOTER_HINT_DELAY_MS);
 
     return () => clearTimeout(timer);
   }, []);
@@ -223,7 +204,7 @@ export default function WordCloud() {
 
       // Cache the result with size limiting (simple LRU-style)
       const cacheKeys = Object.keys(definitionCache);
-      if (cacheKeys.length >= MAX_CACHE_SIZE) {
+      if (cacheKeys.length >= MAX_DEFINITION_CACHE_SIZE) {
         // Remove oldest entry (first key in the object)
         delete definitionCache[cacheKeys[0]];
       }

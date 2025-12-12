@@ -27,6 +27,7 @@ import { useState, useRef } from 'react';
 import { useConstraints } from '../context/ConstraintContext';
 import useTouchDevice from '../hooks/useTouchDevice';
 import useKeyboardInput from '../hooks/useKeyboardInput';
+import { POSITION_INDICES, POSITION_LABELS } from '../constants';
 
 export default function GreenRow({ isFocused, onFocusChange }) {
   const { green, addGreen, removeGreen } = useConstraints();
@@ -109,7 +110,7 @@ export default function GreenRow({ isFocused, onFocusChange }) {
         <div className="pb-8">
           {/* Position labels (1-5) */}
           <div className="grid grid-cols-5 gap-3 mb-2">
-          {[1, 2, 3, 4, 5].map((num) => (
+          {POSITION_LABELS.map((num) => (
             <div key={num} className="text-center text-sm font-bold text-gray-500 dark:text-gray-400">
               {num}
             </div>
@@ -117,7 +118,7 @@ export default function GreenRow({ isFocused, onFocusChange }) {
         </div>
         {/* Tile grid: 5 letter tiles */}
         <div className="grid grid-cols-5 gap-3">
-          {[0, 1, 2, 3, 4].map((position) => {
+          {POSITION_INDICES.map((position) => {
             const baseClasses = `aspect-square rounded-xl border-2 flex items-center justify-center text-5xl font-bold relative group transition-all shadow-md hover:shadow-lg ${
               green[position]
                 ? 'bg-gradient-to-br from-green-400 to-green-600 border-green-600 text-white'

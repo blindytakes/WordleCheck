@@ -32,6 +32,7 @@ import { useConstraints } from '../context/ConstraintContext';
 import ErrorMessage from './ErrorMessage';
 import useTouchDevice from '../hooks/useTouchDevice';
 import useKeyboardInput from '../hooks/useKeyboardInput';
+import { POSITION_INDICES, POSITION_LABELS } from '../constants';
 
 export default function YellowRow({ isFocused, onFocusChange }) {
   const { yellow, addYellow, removeYellow } = useConstraints();
@@ -123,7 +124,7 @@ export default function YellowRow({ isFocused, onFocusChange }) {
         <div className="pb-8">
           {/* Position labels (1-5) */}
           <div className="grid grid-cols-5 gap-3 mb-2">
-          {[1, 2, 3, 4, 5].map((num) => (
+          {POSITION_LABELS.map((num) => (
             <div key={num} className="text-center text-sm font-bold text-gray-500 dark:text-gray-400">
               {num}
             </div>
@@ -131,7 +132,7 @@ export default function YellowRow({ isFocused, onFocusChange }) {
         </div>
         {/* Cell grid: 5 cells that can hold multiple letters each */}
         <div className="grid grid-cols-5 gap-3">
-          {[0, 1, 2, 3, 4].map((position) => (
+          {POSITION_INDICES.map((position) => (
             <div
               key={position}
               onClick={(e) => {
@@ -187,7 +188,7 @@ export default function YellowRow({ isFocused, onFocusChange }) {
                       e.stopPropagation();
                       handleLetterRemove(position, letter);
                     }}
-                    className="bg-gradient-to-br from-amber-200 to-amber-300 border border-amber-400 rounded px-2 py-1 text-base font-bold text-amber-800 flex items-center justify-center gap-1 cursor-pointer hover:from-amber-300 hover:to-amber-400 active:from-amber-400 active:to-amber-500 transition-all shadow-sm hover:shadow-md relative w-full"
+                    className="bg-gradient-to-br from-amber-200 to-amber-300 border border-amber-400 rounded px-2 py-1 text-base font-bold text-amber-800 flex items-center justify-center gap-1 cursor-pointer hover:from-amber-300 hover:to-amber-400 active:from-amber-400 active:to-amber-500 transition-all shadow-sm hover:shadow-md relative w-full group"
                   >
                     <span>{letter}</span>
                     <span className={`text-red-600 font-bold text-base ${isTouchDevice ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>✕</span>
