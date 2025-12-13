@@ -108,6 +108,26 @@ export default function GrayRow({ isFocused, onFocusChange }) {
         <div className="text-base font-semibold text-gray-600 dark:text-gray-300 mb-3 text-center">
           Incorrect Letters
         </div>
+        {/*
+          MOBILE vs DESKTOP INPUT STRATEGY:
+
+          Mobile (isTouchDevice):
+          - Single native <input> element to trigger mobile keyboard
+          - Letters appear as removable badges when typed
+          - Delete button (✕) always visible on badges (no hover needed)
+          - Input autofocuses when clicking the container
+
+          Desktop (!isTouchDevice):
+          - No visible input (keyboard listener handles typing)
+          - Delete button (✕) appears only on hover
+          - Cleaner UI without input field clutter
+          - Tab key cycles back to GreenRow
+
+          Why separate implementations?
+          - Mobile requires visible input for native keyboard
+          - Touch devices don't have hover states (need persistent delete buttons)
+          - Desktop benefits from global keyboard shortcuts
+        */}
         {/* Letter list container (flex wrap for dynamic layout) */}
         <div
           className="min-h-24 bg-gray-50 dark:bg-gray-700 rounded-xl border-2 border-gray-200 dark:border-gray-600 p-4 flex flex-wrap gap-2 justify-center items-center relative"

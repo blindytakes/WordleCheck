@@ -32,7 +32,22 @@ export default function CloudShape({ isTouchDevice, children }) {
         duration: 1
       }}
     >
-      {/* Floating animation: Cloud gently bobs up and down infinitely (desktop only) */}
+      {/*
+        FLOATING ANIMATION - DESKTOP ONLY:
+
+        Desktop (isTouchDevice = false):
+        - Cloud gently floats up and down continuously
+        - Adds visual interest and "alive" feeling to the UI
+        - 4-second loop moving 15px up and back down
+
+        Mobile (isTouchDevice = true):
+        - Animation disabled (animate={}, transition={})
+        - Why? Mobile devices often have:
+          - Lower GPU power (animation can cause jank/stuttering)
+          - Reduced battery life from continuous animations
+          - Scrolling interactions that conflict with floating effects
+        - Provides cleaner, more performant experience on phones/tablets
+      */}
       <motion.div
         className="relative"
         animate={isTouchDevice ? {} : {

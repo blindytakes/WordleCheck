@@ -12,7 +12,15 @@ import {
 /**
  * Fisher-Yates shuffle algorithm
  * Efficiently shuffles an array with unbiased randomization
- * Time complexity: O(n)
+ *
+ * ALGORITHM COMPLEXITY:
+ * - Time: O(n) where n = array length
+ *   - Single pass through array from end to start
+ *   - Each swap is O(1) operation
+ * - Space: O(n) for creating shuffled copy
+ *
+ * @param {Array} array - Array to shuffle
+ * @returns {Array} New shuffled array (original unchanged)
  */
 export function shuffleArray(array) {
   const shuffled = [...array];
@@ -26,7 +34,21 @@ export function shuffleArray(array) {
 /**
  * Hash function for deterministic word ordering and sizing
  * Converts a word to a consistent number based on character codes
- * Same word always produces the same hash
+ * Same word always produces the same hash (important for stable mode)
+ *
+ * ALGORITHM COMPLEXITY:
+ * - Time: O(m) where m = word length (typically 5 for Wordle)
+ *   - Iterates through each character once
+ *   - charCodeAt() is O(1)
+ * - Space: O(1) - only stores a single number
+ *
+ * Why deterministic?
+ * - Ensures same word always gets same size in stable mode
+ * - Prevents words from "jumping" sizes on re-render
+ * - Creates consistent visual hierarchy
+ *
+ * @param {string} word - Word to hash
+ * @returns {number} Hash value (sum of character codes)
  */
 export function hashWord(word) {
   let hash = 0;

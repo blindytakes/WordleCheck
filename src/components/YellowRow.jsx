@@ -149,8 +149,29 @@ export default function YellowRow({ isFocused, onFocusChange }) {
                   : 'border-gray-200 dark:border-gray-600'
               }`}
             >
+              {/*
+                MOBILE vs DESKTOP INPUT STRATEGY:
+
+                Mobile (isTouchDevice):
+                - Shows a native <input> field at the top of each cell
+                - Input triggers mobile keyboard for easy letter entry
+                - Each letter is validated and added as a badge below the input
+                - Input auto-clears after each letter (ready for next entry)
+                - Delete button (✕) always visible on badges
+
+                Desktop (!isTouchDevice):
+                - No visible input field (cleaner UI)
+                - Typing directly adds letters via useKeyboardInput hook
+                - Delete button (✕) appears only on hover
+                - Supports keyboard shortcuts (Tab, Backspace, etc.)
+
+                Why separate implementations?
+                - Mobile needs visible input to trigger native keyboard
+                - Desktop benefits from invisible keyboard listener (cleaner UI)
+                - Touch users need always-visible delete buttons (no hover state)
+              */}
               {isTouchDevice && (
-                // Mobile: Input field at top of cell
+                // Mobile: Input field at top of cell for mobile keyboard
                 <input
                   ref={(el) => (inputRefs.current[position] = el)}
                   {...MOBILE_INPUT_PROPS}

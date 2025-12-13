@@ -137,8 +137,28 @@ export default function GreenRow({ isFocused, onFocusChange }) {
                 }}
                 className={`${baseClasses} cursor-pointer`}
               >
+                {/*
+                  MOBILE vs DESKTOP INPUT STRATEGY:
+
+                  Mobile (isTouchDevice):
+                  - Uses native <input> elements to trigger mobile keyboard
+                  - Each tile has its own focusable input
+                  - onChange handles validation and auto-advance
+                  - Better UX on touchscreens (native keyboard, autocorrect disabled)
+
+                  Desktop (!isTouchDevice):
+                  - Uses <div> display-only elements
+                  - Keyboard input handled globally via useKeyboardInput hook
+                  - Allows arrow key navigation and custom keyboard shortcuts
+                  - Cleaner UI without input fields (just letters + delete buttons)
+
+                  Why separate implementations?
+                  - Mobile keyboards don't support arrow key navigation
+                  - Desktop benefits from global keyboard listener (Tab, arrows, etc.)
+                  - Native inputs on mobile provide better accessibility (screen readers, autocomplete)
+                */}
                 {isTouchDevice ? (
-                  // Mobile: Native input element
+                  // Mobile: Native input element for mobile keyboard support
                   <input
                     ref={(el) => (inputRefs.current[position] = el)}
                     {...MOBILE_INPUT_PROPS}
@@ -165,7 +185,7 @@ export default function GreenRow({ isFocused, onFocusChange }) {
                     style={{ caretColor: 'transparent' }}
                   />
                 ) : (
-                  // Desktop: Display only (keyboard controlled)
+                  // Desktop: Display only (keyboard controlled via useKeyboardInput hook)
                   <>
                     {green[position] ? (
                       <>
