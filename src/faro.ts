@@ -14,19 +14,16 @@ export function initFaro() {
 
     instrumentations: [
       ...getWebInstrumentations({
-        // 🔥 Capture EVERYTHING
-        captureConsole: true,        // console.log / warn / error
-        captureErrors: true,         // JS errors + stack traces
-        captureWebVitals: true,      // LCP, CLS, INP, etc.
-        captureInteractions: true,   // clicks, navigation
+        captureConsole: true,
+        captureErrors: true,
+        captureWebVitals: true,
+        captureInteractions: true,
       }),
-
-      // End-to-end tracing (sessions, fetch/XHR, navigation)
       new TracingInstrumentation(),
     ],
   });
 
-  // 📍 Infer approximate location from IP for analytics
+  // 📍 Geo lookup (already working)
   fetch('https://ipapi.co/json/')
     .then(response => response.json())
     .then(data => {
@@ -36,14 +33,24 @@ export function initFaro() {
           region: data.region,
           country: data.country_name,
           latitude: data.latitude,
-          longitude: data.longitude
+          longitude: data.longitude,
         });
-        console.log('Faro: Geo location resolved -', data.city, data.region);
       }
     })
-    .catch(err => {
-      console.warn('Location lookup failed (non-critical):', err.message);
-    });
+    .catch(() => {});
+
+  // ⏱ TOTAL TIME SPENT ON PAGE (ADD THIS)
+  const pageStart = performance.now();
+
+  window.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') {
+      const durationMs = Math.round(performance.now() - pageStart);
+
+      faro.api.pushEvent('page_time_spent', {
+        duration_ms: durationMs,
+      });
+    }
+  });
 
   return faro;
 }
