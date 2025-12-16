@@ -8,12 +8,11 @@
  * - Fetches definitions from Free Dictionary API
  * - Component-scoped LRU cache (prevents memory leaks)
  * - Loading and error states
- * - Splunk RUM tracking for all events
+ * - Automatic frontend observability via Grafana Faro
  * - Modal open/close management
  */
 
 import { useState, useRef } from 'react';
-import { safeTrackEvent } from '../rum.js';
 import { MAX_DEFINITION_CACHE_SIZE } from '../constants';
 
 export default function useDefinition() {
@@ -39,15 +38,6 @@ export default function useDefinition() {
     if (definitionCache[wordLower]) {
       setDefinition(definitionCache[wordLower]);
       setDefinitionError(false);
-
-      // Track cached definition fetch
-      safeTrackEvent('definition.fetched', {
-        word: wordLower,
-        cached: true,
-        success: true,
-        timestamp: Date.now()
-      });
-
       return;
     }
 
@@ -76,26 +66,10 @@ export default function useDefinition() {
 
       setDefinition(data);
       setDefinitionError(false);
-
-      // Track successful definition fetch
-      safeTrackEvent('definition.fetched', {
-        word: wordLower,
-        cached: false,
-        success: true,
-        timestamp: Date.now()
-      });
     } catch (error) {
       console.error('Error fetching definition:', error);
       setDefinitionError(true);
       setDefinition(null);
-
-      // Track failed definition fetch
-      safeTrackEvent('definition.fetched', {
-        word: wordLower,
-        success: false,
-        error: error.message,
-        timestamp: Date.now()
-      });
     } finally {
       setIsLoadingDefinition(false);
     }
@@ -103,17 +77,8 @@ export default function useDefinition() {
 
   /**
    * Opens definition modal for a word
-   * Tracks word click event and fetches definition
    */
-  const openDefinition = (word, totalWords, isStableMode) => {
-    // Track word click event in Splunk
-    safeTrackEvent('word.clicked', {
-      word: word,
-      totalWords: totalWords,
-      cloudMode: isStableMode ? 'stable' : 'dynamic',
-      timestamp: Date.now()
-    });
-
+  const openDefinition = (word) => {
     setSelectedWord(word);
     setDefinition(null);
     fetchDefinition(word);
@@ -123,13 +88,6 @@ export default function useDefinition() {
    * Closes the definition modal
    */
   const closeDefinition = () => {
-    // Track modal close
-    safeTrackEvent('modal.closed', {
-      word: selectedWord,
-      hadDefinition: definition !== null,
-      timestamp: Date.now()
-    });
-
     setSelectedWord(null);
     setDefinition(null);
     setDefinitionError(false);
@@ -141,6 +99,6 @@ export default function useDefinition() {
     isLoadingDefinition,
     definitionError,
     openDefinition,
-    closeDefinition
+    closeDefinition,
   };
 }
