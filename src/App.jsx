@@ -27,6 +27,8 @@ import GrayRow from './components/GrayRow';
 import Keyboard from './components/Keyboard';
 import WordCloud from './components/WordCloud';
 import useTouchDevice from './hooks/useTouchDevice';
+import { useTypingMetrics } from './hooks/useTypingMetrics';
+import { getFaro } from './faro';
 
 /**
  * AppContent - The main app UI
@@ -42,24 +44,67 @@ function AppContent() {
   // Get global actions from context
   const { undo } = useConstraints();
 
+  // Initialize typing metrics tracking (for fun!)
+  const typingMetrics = useTypingMetrics();
+
   // Called by rows when they receive focus
   const handleFocusChange = (row) => {
     setFocusedRow(row);
   };
 
-  // Global keyboard shortcuts
+  // Global keyboard shortcuts + typing metrics
   useEffect(() => {
     const handleGlobalKeyDown = (e) => {
       // Ctrl+Z or Cmd+Z to undo
       if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
         e.preventDefault();
         undo();
+        return;
       }
+
+      // Track typing activity (not shortcuts)
+      typingMetrics.onKeyDown(e);
     };
 
     window.addEventListener('keydown', handleGlobalKeyDown);
     return () => window.removeEventListener('keydown', handleGlobalKeyDown);
-  }, [undo]);
+  }, [undo, typingMetrics]);
+
+  // Emit typing metrics to Faro when user leaves
+  useEffect(() => {
+    const emitMetrics = () => {
+      const metrics = typingMetrics.getMetrics();
+      const faro = getFaro();
+
+      // Only emit if there was any activity
+      if (metrics.lettersTyped > 0 || metrics.constraintsAdded > 0) {
+        faro?.api?.pushEvent('typing_session_complete', {
+          letters_typed: metrics.lettersTyped,
+          backspaces: metrics.backspaces,
+          constraints_added: metrics.constraintsAdded,
+          constraints_removed: metrics.constraintsRemoved,
+          session_duration_ms: metrics.sessionDurationMs,
+          editing_ratio: Math.round(metrics.editingRatio * 100) / 100,
+        });
+      }
+    };
+
+    // Handler for visibility change (properly cleanup-able)
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'hidden') {
+        emitMetrics();
+      }
+    };
+
+    // Emit on page unload
+    window.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('beforeunload', emitMetrics);
+
+    return () => {
+      window.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('beforeunload', emitMetrics);
+    };
+  }, [typingMetrics]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-300 via-indigo-200 to-purple-100 dark:from-gray-900 dark:via-purple-950 dark:to-gray-900 transition-colors duration-300 overflow-x-hidden">

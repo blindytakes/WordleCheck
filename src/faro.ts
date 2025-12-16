@@ -1,6 +1,16 @@
 // src/faro.ts
-import { getWebInstrumentations, initializeFaro } from '@grafana/faro-web-sdk';
+import { getWebInstrumentations, initializeFaro, Faro } from '@grafana/faro-web-sdk';
 import { TracingInstrumentation } from '@grafana/faro-web-tracing';
+
+/**
+ * Faro instance singleton
+ *
+ * LIFECYCLE ASSUMPTION:
+ * - initFaro() is called exactly once in main.jsx before React renders
+ * - getFaro() is only called after initialization is complete
+ * - This instance persists for the entire application lifecycle
+ */
+let faroInstance: Faro | null = null;
 
 export function initFaro() {
   const faro = initializeFaro({
@@ -52,5 +62,10 @@ export function initFaro() {
     }
   });
 
+  faroInstance = faro;
   return faro;
+}
+
+export function getFaro(): Faro | null {
+  return faroInstance;
 }
