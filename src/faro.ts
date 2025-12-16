@@ -3,7 +3,7 @@ import { getWebInstrumentations, initializeFaro } from '@grafana/faro-web-sdk';
 import { TracingInstrumentation } from '@grafana/faro-web-tracing';
 
 export function initFaro() {
-  initializeFaro({
+  const faro = initializeFaro({
     url: 'https://faro-collector-prod-us-east-3.grafana.net/collect/9314a56f03836fe03ec857e0505d5898',
 
     app: {
@@ -25,4 +25,25 @@ export function initFaro() {
       new TracingInstrumentation(),
     ],
   });
+
+  // 📍 Infer approximate location from IP for analytics
+  fetch('https://ipapi.co/json/')
+    .then(response => response.json())
+    .then(data => {
+      if (data.city && faro.api) {
+        faro.api.pushEvent('geo_ip_resolved', {
+          city: data.city,
+          region: data.region,
+          country: data.country_name,
+          latitude: data.latitude,
+          longitude: data.longitude
+        });
+        console.log('Faro: Geo location resolved -', data.city, data.region);
+      }
+    })
+    .catch(err => {
+      console.warn('Location lookup failed (non-critical):', err.message);
+    });
+
+  return faro;
 }
