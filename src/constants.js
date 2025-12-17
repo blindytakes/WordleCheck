@@ -80,9 +80,9 @@ export const FONT_SIZES_MOBILE = [
  */
 export const FONT_SCALE_THRESHOLDS = {
   /** All words at maximum size */
-  LARGEST_ONLY: 10,
+  LARGEST_ONLY: 3,
   /** Two largest sizes only */
-  LARGE_SIZES: 20,
+  LARGE_SIZES: 6,
   /** Three largest sizes */
   MEDIUM_LARGE: 30,
   /** Four largest sizes */
