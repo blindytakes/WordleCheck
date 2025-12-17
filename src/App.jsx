@@ -108,6 +108,7 @@ function AppContent() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-300 via-indigo-200 to-purple-100 dark:from-gray-900 dark:via-purple-950 dark:to-gray-900 transition-colors duration-300 overflow-x-hidden">
+      <Header />
       {/* Main container with fade-in animation */}
       <motion.div
         className="w-full mx-auto h-screen pt-0 md:pt-16 overflow-x-hidden"
@@ -115,7 +116,6 @@ function AppContent() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
       >
-        <Header />
 
         {/* Responsive layout: Stacks vertically on mobile, side-by-side on desktop */}
         <div className="flex flex-col lg:flex-row justify-center items-start lg:items-center gap-0 lg:gap-20 h-auto lg:h-[calc(100%-120px)] max-w-[1900px] mx-auto px-4 pb-8 overflow-x-hidden">

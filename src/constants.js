@@ -36,7 +36,7 @@ export const MAX_DISPLAY_WORDS_DESKTOP = 40;
 /**
  * Maximum number of words to display in cloud on mobile/tablet
  */
-export const MAX_DISPLAY_WORDS_MOBILE = 12;
+export const MAX_DISPLAY_WORDS_MOBILE = 10;
 
 /**
  * Maximum number of cached word definitions (LRU-style limit)
@@ -63,15 +63,15 @@ export const FONT_SIZES_DESKTOP = [
 
 /**
  * Available font sizes for words in cloud (mobile/tablet)
- * Ordered from smallest to largest
+ * Ordered from smallest to largest - all larger for better mobile readability
  */
 export const FONT_SIZES_MOBILE = [
-  'text-sm',
-  'text-base',
-  'text-lg',
   'text-xl',
   'text-2xl',
-  'text-3xl'
+  'text-3xl',
+  'text-4xl',
+  'text-5xl',
+  'text-6xl'
 ];
 
 /**
