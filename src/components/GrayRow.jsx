@@ -103,7 +103,7 @@ export default function GrayRow({ isFocused, onFocusChange }) {
     >
       {/* Error message (shown at top when validation fails) */}
       <ErrorMessage message={errorMessage} onClose={() => setErrorMessage(null)} />
-      <div className="p-6 pb-8">
+      <div className="p-6 pb-0 lg:pb-8">
         {/* Row title */}
         <div className="text-base font-semibold text-gray-600 dark:text-gray-300 mb-3 text-center">
           Incorrect Letters
@@ -130,7 +130,7 @@ export default function GrayRow({ isFocused, onFocusChange }) {
         */}
         {/* Letter list container (flex wrap for dynamic layout) */}
         <div
-          className="min-h-24 bg-gray-50 dark:bg-gray-700 rounded-xl border-2 border-gray-200 dark:border-gray-600 p-4 flex flex-wrap gap-2 justify-center items-center relative"
+          className="min-h-24 bg-gray-50 dark:bg-gray-700 rounded-xl border-2 border-gray-200 dark:border-gray-600 p-4 pb-2 lg:pb-4 flex flex-wrap gap-2 justify-center items-center relative"
           onClick={() => {
             onFocusChange('gray');
             if (isTouchDevice && inputRef.current) {

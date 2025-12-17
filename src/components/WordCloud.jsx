@@ -73,7 +73,7 @@ export default function WordCloud() {
   // ========================================
 
   return (
-    <div className="relative h-full w-full flex flex-col items-center justify-start mt-0 md:mt-24 lg:mt-48">
+    <div className="relative h-full w-full flex flex-col items-center justify-start -mt-8 md:mt-24 lg:mt-48">
       {/* FLUFFY CLOUD */}
       <CloudShape isTouchDevice={isTouchDevice}>
         <WordGrid
@@ -86,7 +86,7 @@ export default function WordCloud() {
 
       {/* Title: "Wordle Fun" with gradient text (responsive sizing) */}
       <motion.div
-        className="text-xl sm:text-4xl md:text-6xl lg:text-8xl font-black bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 dark:from-pink-400 dark:via-purple-400 dark:to-blue-400 text-transparent bg-clip-text mt-4 md:mt-8"
+        className="text-xl sm:text-4xl md:text-6xl lg:text-8xl font-black bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 dark:from-pink-400 dark:via-purple-400 dark:to-blue-400 text-transparent bg-clip-text -mt-6 md:mt-8"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: "easeOut" }}

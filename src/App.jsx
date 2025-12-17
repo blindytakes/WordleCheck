@@ -118,7 +118,7 @@ function AppContent() {
         <Header />
 
         {/* Responsive layout: Stacks vertically on mobile, side-by-side on desktop */}
-        <div className="flex flex-col lg:flex-row justify-center items-center gap-8 lg:gap-20 h-auto lg:h-[calc(100%-120px)] max-w-[1900px] mx-auto px-4 pb-8 overflow-x-hidden">
+        <div className="flex flex-col lg:flex-row justify-center items-start lg:items-center gap-0 lg:gap-20 h-auto lg:h-[calc(100%-120px)] max-w-[1900px] mx-auto px-4 pb-8 overflow-x-hidden">
           {/* Left Panel - Input rows and keyboard (responsive width) */}
           <motion.div
             className="flex-shrink-0 w-full max-w-[580px] lg:w-[580px] lg:mt-12 lg:ml-8 flex flex-col gap-4"
@@ -139,7 +139,11 @@ function AppContent() {
               onFocusChange={handleFocusChange}
             />
             {/* Only show visual keyboard on desktop (not needed on mobile with native inputs) */}
-            {!isTouchDevice && <Keyboard />}
+            {!isTouchDevice && (
+              <div className="hidden lg:block">
+                <Keyboard />
+              </div>
+            )}
           </motion.div>
 
           {/* Right Panel - Word cloud display (responsive width) */}
