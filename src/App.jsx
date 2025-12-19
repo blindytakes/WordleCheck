@@ -26,6 +26,7 @@ import YellowRow from './components/YellowRow';
 import GrayRow from './components/GrayRow';
 import Keyboard from './components/Keyboard';
 import WordCloud from './components/WordCloud';
+import AboutSection from './components/AboutSection';
 import useTouchDevice from './hooks/useTouchDevice';
 import { useTypingMetrics } from './hooks/useTypingMetrics';
 import { getFaro } from './faro';
@@ -156,6 +157,9 @@ function AppContent() {
             <WordCloud />
           </motion.div>
         </div>
+
+        {/* SEO-friendly about section */}
+        <AboutSection />
       </motion.div>
     </div>
   );
