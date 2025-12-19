@@ -14,21 +14,24 @@
     <!-- Theme Color (mobile browsers) -->
     <meta name="theme-color" content="#10b981" />
 
+    <!-- Canonical URL (prevents duplicate content issues) -->
+    <link rel="canonical" href="https://wordlecloud.com/" />
+
     <!-- Open Graph / Facebook / Discord / LinkedIn -->
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://wordle-wordcloud.vercel.app/" />
+    <meta property="og:url" content="https://wordlecloud.com/" />
     <meta property="og:title" content="Wordle Word Cloud - Interactive Word Filtering Tool" />
     <meta property="og:description" content="Narrow down Wordle solutions with an interactive word cloud. Filter words by letter positions to find your answer faster." />
-    <meta property="og:image" content="https://wordle-wordcloud.vercel.app/og-image.png" />
+    <meta property="og:image" content="https://wordlecloud.com/og-image.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:url" content="https://wordle-wordcloud.vercel.app/" />
+    <meta name="twitter:url" content="https://wordlecloud.com/" />
     <meta name="twitter:title" content="Wordle Word Cloud - Interactive Word Filtering Tool" />
     <meta name="twitter:description" content="Narrow down Wordle solutions with an interactive word cloud. Filter words by letter positions to find your answer faster." />
-    <meta name="twitter:image" content="https://wordle-wordcloud.vercel.app/og-image.png" />
+    <meta name="twitter:image" content="https://wordlecloud.com/og-image.png" />
 
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
@@ -37,6 +40,29 @@
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     -->
+
+    <!-- Structured Data (JSON-LD) for Google -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Wordle Word Cloud",
+      "url": "https://wordlecloud.com/",
+      "description": "Interactive word cloud tool to help solve Wordle puzzles. Filter words by letter positions to find your answer faster.",
+      "applicationCategory": "GameApplication",
+      "operatingSystem": "Any",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.8",
+        "ratingCount": "1"
+      }
+    }
+    </script>
   </head>
   <body>
     <div id="root"></div>
