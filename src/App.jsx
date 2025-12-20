@@ -27,6 +27,7 @@ import GrayRow from './components/GrayRow';
 import Keyboard from './components/Keyboard';
 import WordCloud from './components/WordCloud';
 import AboutSection from './components/AboutSection';
+import HelpModal from './components/HelpModal';
 import useTouchDevice from './hooks/useTouchDevice';
 import { useTypingMetrics } from './hooks/useTypingMetrics';
 import { getFaro } from './faro';
@@ -158,9 +159,12 @@ function AppContent() {
           </motion.div>
         </div>
 
-        {/* SEO-friendly about section */}
+        {/* SEO-friendly about section (hidden, for search engines only) */}
         <AboutSection />
       </motion.div>
+
+      {/* Floating help button with modal */}
+      <HelpModal />
     </div>
   );
 }
