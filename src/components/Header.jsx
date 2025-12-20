@@ -5,7 +5,7 @@ export default function Header() {
   const [isDark, toggleDarkMode] = useDarkMode();
 
   return (
-    <div className="fixed top-[90vh] sm:top-8 left-0 right-0 z-50 pointer-events-none">
+    <div className="fixed top-8 left-0 right-0 z-50 pointer-events-none">
       <div className="max-w-[98%] mx-auto px-4 sm:px-6 lg:px-8 flex justify-end">
         <div className="flex flex-col items-center gap-3 pointer-events-auto">
           <motion.button
