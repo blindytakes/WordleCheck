@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OG Image Preview - 1200x630</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      background: #f0f0f0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+    .instructions {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      max-width: 1200px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .preview-container {
+      border: 2px solid #333;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      background: #2d1b4d; /* Matches the theme background */
+      width: 1200px;
+      height: 630px;
+      overflow: hidden;
+    }
+    code {
+      background: #f4f4f4;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-family: monospace;
+    }
+  </style>
+</head>
+<body>
+  <div class="instructions">
+    <h1>OG Image Preview (Fixed Layout)</h1>
+    <p><strong>Dimensions:</strong> 1200 x 630 pixels</p>
+    <ol>
+      <li>Take a screenshot of the purple area below.</li>
+      <li>Save as <code>og-image.png</code> in your <code>public/</code> folder.</li>
+    </ol>
+  </div>
+
+  <div class="preview-container">
+    <svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+      <rect width="1200" height="630" fill="#2d1b4d"/>
+      
+      <circle cx="950" cy="315" r="200" fill="#FF69B4" fill-opacity="0.35" />
+      <circle cx="950" cy="315" r="140" fill="#FF69B4" fill-opacity="0.45" />
+
+      <rect x="100" y="240" width="100" height="100" rx="8" fill="#6aaa64"/>
+      <rect x="220" y="240" width="100" height="100" rx="8" fill="#c9b458"/>
+      <rect x="340" y="240" width="100" height="100" rx="8" fill="#787c7e"/>
+
+      <text x="100" y="420" font-family="Arial, sans-serif" font-weight="bold" font-size="65" fill="white">Wordle Word Cloud</text>
+      <text x="100" y="460" font-family="Arial, sans-serif" font-size="32" fill="#b1a0d8">Master Wordle with Visual Filtering</text>
+
+      <g font-family="Arial, sans-serif" font-weight="bold" text-anchor="middle">
+        <text x="950" y="335" font-size="80" fill="white">CRANE</text>
+        <text x="830" y="250" font-size="40" fill="#d1d1d1">STARE</text>
+        <text x="1070" y="240" font-size="35" fill="#b1a0d8">ADIEU</text>
+        <text x="800" y="400" font-size="35" fill="#b1a0d8">AUDIO</text>
+        <text x="1100" y="400" font-size="45" fill="white">RAISE</text>
+        <text x="920" y="420" font-size="30" fill="#d1d1d1">WIELD</text>
+        <text x="1050" y="460" font-size="28" fill="#b1a0d8">SALET</text>
+      </g>
+    </svg>
+  </div>
+</body>
+</html>

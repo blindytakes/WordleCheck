@@ -1,0 +1,7 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Wordle green background with rounded corners -->
+  <rect width="32" height="32" rx="6" fill="#6aaa64"/>
+
+  <!-- Bold, simple "W" that scales well -->
+  <path d="M6 10 L9 10 L12 22 L16 10 L20 22 L23 10 L26 10 L22 26 L18 26 L16 16 L14 26 L10 26 Z" fill="white" stroke="white" stroke-width="0.5" stroke-linejoin="round"/>
+</svg>
