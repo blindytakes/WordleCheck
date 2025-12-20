@@ -29,7 +29,7 @@ export default function HelpModal() {
       {/* Floating Info Button */}
       <motion.button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-24 right-10 z-40 w-24 h-24 rounded-full bg-gradient-to-br from-purple-500 to-indigo-600 text-white shadow-lg hover:shadow-xl hover:scale-110 transition-all duration-200 flex items-center justify-center group"
+        className="fixed bottom-12 right-10 z-40 w-14 h-14 sm:w-20 sm:h-20 rounded-full bg-gradient-to-br from-purple-500 to-indigo-600 text-white shadow-lg hover:shadow-xl hover:scale-110 transition-all duration-200 flex items-center justify-center group"
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.4, delay: 0.8 }}
@@ -39,7 +39,7 @@ export default function HelpModal() {
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          className="h-14 w-14"
+          className="h-8 w-8 sm:h-12 sm:w-12"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"

@@ -60,7 +60,7 @@ export default function CloudShape({ isTouchDevice, children }) {
         }}
       >
         {/* Cloud shape: Made of multiple overlapping gradient circles with blur (responsive sizing) */}
-        <div className="relative w-[95vw] max-w-[700px] h-[55vw] max-h-[500px] sm:w-[70vw] sm:h-[50vw] md:w-[70vw] md:h-[52vw] lg:w-[1200px] lg:h-[865px] scale-[0.35] sm:scale-[0.3] lg:scale-125">
+        <div className="relative w-[95vw] max-w-[700px] h-[55vw] max-h-[500px] sm:w-[70vw] sm:h-[50vw] md:w-[70vw] md:h-[52vw] lg:w-[1200px] lg:h-[865px] scale-x-[0.65] scale-y-[0.35] sm:scale-x-[0.6] sm:scale-y-[0.3] lg:scale-125">
           {/* Main cloud body: 13 overlapping circles create the fluffy shape */}
           <div className="absolute inset-0 flex items-center justify-center" style={{ filter: 'drop-shadow(0 0 10px rgba(255, 255, 255, 1))' }}>
             {/* Left puff */}
