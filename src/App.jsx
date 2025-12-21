@@ -113,10 +113,10 @@ function AppContent() {
   }, [typingMetrics]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-300 via-indigo-200 to-purple-100 dark:from-gray-900 dark:via-purple-950 dark:to-gray-900 transition-colors duration-300 overflow-x-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-purple-300 via-indigo-200 to-purple-100 dark:from-gray-900 dark:via-purple-950 dark:to-gray-900 transition-colors duration-300 overflow-x-hidden pt-24 md:pt-32 lg:pt-40">
       {/* Main container with fade-in animation */}
       <motion.div
-        className="relative w-full mx-auto min-h-screen overflow-x-hidden"
+        className="relative w-full mx-auto min-h-screen overflow-x-hidden overflow-y-visible"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
@@ -126,7 +126,7 @@ function AppContent() {
 
         {/* Responsive layout: Stacks vertically on mobile, side-by-side on desktop */}
         <div
-          className="flex flex-col lg:flex-row justify-center items-start lg:items-start gap-0 lg:gap-20 h-auto max-w-[1900px] mx-auto px-4 pb-8 overflow-x-hidden"
+          className="flex flex-col lg:flex-row justify-center items-start lg:items-start gap-0 lg:gap-20 h-auto max-w-[1900px] mx-auto px-4 pb-8 overflow-x-hidden overflow-y-visible"
           style={{ marginTop: isDesktop ? '75px' : '0px' }}
         >
           {/* Left Panel - Input rows and keyboard (responsive width) */}

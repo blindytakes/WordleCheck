@@ -18,7 +18,7 @@ export default function CloudShape({ isTouchDevice, children }) {
   return (
     /* Outer container: Initial scale/fade-in animation */
     <motion.div
-      className="relative w-full h-auto lg:h-full flex items-center justify-center overflow-visible"
+      className="relative w-full h-auto lg:h-full flex items-start justify-center overflow-visible"
       initial={{ y: -20, scale: 0.9, opacity: 0 }}
       animate={{
         y: 0,
@@ -62,7 +62,7 @@ export default function CloudShape({ isTouchDevice, children }) {
         {/* Cloud shape: Made of multiple overlapping gradient circles with blur (responsive sizing) */}
         <div className="relative w-[95vw] max-w-[700px] h-[55vw] max-h-[500px] sm:w-[70vw] sm:h-[50vw] md:w-[70vw] md:h-[52vw] lg:w-[1200px] lg:h-[865px] scale-x-[0.65] scale-y-[0.35] sm:scale-x-[0.6] sm:scale-y-[0.3] lg:scale-125 overflow-visible">
           {/* Main cloud body: 13 overlapping circles create the fluffy shape */}
-          <div className="absolute inset-0 flex items-center justify-center" style={{ filter: 'drop-shadow(0 0 10px rgba(255, 255, 255, 1))' }}>
+          <div className="absolute inset-0 flex items-center justify-center overflow-visible" style={{ filter: 'drop-shadow(0 0 10px rgba(255, 255, 255, 1))' }}>
             {/* Left puff */}
             <div className="absolute left-4 top-1/4 w-72 h-72 bg-gradient-to-br from-blue-200 to-blue-300 dark:from-purple-800 dark:to-purple-900 rounded-full blur-lg opacity-95"></div>
 
