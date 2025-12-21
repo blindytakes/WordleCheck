@@ -113,7 +113,7 @@ function AppContent() {
   }, [typingMetrics]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-300 via-indigo-200 to-purple-100 dark:from-gray-900 dark:via-purple-950 dark:to-gray-900 transition-colors duration-300 overflow-x-hidden pt-32 md:pt-48 lg:pt-64">
+    <div className="min-h-screen bg-gradient-to-br from-purple-300 via-indigo-200 to-purple-100 dark:from-gray-900 dark:via-purple-950 dark:to-gray-900 transition-colors duration-300 overflow-x-hidden pt-16 md:pt-24 lg:pt-32">
       {/* Main container with fade-in animation */}
       <motion.div
         className="relative w-full mx-auto min-h-screen overflow-x-hidden overflow-y-visible"
@@ -131,7 +131,7 @@ function AppContent() {
         >
           {/* Left Panel - Input rows and keyboard (responsive width) */}
           <motion.div
-            className="flex-shrink-0 w-full max-w-[580px] lg:w-[580px] lg:ml-8 flex flex-col gap-4"
+            className="flex-shrink-0 w-full max-w-[580px] lg:w-[580px] lg:ml-8 flex flex-col gap-4 mx-4 lg:mx-0"
             initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}

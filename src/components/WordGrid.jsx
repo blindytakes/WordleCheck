@@ -34,7 +34,7 @@ export default function WordGrid({
 
   // Word grid: Flex wrap layout with animated words
   return (
-    <div className="flex flex-wrap gap-4 sm:gap-3 justify-center items-center w-full max-w-full sm:max-w-3xl lg:max-w-5xl px-2 overflow-visible">
+    <div className="flex flex-wrap gap-5 sm:gap-3 justify-center items-center w-full max-w-full sm:max-w-3xl lg:max-w-5xl px-2 overflow-visible">
       {/* AnimatePresence handles smooth transitions when words change */}
       <AnimatePresence mode="popLayout">
         {wordsWithSizes.map(({ word, size, id }, index) => (
