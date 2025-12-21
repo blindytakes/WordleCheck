@@ -36,13 +36,13 @@ export default function FooterHint({ isTouchDevice, delay = FOOTER_HINT_DELAY_MS
     <AnimatePresence>
       {showHint && (
         <motion.div
-          className="fixed bottom-4 left-1/2 -translate-x-1/2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm px-4 py-2 sm:px-6 sm:py-3 rounded-full shadow-lg border border-purple-200 dark:border-purple-600 max-w-[90vw]"
+          className="hidden lg:block fixed bottom-12 left-1/2 -translate-x-1/2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm px-4 py-2 sm:px-6 sm:py-3 rounded-full shadow-lg border border-purple-200 dark:border-purple-600 max-w-[90vw]"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 20 }}
           transition={{ duration: 0.5 }}
         >
-          <p className="text-purple-700 dark:text-purple-300 text-xs sm:text-sm font-medium text-center">
+          <p className="text-purple-700 dark:text-purple-300 text-base sm:text-lg md:text-xl font-medium text-center">
             💡 Tip: Hover and Click words for definitions
           </p>
         </motion.div>
