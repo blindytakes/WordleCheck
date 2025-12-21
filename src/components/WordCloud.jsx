@@ -73,7 +73,7 @@ export default function WordCloud() {
   // ========================================
 
   return (
-    <div className="relative h-full w-full flex flex-col items-center justify-start -mt-8 md:mt-24 lg:mt-48">
+    <div className="relative h-full w-full flex flex-col items-center justify-start -mt-8 md:mt-24 lg:mt-56 overflow-visible">
       {/* FLUFFY CLOUD */}
       <CloudShape isTouchDevice={isTouchDevice}>
         <WordGrid

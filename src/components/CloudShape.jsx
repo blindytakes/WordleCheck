@@ -18,7 +18,7 @@ export default function CloudShape({ isTouchDevice, children }) {
   return (
     /* Outer container: Initial scale/fade-in animation */
     <motion.div
-      className="relative w-full h-auto lg:h-full flex items-center justify-center"
+      className="relative w-full h-auto lg:h-full flex items-center justify-center overflow-visible"
       initial={{ y: -20, scale: 0.9, opacity: 0 }}
       animate={{
         y: 0,
@@ -49,7 +49,7 @@ export default function CloudShape({ isTouchDevice, children }) {
         - Provides cleaner, more performant experience on phones/tablets
       */}
       <motion.div
-        className="relative"
+        className="relative overflow-visible"
         animate={isTouchDevice ? {} : {
           y: [0, -15, 0], // Move up 15px, then back down
         }}
@@ -60,7 +60,7 @@ export default function CloudShape({ isTouchDevice, children }) {
         }}
       >
         {/* Cloud shape: Made of multiple overlapping gradient circles with blur (responsive sizing) */}
-        <div className="relative w-[95vw] max-w-[700px] h-[55vw] max-h-[500px] sm:w-[70vw] sm:h-[50vw] md:w-[70vw] md:h-[52vw] lg:w-[1200px] lg:h-[865px] scale-x-[0.65] scale-y-[0.35] sm:scale-x-[0.6] sm:scale-y-[0.3] lg:scale-125">
+        <div className="relative w-[95vw] max-w-[700px] h-[55vw] max-h-[500px] sm:w-[70vw] sm:h-[50vw] md:w-[70vw] md:h-[52vw] lg:w-[1200px] lg:h-[865px] scale-x-[0.65] scale-y-[0.35] sm:scale-x-[0.6] sm:scale-y-[0.3] lg:scale-125 overflow-visible">
           {/* Main cloud body: 13 overlapping circles create the fluffy shape */}
           <div className="absolute inset-0 flex items-center justify-center" style={{ filter: 'drop-shadow(0 0 10px rgba(255, 255, 255, 1))' }}>
             {/* Left puff */}
@@ -106,7 +106,7 @@ export default function CloudShape({ isTouchDevice, children }) {
           <div className="absolute -bottom-12 left-1/2 -translate-x-1/2 w-[500px] h-16 bg-blue-300/40 dark:bg-purple-900/40 rounded-full blur-3xl"></div>
 
           {/* CONTENT: Children displayed inside the cloud (responsive padding) */}
-          <div className="absolute inset-0 flex flex-col items-center justify-center px-2 py-4 sm:px-8 sm:py-10 md:px-12 md:py-12 lg:px-20 lg:py-16">
+          <div className="absolute inset-0 flex flex-col items-center justify-center px-2 py-8 sm:px-8 sm:py-12 md:px-12 md:py-16 lg:px-20 lg:py-24 overflow-visible">
             {children}
           </div>
         </div>

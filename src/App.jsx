@@ -29,6 +29,7 @@ import WordCloud from './components/WordCloud';
 import AboutSection from './components/AboutSection';
 import HelpModal from './components/HelpModal';
 import useTouchDevice from './hooks/useTouchDevice';
+import useResponsive from './hooks/useResponsive';
 import { useTypingMetrics } from './hooks/useTypingMetrics';
 import { getFaro } from './faro';
 
@@ -42,6 +43,9 @@ function AppContent() {
 
   // Detect touch devices to hide visual keyboard on mobile
   const isTouchDevice = useTouchDevice();
+
+  // Detect screen size for responsive spacing
+  const { isDesktop } = useResponsive();
 
   // Get global actions from context
   const { undo } = useConstraints();
@@ -112,7 +116,7 @@ function AppContent() {
     <div className="min-h-screen bg-gradient-to-br from-purple-300 via-indigo-200 to-purple-100 dark:from-gray-900 dark:via-purple-950 dark:to-gray-900 transition-colors duration-300 overflow-x-hidden">
       {/* Main container with fade-in animation */}
       <motion.div
-        className="relative w-full mx-auto min-h-screen pt-0 lg:pt-40 overflow-x-hidden"
+        className="relative w-full mx-auto min-h-screen overflow-x-hidden"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
@@ -121,10 +125,13 @@ function AppContent() {
         <HelpModal />
 
         {/* Responsive layout: Stacks vertically on mobile, side-by-side on desktop */}
-        <div className="flex flex-col lg:flex-row justify-center items-start lg:items-center gap-0 lg:gap-20 h-auto lg:h-[calc(100%-120px)] max-w-[1900px] mx-auto px-4 pb-8 overflow-x-hidden">
+        <div
+          className="flex flex-col lg:flex-row justify-center items-start lg:items-start gap-0 lg:gap-20 h-auto max-w-[1900px] mx-auto px-4 pb-8 overflow-x-hidden"
+          style={{ marginTop: isDesktop ? '75px' : '0px' }}
+        >
           {/* Left Panel - Input rows and keyboard (responsive width) */}
           <motion.div
-            className="flex-shrink-0 w-full max-w-[580px] lg:w-[580px] lg:mt-12 lg:ml-8 flex flex-col gap-4"
+            className="flex-shrink-0 w-full max-w-[580px] lg:w-[580px] lg:ml-8 flex flex-col gap-4"
             initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
