@@ -54,7 +54,7 @@ export default function DefinitionModal({ word, definition, isLoading, error, on
           transition={{ type: "spring", damping: 25, stiffness: 300 }}
         >
           {/* Header */}
-          <div className="sticky top-0 bg-gradient-to-r from-purple-500 to-blue-500 dark:from-purple-700 dark:to-blue-700 text-white p-6 rounded-t-3xl">
+          <div className="sticky top-0 bg-gradient-to-r from-purple-500 to-blue-500 dark:from-purple-700 dark:to-blue-700 text-white p-8 rounded-t-3xl">
             <div className="flex justify-between items-start">
               <div>
                 <h2 className="text-4xl font-black uppercase">{word}</h2>
@@ -74,7 +74,7 @@ export default function DefinitionModal({ word, definition, isLoading, error, on
           </div>
 
           {/* Body */}
-          <div className="p-6">
+          <div className="p-8">
             {/* Loading State */}
             {isLoading && (
               <div className="flex flex-col items-center justify-center py-12">
@@ -95,7 +95,7 @@ export default function DefinitionModal({ word, definition, isLoading, error, on
             {!isLoading && !error && definition && (
               <div className="space-y-6">
                 {definition[0]?.meanings?.map((meaning, idx) => (
-                  <div key={idx} className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-md">
+                  <div key={idx} className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-md">
                     {/* Part of Speech */}
                     <div className="inline-block bg-gradient-to-r from-purple-500 to-blue-500 dark:from-purple-600 dark:to-blue-600 text-white px-4 py-1 rounded-full text-sm font-bold mb-3">
                       {meaning.partOfSpeech}
