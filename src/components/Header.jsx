@@ -5,7 +5,7 @@ export default function Header() {
   const [isDark, toggleDarkMode] = useDarkMode();
 
   return (
-    <div className="fixed bottom-8 left-10 z-50">
+    <div className="absolute lg:fixed z-50 bottom-[12rem] lg:bottom-[2rem] left-[2.5rem]">
       <div className="flex flex-col items-center gap-3">
         <motion.button
           onClick={toggleDarkMode}

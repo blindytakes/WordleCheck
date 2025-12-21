@@ -29,7 +29,7 @@ export default function HelpModal() {
       {/* Floating Info Button */}
       <motion.button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-12 right-10 z-40 w-14 h-14 sm:w-20 sm:h-20 rounded-full bg-gradient-to-br from-purple-500 to-indigo-600 text-white shadow-lg hover:shadow-xl hover:scale-110 transition-all duration-200 flex items-center justify-center group"
+        className="absolute lg:fixed z-40 w-14 h-14 sm:w-20 sm:h-20 rounded-full bg-gradient-to-br from-purple-500 to-indigo-600 text-white shadow-lg hover:shadow-xl hover:scale-110 transition-all duration-200 flex items-center justify-center group bottom-[12rem] lg:bottom-[3rem] right-[2.5rem]"
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.4, delay: 0.8 }}
