@@ -106,7 +106,7 @@ export default function CloudShape({ isTouchDevice, children }) {
           <div className="absolute -bottom-12 left-1/2 -translate-x-1/2 w-[500px] h-16 bg-blue-300/40 dark:bg-purple-900/40 rounded-full blur-3xl"></div>
 
           {/* CONTENT: Children displayed inside the cloud (responsive padding) */}
-          <div className="absolute inset-0 flex flex-col items-center justify-center px-2 py-8 sm:px-8 sm:py-12 md:px-12 md:py-16 lg:px-20 lg:py-24 overflow-visible">
+          <div className="absolute top-16 inset-x-0 bottom-0 flex flex-col items-center justify-center px-2 py-8 sm:px-8 sm:py-12 md:px-12 md:py-16 lg:px-20 lg:py-24 overflow-visible">
             {children}
           </div>
         </div>
