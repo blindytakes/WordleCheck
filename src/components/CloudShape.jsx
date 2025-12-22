@@ -23,13 +23,13 @@ export default function CloudShape({ isTouchDevice, children }) {
     /* Outer container: Initial scale/fade-in animation (disabled on touch for scroll performance) */
     <motion.div
       className="relative w-full h-auto lg:h-full flex items-start justify-center overflow-visible"
-      initial={isTouchDevice ? {} : { y: -20, scale: 0.9, opacity: 0 }}
-      animate={isTouchDevice ? {} : {
+      initial={isTouchDevice ? { y: 0, scale: 1, opacity: 1 } : { y: -20, scale: 0.9, opacity: 0 }}
+      animate={{
         y: 0,
         scale: 1,
         opacity: 1,
       }}
-      transition={isTouchDevice ? {} : {
+      transition={isTouchDevice ? { duration: 0 } : {
         type: "spring",
         stiffness: 200,
         damping: 15,
