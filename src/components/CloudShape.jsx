@@ -15,6 +15,10 @@
 import { motion } from 'framer-motion';
 
 export default function CloudShape({ isTouchDevice, children }) {
+  // Use lighter blur on mobile for better performance (blur-sm vs blur-lg)
+  const blurClass = isTouchDevice ? 'blur-sm' : 'blur-lg';
+  const shadowBlur = isTouchDevice ? 'blur-xl' : 'blur-3xl';
+
   return (
     /* Outer container: Initial scale/fade-in animation */
     <motion.div
@@ -64,46 +68,46 @@ export default function CloudShape({ isTouchDevice, children }) {
           {/* Main cloud body: 13 overlapping circles create the fluffy shape */}
           <div className="absolute top-16 inset-x-0 bottom-0 flex items-center justify-center overflow-visible" style={{ filter: 'drop-shadow(0 0 10px rgba(255, 255, 255, 1))' }}>
             {/* Left puff */}
-            <div className="absolute left-4 top-1/4 w-72 h-72 bg-gradient-to-br from-blue-200 to-blue-300 dark:from-purple-800 dark:to-purple-900 rounded-full blur-lg opacity-95"></div>
+            <div className={`absolute left-4 top-1/4 w-72 h-72 bg-gradient-to-br from-blue-200 to-blue-300 dark:from-purple-800 dark:to-purple-900 rounded-full ${blurClass} opacity-95`}></div>
 
             {/* Center large puff - the main body */}
-            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-80 bg-gradient-to-br from-blue-100 via-blue-200 to-blue-300 dark:from-purple-900 dark:via-purple-800 dark:to-purple-900 rounded-full blur-lg"></div>
+            <div className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-80 bg-gradient-to-br from-blue-100 via-blue-200 to-blue-300 dark:from-purple-900 dark:via-purple-800 dark:to-purple-900 rounded-full ${blurClass}`}></div>
 
             {/* Right puff */}
-            <div className="absolute right-4 top-1/3 w-80 h-80 bg-gradient-to-br from-blue-200 to-blue-300 dark:from-purple-800 dark:to-purple-900 rounded-full blur-lg opacity-95"></div>
+            <div className={`absolute right-4 top-1/3 w-80 h-80 bg-gradient-to-br from-blue-200 to-blue-300 dark:from-purple-800 dark:to-purple-900 rounded-full ${blurClass} opacity-95`}></div>
 
             {/* Top left puff */}
-            <div className="absolute left-28 top-20 w-60 h-60 bg-gradient-to-br from-blue-100 to-blue-200 dark:from-purple-900 dark:to-purple-800 rounded-full blur-lg"></div>
+            <div className={`absolute left-28 top-20 w-60 h-60 bg-gradient-to-br from-blue-100 to-blue-200 dark:from-purple-900 dark:to-purple-800 rounded-full ${blurClass}`}></div>
 
             {/* Top center puff */}
-            <div className="absolute left-1/2 -translate-x-1/2 top-24 w-56 h-56 bg-gradient-to-br from-blue-100 to-blue-200 dark:from-purple-900 dark:to-purple-800 rounded-full blur-lg"></div>
+            <div className={`absolute left-1/2 -translate-x-1/2 top-24 w-56 h-56 bg-gradient-to-br from-blue-100 to-blue-200 dark:from-purple-900 dark:to-purple-800 rounded-full ${blurClass}`}></div>
 
             {/* Top right puff */}
-            <div className="absolute right-28 top-24 w-52 h-52 bg-gradient-to-br from-blue-100 to-blue-200 dark:from-purple-900 dark:to-purple-800 rounded-full blur-lg"></div>
+            <div className={`absolute right-28 top-24 w-52 h-52 bg-gradient-to-br from-blue-100 to-blue-200 dark:from-purple-900 dark:to-purple-800 rounded-full ${blurClass}`}></div>
 
             {/* Additional puffs to fill gaps */}
             {/* Upper left fill */}
-            <div className="absolute left-48 top-20 w-56 h-56 bg-gradient-to-br from-blue-100 to-blue-200 dark:from-purple-900 dark:to-purple-800 rounded-full blur-lg opacity-90"></div>
+            <div className={`absolute left-48 top-20 w-56 h-56 bg-gradient-to-br from-blue-100 to-blue-200 dark:from-purple-900 dark:to-purple-800 rounded-full ${blurClass} opacity-90`}></div>
 
             {/* Upper right fill */}
-            <div className="absolute right-48 top-24 w-52 h-52 bg-gradient-to-br from-blue-100 to-blue-200 dark:from-purple-900 dark:to-purple-800 rounded-full blur-lg opacity-90"></div>
+            <div className={`absolute right-48 top-24 w-52 h-52 bg-gradient-to-br from-blue-100 to-blue-200 dark:from-purple-900 dark:to-purple-800 rounded-full ${blurClass} opacity-90`}></div>
 
             {/* Middle left fill */}
-            <div className="absolute left-12 top-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-to-br from-blue-200 to-blue-300 dark:from-purple-800 dark:to-purple-900 rounded-full blur-lg opacity-85"></div>
+            <div className={`absolute left-12 top-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-to-br from-blue-200 to-blue-300 dark:from-purple-800 dark:to-purple-900 rounded-full ${blurClass} opacity-85`}></div>
 
             {/* Middle right fill */}
-            <div className="absolute right-12 top-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-to-br from-blue-200 to-blue-300 dark:from-purple-800 dark:to-purple-900 rounded-full blur-lg opacity-85"></div>
+            <div className={`absolute right-12 top-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-to-br from-blue-200 to-blue-300 dark:from-purple-800 dark:to-purple-900 rounded-full ${blurClass} opacity-85`}></div>
 
             {/* Bottom puffs for fullness */}
-            <div className="absolute left-36 bottom-12 w-64 h-64 bg-gradient-to-br from-blue-200 to-blue-300 dark:from-purple-800 dark:to-purple-900 rounded-full blur-lg opacity-85"></div>
-            <div className="absolute right-36 bottom-16 w-60 h-60 bg-gradient-to-br from-blue-200 to-blue-300 dark:from-purple-800 dark:to-purple-900 rounded-full blur-lg opacity-85"></div>
+            <div className={`absolute left-36 bottom-12 w-64 h-64 bg-gradient-to-br from-blue-200 to-blue-300 dark:from-purple-800 dark:to-purple-900 rounded-full ${blurClass} opacity-85`}></div>
+            <div className={`absolute right-36 bottom-16 w-60 h-60 bg-gradient-to-br from-blue-200 to-blue-300 dark:from-purple-800 dark:to-purple-900 rounded-full ${blurClass} opacity-85`}></div>
 
             {/* Middle bottom puff for cloud shape */}
-            <div className="absolute left-1/2 -translate-x-1/2 bottom-20 w-72 h-72 bg-gradient-to-br from-blue-200 to-blue-300 dark:from-purple-800 dark:to-purple-900 rounded-full blur-lg opacity-90"></div>
+            <div className={`absolute left-1/2 -translate-x-1/2 bottom-20 w-72 h-72 bg-gradient-to-br from-blue-200 to-blue-300 dark:from-purple-800 dark:to-purple-900 rounded-full ${blurClass} opacity-90`}></div>
           </div>
 
           {/* Soft drop shadow underneath cloud for depth */}
-          <div className="absolute -bottom-12 left-1/2 -translate-x-1/2 w-[500px] h-16 bg-blue-300/40 dark:bg-purple-900/40 rounded-full blur-3xl"></div>
+          <div className={`absolute -bottom-12 left-1/2 -translate-x-1/2 w-[500px] h-16 bg-blue-300/40 dark:bg-purple-900/40 rounded-full ${shadowBlur}`}></div>
 
           {/* CONTENT: Children displayed inside the cloud (responsive padding) */}
           <div className="absolute top-16 inset-x-0 bottom-0 flex flex-col items-center justify-center px-2 py-8 sm:px-8 sm:py-12 md:px-12 md:py-16 lg:px-20 lg:py-24 overflow-visible">

@@ -80,6 +80,7 @@ export default function WordCloud() {
           filteredWords={filteredWords}
           wordsWithSizes={wordsWithSizes}
           isStableMode={isStableMode}
+          isTouchDevice={isTouchDevice}
           onWordClick={(word) => openDefinition(word, filteredWords.length, isStableMode)}
         />
       </CloudShape>
