@@ -127,7 +127,7 @@ function AppContent() {
         {/* Responsive layout: Stacks vertically on mobile, side-by-side on desktop */}
         <div
           className="flex flex-col lg:flex-row justify-center items-start lg:items-start gap-0 lg:gap-20 h-auto max-w-[1900px] mx-auto px-4 pb-8"
-          style={{ marginTop: isDesktop ? '100px' : '0px' }}
+          style={{ marginTop: isDesktop ? '150px' : '0px' }}
         >
           {/* Left Panel - Input rows and keyboard (responsive width) */}
           <motion.div
