@@ -88,7 +88,7 @@ export default function WordCloud() {
       {/* Title: "Wordle Fun" with gradient text (responsive sizing) */}
       <motion.div
         className="text-4xl sm:text-4xl md:text-6xl lg:text-8xl font-black bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 dark:from-pink-400 dark:via-purple-400 dark:to-blue-400 text-transparent bg-clip-text"
-        style={{ marginTop: '80px', touchAction: 'pan-y' }}
+        style={{ marginTop: '80px' }}
         initial={isTouchDevice ? { opacity: 1, y: 0 } : { opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={isTouchDevice ? { duration: 0 } : { duration: 0.6, ease: "easeOut" }}
@@ -103,7 +103,6 @@ export default function WordCloud() {
           initial={isTouchDevice ? { opacity: 1 } : { opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={isTouchDevice ? { duration: 0 } : { delay: 0.5 }}
-          style={{ touchAction: 'pan-y' }}
         >
           {filteredWords.length.toLocaleString()} words
         </motion.div>

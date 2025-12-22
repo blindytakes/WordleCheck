@@ -120,7 +120,6 @@ function AppContent() {
         initial={isTouchDevice ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={isTouchDevice ? { duration: 0 } : { duration: 0.6, ease: "easeOut" }}
-        style={{ touchAction: 'pan-y' }}
       >
         <Header />
         <HelpModal />
@@ -136,7 +135,6 @@ function AppContent() {
             initial={isTouchDevice ? { opacity: 1, x: 0 } : { opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={isTouchDevice ? { duration: 0 } : { duration: 0.6, delay: 0.2, ease: "easeOut" }}
-            style={{ touchAction: 'pan-y' }}
           >
             <GreenRow
               isFocused={focusedRow === 'green'}
@@ -164,7 +162,6 @@ function AppContent() {
             initial={isTouchDevice ? { opacity: 1, x: 0 } : { opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={isTouchDevice ? { duration: 0 } : { duration: 0.6, delay: 0.3, ease: "easeOut" }}
-            style={{ touchAction: 'pan-y' }}
           >
             <WordCloud />
           </motion.div>

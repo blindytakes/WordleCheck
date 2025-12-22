@@ -35,7 +35,6 @@ export default function CloudShape({ isTouchDevice, children }) {
         damping: 15,
         duration: 1
       }}
-      style={{ touchAction: 'pan-y' }}
     >
       {/*
         FLOATING ANIMATION - DESKTOP ONLY:
