@@ -20,21 +20,22 @@ export default function CloudShape({ isTouchDevice, children }) {
   const shadowBlur = isTouchDevice ? 'blur-xl' : 'blur-3xl';
 
   return (
-    /* Outer container: Initial scale/fade-in animation */
+    /* Outer container: Initial scale/fade-in animation (disabled on touch for scroll performance) */
     <motion.div
       className="relative w-full h-auto lg:h-full flex items-start justify-center overflow-visible"
-      initial={{ y: -20, scale: 0.9, opacity: 0 }}
-      animate={{
+      initial={isTouchDevice ? {} : { y: -20, scale: 0.9, opacity: 0 }}
+      animate={isTouchDevice ? {} : {
         y: 0,
         scale: 1,
         opacity: 1,
       }}
-      transition={{
+      transition={isTouchDevice ? {} : {
         type: "spring",
         stiffness: 200,
         damping: 15,
         duration: 1
       }}
+      style={{ touchAction: 'pan-y' }}
     >
       {/*
         FLOATING ANIMATION - DESKTOP ONLY:

@@ -88,10 +88,10 @@ export default function WordCloud() {
       {/* Title: "Wordle Fun" with gradient text (responsive sizing) */}
       <motion.div
         className="text-4xl sm:text-4xl md:text-6xl lg:text-8xl font-black bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 dark:from-pink-400 dark:via-purple-400 dark:to-blue-400 text-transparent bg-clip-text"
-        style={{ marginTop: '80px' }}
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
+        style={{ marginTop: '80px', touchAction: 'pan-y' }}
+        initial={isTouchDevice ? {} : { opacity: 0, y: -20 }}
+        animate={isTouchDevice ? {} : { opacity: 1, y: 0 }}
+        transition={isTouchDevice ? {} : { duration: 0.6, ease: "easeOut" }}
       >
         Wordle Fun
       </motion.div>
@@ -100,9 +100,10 @@ export default function WordCloud() {
       {filteredWords.length > 0 && (
         <motion.div
           className="text-center mt-2 md:mt-4 text-sm sm:text-2xl md:text-4xl lg:text-5xl bg-gradient-to-r from-pink-500 to-blue-500 dark:from-pink-400 dark:to-blue-400 text-transparent bg-clip-text font-bold"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
+          initial={isTouchDevice ? {} : { opacity: 0 }}
+          animate={isTouchDevice ? {} : { opacity: 1 }}
+          transition={isTouchDevice ? {} : { delay: 0.5 }}
+          style={{ touchAction: 'pan-y' }}
         >
           {filteredWords.length.toLocaleString()} words
         </motion.div>
