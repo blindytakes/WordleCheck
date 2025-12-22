@@ -90,7 +90,7 @@ export default function WordGrid({
               transition: { duration: 0.3 }
             }}
             // PERFORMANCE: Reduce drop-shadow on mobile (expensive filter effect)
-            className={`${size} font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-slate-800 via-purple-900 to-slate-900 dark:from-gray-100 dark:via-purple-200 dark:to-gray-100 cursor-pointer select-none transition-all uppercase ${isTouchDevice ? 'drop-shadow-md' : 'drop-shadow-[0_0_8px_rgba(255,255,255,0.7)] drop-shadow-md'}`}
+            className={`${size} font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-slate-800 via-purple-900 to-slate-900 dark:from-gray-100 dark:via-purple-200 dark:to-gray-100 cursor-pointer select-none transition-all uppercase drop-shadow-md`}
           >
             {word}
           </motion.div>
