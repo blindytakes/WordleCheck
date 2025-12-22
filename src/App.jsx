@@ -113,10 +113,10 @@ function AppContent() {
   }, [typingMetrics]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-300 via-indigo-200 to-purple-100 dark:from-gray-900 dark:via-purple-950 dark:to-gray-900 transition-colors duration-300 overflow-x-hidden pt-16 md:pt-24 lg:pt-32">
+    <div className="min-h-screen bg-gradient-to-br from-purple-300 via-indigo-200 to-purple-100 dark:from-gray-900 dark:via-purple-950 dark:to-gray-900 transition-colors duration-300 pt-16 md:pt-24 lg:pt-32">
       {/* Main container with fade-in animation (disabled on touch for scroll performance) */}
       <motion.div
-        className="relative w-full mx-auto min-h-screen overflow-x-hidden overflow-y-visible"
+        className="relative w-full mx-auto min-h-screen"
         initial={isTouchDevice ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={isTouchDevice ? { duration: 0 } : { duration: 0.6, ease: "easeOut" }}
@@ -126,7 +126,7 @@ function AppContent() {
 
         {/* Responsive layout: Stacks vertically on mobile, side-by-side on desktop */}
         <div
-          className="flex flex-col lg:flex-row justify-center items-start lg:items-start gap-0 lg:gap-20 h-auto max-w-[1900px] mx-auto px-4 pb-8 overflow-x-hidden overflow-y-visible"
+          className="flex flex-col lg:flex-row justify-center items-start lg:items-start gap-0 lg:gap-20 h-auto max-w-[1900px] mx-auto px-4 pb-8"
           style={{ marginTop: isDesktop ? '100px' : '0px' }}
         >
           {/* Left Panel - Input rows and keyboard (responsive width) */}
