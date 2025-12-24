@@ -12,6 +12,16 @@ import { motion, AnimatePresence } from 'framer-motion';
 export default function HelpModal() {
   const [isOpen, setIsOpen] = useState(false);
 
+  // Prevent body scroll when modal is open (mobile fix)
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = '';
+      };
+    }
+  }, [isOpen]);
+
   // Close modal on ESC key
   useEffect(() => {
     const handleEscape = (e) => {

@@ -17,6 +17,16 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useEffect } from 'react';
 
 export default function DefinitionModal({ word, definition, isLoading, error, onClose }) {
+  // Prevent body scroll when modal is open (mobile fix)
+  useEffect(() => {
+    if (word) {
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = '';
+      };
+    }
+  }, [word]);
+
   // Close modal on ESC key press
   useEffect(() => {
     const handleEscape = (e) => {
