@@ -85,16 +85,14 @@ export default function WordCloud() {
         />
       </CloudShape>
 
-      {/* Word count: Shows how many words match the constraints (responsive sizing) */}
+      {/* Spacer to push word count down */}
+      <div className="h-24 md:h-36"></div>
+
+      {/* Word count - positioned below cloud */}
       {filteredWords.length > 0 && (
-        <motion.div
-          className="text-center mt-2 md:mt-4 lg:mt-40 text-sm sm:text-2xl md:text-4xl lg:text-5xl bg-gradient-to-r from-pink-500 to-blue-500 dark:from-pink-400 dark:to-blue-400 text-transparent bg-clip-text font-bold"
-          initial={isTouchDevice ? { opacity: 1 } : { opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={isTouchDevice ? { duration: 0 } : { delay: 0.5 }}
-        >
-          {filteredWords.length.toLocaleString()} words
-        </motion.div>
+        <div className="text-center text-5xl md:text-6xl bg-gradient-to-r from-pink-500 to-blue-500 dark:from-pink-400 dark:to-blue-400 text-transparent bg-clip-text font-bold">
+          {filteredWords.length.toLocaleString()} Words
+        </div>
       )}
 
       {/* Definition Modal */}
