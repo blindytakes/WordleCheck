@@ -63,15 +63,15 @@ export const FONT_SIZES_DESKTOP = [
 
 /**
  * Available font sizes for words in cloud (mobile/tablet)
- * Ordered from smallest to largest - all larger for better mobile readability
+ * Ordered from smallest to largest - smaller than desktop for mobile cloud
  */
 export const FONT_SIZES_MOBILE = [
+  'text-sm',
+  'text-base',
+  'text-lg',
   'text-xl',
   'text-2xl',
-  'text-3xl',
-  'text-4xl',
-  'text-5xl',
-  'text-6xl'
+  'text-3xl'
 ];
 
 /**
