@@ -88,7 +88,7 @@ export default function WordCloud() {
       {/* Word count: Shows how many words match the constraints (responsive sizing) */}
       {filteredWords.length > 0 && (
         <motion.div
-          className="text-center mt-2 md:mt-4 text-sm sm:text-2xl md:text-4xl lg:text-5xl bg-gradient-to-r from-pink-500 to-blue-500 dark:from-pink-400 dark:to-blue-400 text-transparent bg-clip-text font-bold"
+          className="text-center mt-2 md:mt-4 lg:mt-40 text-sm sm:text-2xl md:text-4xl lg:text-5xl bg-gradient-to-r from-pink-500 to-blue-500 dark:from-pink-400 dark:to-blue-400 text-transparent bg-clip-text font-bold"
           initial={isTouchDevice ? { opacity: 1 } : { opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={isTouchDevice ? { duration: 0 } : { delay: 0.5 }}
