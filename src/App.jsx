@@ -158,7 +158,7 @@ function AppContent() {
 
           {/* Right Panel - Word cloud display (responsive width) */}
           <motion.div
-            className="flex-shrink-0 w-full max-w-[990px] lg:w-[990px] h-full min-h-[500px]"
+            className="flex-shrink-0 w-full max-w-[990px] lg:w-[990px] h-auto lg:h-full min-h-[500px]"
             initial={isTouchDevice ? { opacity: 1, x: 0 } : { opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={isTouchDevice ? { duration: 0 } : { duration: 0.6, delay: 0.3, ease: "easeOut" }}
