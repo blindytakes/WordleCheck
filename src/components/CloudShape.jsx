@@ -13,12 +13,50 @@
  */
 
 import { motion } from 'framer-motion';
+import useResponsive from '../hooks/useResponsive';
 
 export default function CloudShape({ isTouchDevice, children }) {
+  const { isDesktop } = useResponsive();
   // Use lighter blur on mobile for better performance (blur-sm vs blur-lg)
   const blurClass = isTouchDevice ? 'blur-sm' : 'blur-lg';
   const shadowBlur = isTouchDevice ? 'blur-xl' : 'blur-3xl';
 
+  // MOBILE CLOUD: Simple, contained, easy to control
+  if (!isDesktop) {
+    return (
+      <motion.div
+        className="relative w-full h-auto flex items-start justify-center pt-8"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+      >
+        {/* Simple mobile cloud - Blue/Purple to match desktop */}
+        <div className="relative w-[90vw] max-w-[480px] h-[360px]">
+          {/* Main cloud body: Just 4 simple circles, fully contained */}
+          <div className="absolute inset-0 flex items-center justify-center">
+            {/* Center circle - largest */}
+            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-gradient-to-br from-blue-200 to-blue-300 dark:from-purple-800 dark:to-purple-900 rounded-full blur-md"></div>
+
+            {/* Left circle */}
+            <div className="absolute left-8 top-1/2 -translate-y-1/2 w-48 h-48 bg-gradient-to-br from-blue-200 to-blue-300 dark:from-purple-800 dark:to-purple-900 rounded-full blur-md opacity-90"></div>
+
+            {/* Right circle */}
+            <div className="absolute right-8 top-1/2 -translate-y-1/2 w-48 h-48 bg-gradient-to-br from-blue-200 to-blue-300 dark:from-purple-800 dark:to-purple-900 rounded-full blur-md opacity-90"></div>
+
+            {/* Top circle */}
+            <div className="absolute left-1/2 -translate-x-1/2 top-8 w-40 h-40 bg-gradient-to-br from-blue-100 to-blue-200 dark:from-purple-900 dark:to-purple-800 rounded-full blur-md opacity-85"></div>
+          </div>
+
+          {/* CONTENT: Children displayed inside the mobile cloud */}
+          <div className="absolute inset-0 flex flex-col items-center justify-center px-4 py-8">
+            {children}
+          </div>
+        </div>
+      </motion.div>
+    );
+  }
+
+  // DESKTOP CLOUD: Original complex cloud (unchanged)
   return (
     /* Outer container: Initial scale/fade-in animation (disabled on touch for scroll performance) */
     <motion.div
