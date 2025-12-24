@@ -31,7 +31,7 @@ export default function CloudShape({ isTouchDevice, children }) {
         transition={{ duration: 0.5 }}
       >
         {/* Simple mobile cloud - Blue/Purple to match desktop */}
-        <div className="relative w-[81vw] max-w-[432px] h-[324px]">
+        <div className="relative w-[73vw] max-w-[390px] h-[292px]">
           {/* Main cloud body: Just 4 simple circles, fully contained */}
           <div className="absolute inset-0 flex items-center justify-center">
             {/* Center circle - largest */}
