@@ -131,6 +131,7 @@ function AppContent() {
           {/* Left Panel - Input rows and keyboard (responsive width) */}
           <motion.div
             className="flex-shrink-0 w-full max-w-[580px] lg:w-[580px] lg:ml-8 flex flex-col gap-4 mx-4 lg:mx-0"
+            style={{ marginTop: isDesktop ? '60px' : '0' }}
             initial={isTouchDevice ? { opacity: 1, x: 0 } : { opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={isTouchDevice ? { duration: 0 } : { duration: 0.6, delay: 0.2, ease: "easeOut" }}
@@ -158,6 +159,7 @@ function AppContent() {
           {/* Right Panel - Word cloud display (responsive width) */}
           <motion.div
             className="flex-shrink-0 w-full max-w-[990px] lg:w-[990px] h-auto lg:h-full min-h-[500px]"
+            style={{ marginTop: isDesktop ? '40px' : '0' }} // <--- ADD THIS LINE
             initial={isTouchDevice ? { opacity: 1, x: 0 } : { opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={isTouchDevice ? { duration: 0 } : { duration: 0.6, delay: 0.3, ease: "easeOut" }}
