@@ -30,21 +30,33 @@ export default function CloudShape({ isTouchDevice, children }) {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
-        {/* Simple mobile cloud - Blue/Purple to match desktop - NO BLUR for performance */}
+        {/* Enhanced mobile cloud - GPU-accelerated visual interest without blur */}
         <div className="relative w-[73vw] max-w-[390px] h-[292px]">
-          {/* Main cloud body: Just 4 simple circles, fully contained */}
+          {/* Main cloud body: 4 circles with richer gradients and subtle rings */}
           <div className="absolute inset-0 flex items-center justify-center">
-            {/* Center circle - largest */}
-            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-gradient-to-br from-blue-200 to-blue-300 dark:from-purple-800 dark:to-purple-900 rounded-full"></div>
+            {/* Center circle - largest, with multi-stop gradient and inner glow */}
+            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-gradient-to-br from-blue-100 via-purple-200 via-pink-100 to-blue-200 dark:from-purple-700 dark:via-purple-800 dark:via-purple-900 dark:to-purple-800 rounded-full ring-1 ring-inset ring-white/20 dark:ring-white/10"></div>
 
-            {/* Left circle */}
-            <div className="absolute left-8 top-1/2 -translate-y-1/2 w-48 h-48 bg-gradient-to-br from-blue-200 to-blue-300 dark:from-purple-800 dark:to-purple-900 rounded-full opacity-90"></div>
+            {/* Left circle - with richer gradient */}
+            <div className="absolute left-8 top-1/2 -translate-y-1/2 w-48 h-48 bg-gradient-to-br from-blue-100 via-blue-200 to-purple-200 dark:from-purple-700 dark:via-purple-800 dark:to-purple-900 rounded-full opacity-90 ring-1 ring-inset ring-white/15 dark:ring-white/8"></div>
 
-            {/* Right circle */}
-            <div className="absolute right-8 top-1/2 -translate-y-1/2 w-48 h-48 bg-gradient-to-br from-blue-200 to-blue-300 dark:from-purple-800 dark:to-purple-900 rounded-full opacity-90"></div>
+            {/* Right circle - with richer gradient */}
+            <div className="absolute right-8 top-1/2 -translate-y-1/2 w-48 h-48 bg-gradient-to-br from-purple-200 via-blue-200 to-blue-100 dark:from-purple-900 dark:via-purple-800 dark:to-purple-700 rounded-full opacity-90 ring-1 ring-inset ring-white/15 dark:ring-white/8"></div>
 
-            {/* Top circle */}
-            <div className="absolute left-1/2 -translate-x-1/2 top-8 w-40 h-40 bg-gradient-to-br from-blue-100 to-blue-200 dark:from-purple-900 dark:to-purple-800 rounded-full opacity-85"></div>
+            {/* Top circle - with richer gradient */}
+            <div className="absolute left-1/2 -translate-x-1/2 top-8 w-40 h-40 bg-gradient-to-br from-blue-50 via-purple-100 to-blue-100 dark:from-purple-800 dark:via-purple-900 dark:to-purple-800 rounded-full opacity-85 ring-1 ring-inset ring-white/10 dark:ring-white/5"></div>
+          </div>
+
+          {/* GPU-accelerated gradient overlays for depth and shimmer */}
+          <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-full">
+            {/* Radial highlight overlay - creates depth */}
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_40%,rgba(255,255,255,0.2),transparent_60%)] dark:bg-[radial-gradient(circle_at_30%_40%,rgba(255,255,255,0.08),transparent_60%)]"></div>
+
+            {/* Diagonal shimmer overlay - adds visual interest */}
+            <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/8 to-transparent dark:via-white/4"></div>
+
+            {/* Subtle bottom shadow gradient for depth */}
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-blue-300/10 dark:to-purple-950/20"></div>
           </div>
 
           {/* CONTENT: Children displayed inside the mobile cloud */}
