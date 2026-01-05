@@ -15,8 +15,10 @@
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { useEffect } from 'react';
+import useTouchDevice from '../hooks/useTouchDevice';
 
 export default function DefinitionModal({ word, definition, isLoading, error, onClose }) {
+  const isTouchDevice = useTouchDevice();
   // Prevent body scroll when modal is open (mobile fix)
   useEffect(() => {
     if (word) {
@@ -46,9 +48,9 @@ export default function DefinitionModal({ word, definition, isLoading, error, on
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
       >
-        {/* Backdrop */}
+        {/* Backdrop - no blur on mobile for performance */}
         <motion.div
-          className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+          className={`absolute inset-0 ${isTouchDevice ? 'bg-black/70' : 'bg-black/50 backdrop-blur-sm'}`}
           onClick={onClose}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

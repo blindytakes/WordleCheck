@@ -8,9 +8,11 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import useTouchDevice from '../hooks/useTouchDevice';
 
 export default function HelpModal() {
   const [isOpen, setIsOpen] = useState(false);
+  const isTouchDevice = useTouchDevice();
 
   // Prevent body scroll when modal is open (mobile fix)
   useEffect(() => {
@@ -72,9 +74,9 @@ export default function HelpModal() {
       <AnimatePresence>
         {isOpen && (
           <>
-            {/* Backdrop */}
+            {/* Backdrop - no blur on mobile for performance */}
             <motion.div
-              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
+              className={`fixed inset-0 z-50 ${isTouchDevice ? 'bg-black/70' : 'bg-black/50 backdrop-blur-sm'}`}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}

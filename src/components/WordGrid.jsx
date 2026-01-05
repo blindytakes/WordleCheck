@@ -36,66 +36,68 @@ export default function WordGrid({
   // Word grid: Flex wrap layout with animated words
   return (
     <div className="flex flex-wrap gap-5 sm:gap-3 justify-center items-center w-full max-w-full sm:max-w-3xl lg:max-w-5xl px-2 overflow-visible">
-      {/* AnimatePresence handles smooth transitions when words change */}
-      <AnimatePresence mode="popLayout">
-        {wordsWithSizes.map(({ word, size, id }, index) => (
-          <motion.div
+      {/* MOBILE: No AnimatePresence for instant updates and zero layout recalculations */}
+      {/* DESKTOP: AnimatePresence for smooth word transitions */}
+      {isTouchDevice ? (
+        // Mobile: Static rendering, no animations
+        wordsWithSizes.map(({ word, size, id }) => (
+          <div
             key={id}
-            // PERFORMANCE: Disable expensive layout animations on mobile
-            layout={isTouchDevice ? false : true}
-            layoutId={isTouchDevice ? undefined : (isStableMode ? word : undefined)}
-            onClick={() => onWordClick(word)}  // Click to show definition
-            // CONDITIONAL ANIMATIONS:
-            // Mobile: Simple fade only (best performance)
-            // Desktop Stable mode: Smooth fades with slow layout transitions
-            // Desktop Dynamic mode: Fun bouncy animations with stagger
-            initial={
-              isTouchDevice
-                ? { opacity: 0 }  // Mobile: simple fade
-                : isStableMode
-                ? { opacity: 0 }  // Desktop stable: just fade in
-                : { opacity: 0, scale: 0.8, y: 20 }  // Desktop dynamic: bounce in from below
-            }
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={
-              isTouchDevice
-                ? { opacity: 0 }  // Mobile: simple fade
-                : isStableMode
-                ? { opacity: 0 }  // Desktop stable: just fade out
-                : { opacity: 0, scale: 0.8, y: -20 }  // Desktop dynamic: bounce out upward
-            }
-            transition={
-              isTouchDevice
-                ? { duration: 0.3 }  // Mobile: quick and simple
-                : isStableMode
-                ? {
-                    duration: 0.4,
-                    layout: { type: "spring", duration: 0.6, bounce: 0 }  // Desktop stable: smooth spring
-                  }
-                : {
-                    duration: 0.4,
-                    delay: index * 0.01,  // Desktop dynamic: stagger effect
-                    layout: { duration: 0.3 },
-                    type: "spring",
-                    stiffness: 300,
-                    damping: 24
-                  }
-            }
-            // PERFORMANCE: Disable expensive hover effects on mobile (filters are GPU-heavy)
-            whileHover={isTouchDevice ? {} : {
-              opacity: 1,
-              scale: 1.2,
-              rotate: [-2, 2, -2, 0],
-              filter: "brightness(1.2) drop-shadow(0 0 12px rgba(168, 85, 247, 0.7))",
-              transition: { duration: 0.3 }
-            }}
-            // PERFORMANCE: Reduce drop-shadow on mobile (expensive filter effect)
-            className={`${size} font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-slate-800 via-purple-900 to-slate-900 dark:from-gray-100 dark:via-purple-200 dark:to-gray-100 cursor-pointer select-none transition-all uppercase drop-shadow-md`}
+            onClick={() => onWordClick(word)}
+            className={`${size} font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-slate-800 via-purple-900 to-slate-900 dark:from-gray-100 dark:via-purple-200 dark:to-gray-100 cursor-pointer select-none uppercase`}
           >
             {word}
-          </motion.div>
-        ))}
-      </AnimatePresence>
+          </div>
+        ))
+      ) : (
+        // Desktop: Full animations with AnimatePresence
+        <AnimatePresence mode="popLayout">
+          {wordsWithSizes.map(({ word, size, id }, index) => (
+            <motion.div
+              key={id}
+              layout={true}
+              layoutId={isStableMode ? word : undefined}
+              onClick={() => onWordClick(word)}
+              initial={
+                isStableMode
+                  ? { opacity: 0 }
+                  : { opacity: 0, scale: 0.8, y: 20 }
+              }
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={
+                isStableMode
+                  ? { opacity: 0 }
+                  : { opacity: 0, scale: 0.8, y: -20 }
+              }
+              transition={
+                isStableMode
+                  ? {
+                      duration: 0.4,
+                      layout: { type: "spring", duration: 0.6, bounce: 0 }
+                    }
+                  : {
+                      duration: 0.4,
+                      delay: index * 0.01,
+                      layout: { duration: 0.3 },
+                      type: "spring",
+                      stiffness: 300,
+                      damping: 24
+                    }
+              }
+              whileHover={{
+                opacity: 1,
+                scale: 1.2,
+                rotate: [-2, 2, -2, 0],
+                filter: "brightness(1.2) drop-shadow(0 0 12px rgba(168, 85, 247, 0.7))",
+                transition: { duration: 0.3 }
+              }}
+              className={`${size} font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-slate-800 via-purple-900 to-slate-900 dark:from-gray-100 dark:via-purple-200 dark:to-gray-100 cursor-pointer select-none transition-all uppercase drop-shadow-md`}
+            >
+              {word}
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      )}
     </div>
   );
 }
