@@ -12,9 +12,16 @@
   box-sizing: border-box;
 }
 
+/* FIX 4: Optimization for mobile touch responsiveness */
+html, body {
+  touch-action: manipulation;
+  -webkit-overflow-scrolling: touch; /* Momentum scrolling for iOS */
+}
+
+/* FIX 3: Prevent double overflow-x hidden */
 html {
   overflow-y: auto;
-  overflow-x: hidden;
+  /* overflow-x removed - let body handle it */
 }
 
 body {
@@ -22,8 +29,9 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   width: 100%;
-  overflow-x: hidden;
+  overflow-x: hidden; /* Keep horizontal overflow lock only on body */
   min-height: 100vh;
+  position: relative;
 }
 
 body {

@@ -19,12 +19,19 @@ import useTouchDevice from '../hooks/useTouchDevice';
 
 export default function DefinitionModal({ word, definition, isLoading, error, onClose }) {
   const isTouchDevice = useTouchDevice();
-  // Prevent body scroll when modal is open (mobile fix)
+  // FIX 2: Prevent body scroll when modal is open (iOS-friendly)
   useEffect(() => {
     if (word) {
-      document.body.style.overflow = 'hidden';
+      const scrollY = window.scrollY;
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.width = '100%';
+
       return () => {
-        document.body.style.overflow = '';
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.width = '';
+        window.scrollTo(0, scrollY);
       };
     }
   }, [word]);

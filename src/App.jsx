@@ -113,7 +113,11 @@ function AppContent() {
   }, [typingMetrics]);
 
   return (
-    <div className="min-h-dvh bg-gradient-to-br from-purple-300 via-indigo-200 to-purple-100 dark:from-gray-900 dark:via-purple-950 dark:to-gray-900 transition-colors duration-300 pt-16 md:pt-24 lg:pt-4">
+    /* FIX 1 & 5: Changed min-h-dvh to min-h-screen.
+       Reduced top padding (pt-6) and added bottom padding (pb-20)
+       to ensure the page is actually scrollable on small screens.
+    */
+    <div className="min-h-screen bg-gradient-to-br from-purple-300 via-indigo-200 to-purple-100 dark:from-gray-900 dark:via-purple-950 dark:to-gray-900 transition-colors duration-300 pt-6 md:pt-24 lg:pt-4 pb-20">
       {/* Main container with fade-in animation (disabled on touch for scroll performance) */}
       <motion.div
         className="relative w-full mx-auto"
@@ -126,11 +130,11 @@ function AppContent() {
 
         {/* Responsive layout: Stacks vertically on mobile, side-by-side on desktop */}
         <div
-          className="flex flex-col lg:flex-row justify-center items-start lg:items-start gap-0 lg:gap-20 h-auto max-w-[1900px] mx-auto px-4 pb-8"
+          className="flex flex-col lg:flex-row justify-center items-start lg:items-start gap-0 lg:gap-20 h-auto max-w-[1900px] mx-auto px-4"
         >
           {/* Left Panel - Input rows and keyboard (responsive width) */}
           <motion.div
-            className="flex-shrink-0 w-full max-w-[580px] lg:w-[580px] lg:ml-8 flex flex-col gap-4 mx-4 lg:mx-0"
+            className="flex-shrink-0 w-full max-w-[580px] lg:w-[580px] lg:ml-8 flex flex-col gap-4 mx-auto lg:mx-0"
             style={{ marginTop: isDesktop ? '60px' : '0' }}
             initial={isTouchDevice ? { opacity: 1 } : { opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
@@ -158,7 +162,7 @@ function AppContent() {
 
           {/* Right Panel - Word cloud display (responsive width) */}
           <motion.div
-            className="flex-shrink-0 w-full max-w-[990px] lg:w-[990px] h-auto lg:h-full min-h-[500px]"
+            className="flex-shrink-0 w-full max-w-[990px] lg:w-[990px] h-auto lg:h-full min-h-[400px]"
             style={{ marginTop: isDesktop ? '40px' : '0' }}
             initial={isTouchDevice ? { opacity: 1 } : { opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
