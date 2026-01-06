@@ -78,12 +78,13 @@ export default function DefinitionModal({ word, definition, isLoading, error, on
               <div>
                 <h2 className="text-4xl font-black uppercase">{word}</h2>
                 {definition?.[0]?.phonetic && (
-                  <p className="text-purple-100 dark:text-purple-200 text-lg mt-1">{definition[0].phonetic}</p>
+                  <p className="text-purple-100 dark:text-purple-200 text-xl mt-1">{definition[0].phonetic}</p>
                 )}
               </div>
               <button
                 onClick={onClose}
                 className="text-white hover:bg-white/20 dark:hover:bg-white/10 rounded-full p-2 transition-colors"
+                style={{ transform: 'translateX(-16px)' }}
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -105,8 +106,8 @@ export default function DefinitionModal({ word, definition, isLoading, error, on
             {/* Error State */}
             {error && (
               <div className="bg-red-50 dark:bg-red-900/20 border-2 border-red-200 dark:border-red-700 rounded-2xl p-6 text-center">
-                <p className="text-red-600 dark:text-red-400 font-semibold text-lg">Definition not found</p>
-                <p className="text-red-500 dark:text-red-400 mt-2">Sorry, we couldn't find a definition for "{word}"</p>
+                <p className="text-red-600 dark:text-red-400 font-semibold text-xl">Definition not found</p>
+                <p className="text-red-500 dark:text-red-400 mt-2 text-base">Sorry, we couldn't find a definition for "{word}"</p>
               </div>
             )}
 
@@ -116,7 +117,7 @@ export default function DefinitionModal({ word, definition, isLoading, error, on
                 {definition[0]?.meanings?.map((meaning, idx) => (
                   <div key={idx} className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-md">
                     {/* Part of Speech */}
-                    <div className="inline-block bg-gradient-to-r from-purple-500 to-blue-500 dark:from-purple-600 dark:to-blue-600 text-white px-4 py-1 rounded-full text-sm font-bold mb-3">
+                    <div className="inline-block bg-gradient-to-r from-purple-500 to-blue-500 dark:from-purple-600 dark:to-blue-600 text-white px-4 py-1 rounded-full text-base font-bold mb-3">
                       {meaning.partOfSpeech}
                     </div>
 
@@ -124,11 +125,11 @@ export default function DefinitionModal({ word, definition, isLoading, error, on
                     <div className="space-y-3">
                       {meaning.definitions.slice(0, 3).map((def, defIdx) => (
                         <div key={defIdx} className="border-l-4 border-purple-300 dark:border-purple-600 pl-4">
-                          <p className="text-slate-800 dark:text-gray-200 font-medium">
+                          <p className="text-slate-800 dark:text-gray-200 font-medium text-base">
                             {defIdx + 1}. {def.definition}
                           </p>
                           {def.example && (
-                            <p className="text-slate-600 dark:text-gray-400 italic mt-1 text-sm">
+                            <p className="text-slate-600 dark:text-gray-400 italic mt-1 text-base">
                               Example: "{def.example}"
                             </p>
                           )}
@@ -139,12 +140,12 @@ export default function DefinitionModal({ word, definition, isLoading, error, on
                     {/* Synonyms */}
                     {meaning.synonyms?.length > 0 && (
                       <div className="mt-4 pt-4 border-t border-slate-200 dark:border-gray-700">
-                        <p className="text-slate-600 dark:text-gray-400 text-sm font-semibold mb-2">Synonyms:</p>
+                        <p className="text-slate-600 dark:text-gray-400 text-base font-semibold mb-2">Synonyms:</p>
                         <div className="flex flex-wrap gap-2">
                           {meaning.synonyms.slice(0, 5).map((synonym, synIdx) => (
                             <span
                               key={synIdx}
-                              className="bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300 px-3 py-1 rounded-full text-sm"
+                              className="bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300 px-3 py-1 rounded-full text-base"
                             >
                               {synonym}
                             </span>
