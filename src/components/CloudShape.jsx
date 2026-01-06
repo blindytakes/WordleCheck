@@ -31,7 +31,7 @@ export default function CloudShape({ isTouchDevice, children }) {
         transition={{ duration: 0.5 }}
       >
         {/* SVG Cloud Shape - proper cloud silhouette */}
-        <div className="relative w-[90vw] max-w-[400px] h-[280px]">
+        <div className="relative w-[90vw] max-w-[600px] h-[420px]">
           {/* SVG Cloud with gradients */}
           <svg
             viewBox="0 0 400 180"
