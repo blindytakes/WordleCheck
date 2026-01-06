@@ -25,7 +25,7 @@ export default function CloudShape({ isTouchDevice, children }) {
   if (!isDesktop) {
     return (
       <motion.div
-        className="relative w-full h-auto flex items-start justify-center pt-8"
+        className="relative w-full h-auto flex items-start justify-center pt-2"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
