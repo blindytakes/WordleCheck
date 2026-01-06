@@ -177,9 +177,13 @@ export default function GreenRow({ isFocused, onFocusChange }) {
                         }
                       }
                     }}
-                    onFocus={() => {
+                    onFocus={(e) => {
                       setSelectedPosition(position);
                       onFocusChange('green');
+                      // Scroll input into view when keyboard appears (with delay for keyboard animation)
+                      setTimeout(() => {
+                        e.target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                      }, 300);
                     }}
                     className="w-full h-full bg-transparent border-0 outline-none text-center text-5xl font-bold text-white caret-transparent"
                     style={{ caretColor: 'transparent' }}

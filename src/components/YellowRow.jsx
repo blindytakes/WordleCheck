@@ -188,9 +188,13 @@ export default function YellowRow({ isFocused, onFocusChange }) {
                       }
                     }
                   }}
-                  onFocus={() => {
+                  onFocus={(e) => {
                     setSelectedPosition(position);
                     onFocusChange('yellow');
+                    // Scroll input into view when keyboard appears (with delay for keyboard animation)
+                    setTimeout(() => {
+                      e.target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }, 300);
                   }}
                   placeholder="+"
                   className="w-full h-8 bg-white dark:bg-gray-600 border border-gray-300 dark:border-gray-500 rounded text-center text-lg font-bold outline-none focus:border-yellow-400"

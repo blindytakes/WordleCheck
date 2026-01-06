@@ -156,8 +156,12 @@ export default function GrayRow({ isFocused, onFocusChange }) {
                   e.target.value = ''; // Clear input for next letter
                 }
               }}
-              onFocus={() => {
+              onFocus={(e) => {
                 onFocusChange('gray');
+                // Scroll input into view when keyboard appears (with delay for keyboard animation)
+                setTimeout(() => {
+                  e.target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 300);
               }}
               className="absolute opacity-0 pointer-events-none w-0 h-0"
               aria-label="Type letters to add"
