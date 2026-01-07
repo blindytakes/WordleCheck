@@ -130,11 +130,11 @@ function AppContent() {
 
         {/* Responsive layout: Stacks vertically on mobile, side-by-side on desktop */}
         <div
-          className="flex flex-col lg:flex-row justify-center items-start lg:items-start gap-0 lg:gap-20 h-auto max-w-[1900px] mx-auto px-4"
+          className="flex flex-col lg:flex-row justify-center items-start lg:items-start gap-0 lg:gap-20 h-auto max-w-[1900px] mx-auto px-4 lg:pl-32"
         >
           {/* Left Panel - Input rows and keyboard (responsive width) */}
           <motion.div
-            className="flex-shrink-0 w-full max-w-[580px] lg:w-[580px] lg:ml-8 flex flex-col gap-4 mx-auto lg:mx-0"
+            className="flex-shrink-0 w-full max-w-[580px] lg:w-[580px] flex flex-col gap-4 mx-auto lg:mx-0"
             style={{ marginTop: isDesktop ? '60px' : '0' }}
             initial={isTouchDevice ? { opacity: 1 } : { opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
