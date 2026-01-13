@@ -23,20 +23,32 @@
  * - onFocusChange: Callback to change which row is focused
  */
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { useConstraints } from '../context/ConstraintContext';
 import useTouchDevice from '../hooks/useTouchDevice';
 import useKeyboardInput from '../hooks/useKeyboardInput';
-import { POSITION_INDICES, POSITION_LABELS, MOBILE_INPUT_PROPS } from '../constants';
+import { POSITION_INDICES, POSITION_LABELS, MOBILE_INPUT_PROPS, MAX_POSITION_INDEX } from '../constants';
 import { validateLetter } from '../utils/validateLetter';
 
-export default function GreenRow({ isFocused, onFocusChange }) {
+export default function GreenRow({ isFocused, focusedPosition, onFocusChange }) {
   const { green, addGreen, removeGreen } = useConstraints();
   const isTouchDevice = useTouchDevice();
   const inputRefs = useRef([]);
 
   // Track which position (0-4) is currently selected
-  const [selectedPosition, setSelectedPosition] = useState(0);
+  // On desktop, use focusedPosition from parent; on mobile, use local state
+  const [localPosition, setLocalPosition] = useState(0);
+  const selectedPosition = !isTouchDevice && focusedPosition !== null ? focusedPosition : localPosition;
+
+  // Helper to update position (desktop updates parent, mobile updates local state)
+  // Wrapped in useCallback to prevent stale closures
+  const updatePosition = useCallback((newPosition) => {
+    if (!isTouchDevice) {
+      onFocusChange('green', newPosition);
+    } else {
+      setLocalPosition(newPosition);
+    }
+  }, [isTouchDevice, onFocusChange]);
 
   // ========================================
   // KEYBOARD INPUT HANDLING (using custom hook)
@@ -46,8 +58,8 @@ export default function GreenRow({ isFocused, onFocusChange }) {
   const handleLetterInput = (letter) => {
     addGreen(selectedPosition, letter);
     // Move to next position if not at the end
-    if (selectedPosition < 4) {
-      setSelectedPosition(selectedPosition + 1);
+    if (selectedPosition < MAX_POSITION_INDEX) {
+      updatePosition(selectedPosition + 1);
     }
   };
 
@@ -57,20 +69,53 @@ export default function GreenRow({ isFocused, onFocusChange }) {
       removeGreen(selectedPosition);
     } else if (selectedPosition > 0) {
       // If current position is empty, go back and clear previous
-      setSelectedPosition(selectedPosition - 1);
+      updatePosition(selectedPosition - 1);
       removeGreen(selectedPosition - 1);
     }
   };
+
+  // Handle Tab navigation (desktop only: move to next position or next row)
+  const handleTabNavigate = useCallback(() => {
+    if (selectedPosition < MAX_POSITION_INDEX) {
+      // Move to next position within green row
+      onFocusChange('green', selectedPosition + 1);
+    } else {
+      // Move to first position of yellow row
+      onFocusChange('yellow', 0);
+    }
+  }, [selectedPosition, onFocusChange]);
+
+  // Handle Shift+Tab reverse navigation (desktop only: move to previous position or previous row)
+  const handleTabNavigateReverse = useCallback(() => {
+    if (selectedPosition > 0) {
+      // Move to previous position within green row
+      onFocusChange('green', selectedPosition - 1);
+    } else {
+      // Move to last position of gray row (wrap around)
+      onFocusChange('gray', 0);
+    }
+  }, [selectedPosition, onFocusChange]);
+
+  // Handle Escape key (unfocus the row)
+  const handleEscape = useCallback(() => {
+    // Blur by setting focus to null (requires App.jsx update to handle)
+    // For now, just move to green position 0 as a "reset"
+    onFocusChange('green', 0);
+  }, [onFocusChange]);
 
   // Use consolidated keyboard handling hook
   useKeyboardInput({
     isFocused,
     hasPositions: true,
     selectedPosition,
-    onPositionChange: setSelectedPosition,
+    onPositionChange: (pos) => updatePosition(pos),
     onLetterInput: handleLetterInput,
     onBackspace: handleBackspace,
-    onTabPress: () => onFocusChange('yellow'),
+    onTabPress: () => onFocusChange('yellow', 0),
+    onTabNavigate: handleTabNavigate,
+    onTabNavigateReverse: handleTabNavigateReverse,
+    onEscape: handleEscape,
+    isDesktopTabNavigation: !isTouchDevice,
   });
 
   // ========================================
@@ -79,13 +124,13 @@ export default function GreenRow({ isFocused, onFocusChange }) {
 
   // When clicking anywhere in the row, focus it
   const handleClick = () => {
-    onFocusChange('green');
+    onFocusChange('green', selectedPosition);
   };
 
   // When clicking a specific tile, select that position and focus the row
   const handleTileClick = (position) => {
-    setSelectedPosition(position);
-    onFocusChange('green');
+    updatePosition(position);
+    onFocusChange('green', position);
   };
 
   // ========================================
@@ -169,7 +214,7 @@ export default function GreenRow({ isFocused, onFocusChange }) {
                         if (letter) {
                           addGreen(position, letter);
                           // Auto-advance to next input
-                          if (position < 4 && inputRefs.current[position + 1]) {
+                          if (position < MAX_POSITION_INDEX && inputRefs.current[position + 1]) {
                             inputRefs.current[position + 1].focus();
                           }
                         } else {
@@ -178,8 +223,8 @@ export default function GreenRow({ isFocused, onFocusChange }) {
                       }
                     }}
                     onFocus={(e) => {
-                      setSelectedPosition(position);
-                      onFocusChange('green');
+                      updatePosition(position);
+                      onFocusChange('green', position);
                       // Scroll input into view when keyboard appears (with delay for keyboard animation)
                       setTimeout(() => {
                         e.target.scrollIntoView({ behavior: 'smooth', block: 'center' });

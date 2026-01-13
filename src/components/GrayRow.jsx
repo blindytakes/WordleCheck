@@ -24,12 +24,12 @@
  * - onFocusChange: Callback to change which row is focused
  */
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { useConstraints } from '../context/ConstraintContext';
 import ErrorMessage from './ErrorMessage';
 import useTouchDevice from '../hooks/useTouchDevice';
 import useKeyboardInput from '../hooks/useKeyboardInput';
-import { MOBILE_INPUT_PROPS } from '../constants';
+import { MOBILE_INPUT_PROPS, MAX_POSITION_INDEX } from '../constants';
 import { validateLetter } from '../utils/validateLetter';
 
 export default function GrayRow({ isFocused, onFocusChange }) {
@@ -64,13 +64,33 @@ export default function GrayRow({ isFocused, onFocusChange }) {
     }
   };
 
+  // Handle Tab navigation (desktop only: cycle back to green)
+  const handleTabNavigate = useCallback(() => {
+    onFocusChange('green', 0);
+  }, [onFocusChange]);
+
+  // Handle Shift+Tab reverse navigation (desktop only: go to last yellow position)
+  const handleTabNavigateReverse = useCallback(() => {
+    onFocusChange('yellow', MAX_POSITION_INDEX);
+  }, [onFocusChange]);
+
+  // Handle Escape key (unfocus the row)
+  const handleEscape = useCallback(() => {
+    // Reset to gray
+    onFocusChange('gray', 0);
+  }, [onFocusChange]);
+
   // Use consolidated keyboard handling hook (no positions for gray row)
   useKeyboardInput({
     isFocused,
     hasPositions: false,
     onLetterInput: handleLetterInput,
     onBackspace: handleBackspace,
-    onTabPress: () => onFocusChange('green'), // Cycle back to green
+    onTabPress: () => onFocusChange('green', 0), // Cycle back to green position 0
+    onTabNavigate: handleTabNavigate,
+    onTabNavigateReverse: handleTabNavigateReverse,
+    onEscape: handleEscape,
+    isDesktopTabNavigation: !isTouchDevice,
   });
 
   // ========================================
@@ -79,7 +99,7 @@ export default function GrayRow({ isFocused, onFocusChange }) {
 
   // When clicking anywhere in the row, focus it
   const handleClick = () => {
-    onFocusChange('gray');
+    onFocusChange('gray', 0);
   };
 
   // When clicking a letter badge, remove that letter
@@ -132,7 +152,7 @@ export default function GrayRow({ isFocused, onFocusChange }) {
         <div
           className="min-h-24 bg-gray-50 dark:bg-gray-700 rounded-xl border-2 border-gray-200 dark:border-gray-600 p-4 pb-2 lg:pb-4 flex flex-wrap gap-2 justify-center items-center relative"
           onClick={() => {
-            onFocusChange('gray');
+            onFocusChange('gray', 0);
             if (isTouchDevice && inputRef.current) {
               inputRef.current.focus();
             }
@@ -157,7 +177,7 @@ export default function GrayRow({ isFocused, onFocusChange }) {
                 }
               }}
               onFocus={(e) => {
-                onFocusChange('gray');
+                onFocusChange('gray', 0);
                 // Scroll input into view when keyboard appears (with delay for keyboard animation)
                 setTimeout(() => {
                   e.target.scrollIntoView({ behavior: 'smooth', block: 'center' });

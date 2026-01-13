@@ -15,6 +15,11 @@
 export const WORD_LENGTH = 5;
 
 /**
+ * Maximum position index (0-indexed, so WORD_LENGTH - 1)
+ */
+export const MAX_POSITION_INDEX = WORD_LENGTH - 1;
+
+/**
  * Position indices for word slots (0-indexed for internal use)
  */
 export const POSITION_INDICES = [0, 1, 2, 3, 4];

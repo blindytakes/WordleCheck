@@ -27,24 +27,36 @@
  * - onFocusChange: Callback to change which row is focused
  */
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { useConstraints } from '../context/ConstraintContext';
 import ErrorMessage from './ErrorMessage';
 import useTouchDevice from '../hooks/useTouchDevice';
 import useKeyboardInput from '../hooks/useKeyboardInput';
-import { POSITION_INDICES, POSITION_LABELS, MOBILE_INPUT_PROPS } from '../constants';
+import { POSITION_INDICES, POSITION_LABELS, MOBILE_INPUT_PROPS, MAX_POSITION_INDEX } from '../constants';
 import { validateLetter } from '../utils/validateLetter';
 
-export default function YellowRow({ isFocused, onFocusChange }) {
+export default function YellowRow({ isFocused, focusedPosition, onFocusChange }) {
   const { yellow, addYellow, removeYellow } = useConstraints();
   const isTouchDevice = useTouchDevice();
   const inputRefs = useRef([]);
 
   // Track which position (0-4) is currently selected
-  const [selectedPosition, setSelectedPosition] = useState(0);
+  // On desktop, use focusedPosition from parent; on mobile, use local state
+  const [localPosition, setLocalPosition] = useState(0);
+  const selectedPosition = !isTouchDevice && focusedPosition !== null ? focusedPosition : localPosition;
 
   // Error message shown when validation fails (e.g., letter is already green)
   const [errorMessage, setErrorMessage] = useState(null);
+
+  // Helper to update position (desktop updates parent, mobile updates local state)
+  // Wrapped in useCallback to prevent stale closures
+  const updatePosition = useCallback((newPosition) => {
+    if (!isTouchDevice) {
+      onFocusChange('yellow', newPosition);
+    } else {
+      setLocalPosition(newPosition);
+    }
+  }, [isTouchDevice, onFocusChange]);
 
   // ========================================
   // KEYBOARD INPUT HANDLING (using custom hook)
@@ -69,15 +81,47 @@ export default function YellowRow({ isFocused, onFocusChange }) {
     }
   };
 
+  // Handle Tab navigation (desktop only: move to next position or next row)
+  const handleTabNavigate = useCallback(() => {
+    if (selectedPosition < MAX_POSITION_INDEX) {
+      // Move to next position within yellow row
+      onFocusChange('yellow', selectedPosition + 1);
+    } else {
+      // Move to gray row
+      onFocusChange('gray', 0);
+    }
+  }, [selectedPosition, onFocusChange]);
+
+  // Handle Shift+Tab reverse navigation (desktop only: move to previous position or previous row)
+  const handleTabNavigateReverse = useCallback(() => {
+    if (selectedPosition > 0) {
+      // Move to previous position within yellow row
+      onFocusChange('yellow', selectedPosition - 1);
+    } else {
+      // Move to last position of green row
+      onFocusChange('green', MAX_POSITION_INDEX);
+    }
+  }, [selectedPosition, onFocusChange]);
+
+  // Handle Escape key (unfocus the row)
+  const handleEscape = useCallback(() => {
+    // Reset to first position
+    onFocusChange('yellow', 0);
+  }, [onFocusChange]);
+
   // Use consolidated keyboard handling hook
   useKeyboardInput({
     isFocused,
     hasPositions: true,
     selectedPosition,
-    onPositionChange: setSelectedPosition,
+    onPositionChange: (pos) => updatePosition(pos),
     onLetterInput: handleLetterInput,
     onBackspace: handleBackspace,
-    onTabPress: () => onFocusChange('gray'),
+    onTabPress: () => onFocusChange('gray', 0),
+    onTabNavigate: handleTabNavigate,
+    onTabNavigateReverse: handleTabNavigateReverse,
+    onEscape: handleEscape,
+    isDesktopTabNavigation: !isTouchDevice,
   });
 
   // ========================================
@@ -86,13 +130,13 @@ export default function YellowRow({ isFocused, onFocusChange }) {
 
   // When clicking anywhere in the row, focus it
   const handleClick = () => {
-    onFocusChange('yellow');
+    onFocusChange('yellow', selectedPosition);
   };
 
   // When clicking a specific cell, select that position and focus the row
   const handleCellClick = (position) => {
-    setSelectedPosition(position);
-    onFocusChange('yellow');
+    updatePosition(position);
+    onFocusChange('yellow', position);
   };
 
   // When clicking a letter badge, remove that letter
@@ -189,8 +233,8 @@ export default function YellowRow({ isFocused, onFocusChange }) {
                     }
                   }}
                   onFocus={(e) => {
-                    setSelectedPosition(position);
-                    onFocusChange('yellow');
+                    updatePosition(position);
+                    onFocusChange('yellow', position);
                     // Scroll input into view when keyboard appears (with delay for keyboard animation)
                     setTimeout(() => {
                       e.target.scrollIntoView({ behavior: 'smooth', block: 'center' });

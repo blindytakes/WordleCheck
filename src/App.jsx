@@ -38,8 +38,8 @@ import { getFaro } from './faro';
  * Separated from App so it can use the useConstraints hook
  */
 function AppContent() {
-  // Track which row is currently focused (for keyboard input)
-  const [focusedRow, setFocusedRow] = useState('green');
+  // Track which row and position is currently focused (for keyboard input)
+  const [focusedState, setFocusedState] = useState({ row: 'green', position: 0 });
 
   // Detect touch devices to hide visual keyboard on mobile
   const isTouchDevice = useTouchDevice();
@@ -54,8 +54,8 @@ function AppContent() {
   const typingMetrics = useTypingMetrics();
 
   // Called by rows when they receive focus
-  const handleFocusChange = (row) => {
-    setFocusedRow(row);
+  const handleFocusChange = (row, position = 0) => {
+    setFocusedState({ row, position });
   };
 
   // Global keyboard shortcuts + typing metrics
@@ -141,15 +141,17 @@ function AppContent() {
             transition={isTouchDevice ? { duration: 0 } : { duration: 0.6, delay: 0.2, ease: "easeOut" }}
           >
             <GreenRow
-              isFocused={focusedRow === 'green'}
+              isFocused={focusedState.row === 'green'}
+              focusedPosition={focusedState.row === 'green' ? focusedState.position : null}
               onFocusChange={handleFocusChange}
             />
             <YellowRow
-              isFocused={focusedRow === 'yellow'}
+              isFocused={focusedState.row === 'yellow'}
+              focusedPosition={focusedState.row === 'yellow' ? focusedState.position : null}
               onFocusChange={handleFocusChange}
             />
             <GrayRow
-              isFocused={focusedRow === 'gray'}
+              isFocused={focusedState.row === 'gray'}
               onFocusChange={handleFocusChange}
             />
             {/* Only show visual keyboard on desktop (not needed on mobile with native inputs) */}
